@@ -1,0 +1,1080 @@
+Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 1  
+SYSTEM DOCUMENTATION  
+Sri Lanka Clothing Boutique Marketplace Application  
+ 
+Version 1.0  |  Project Kick -off Document  
+ 
+Project  Ceylon Boutique Marketplace App  
+Document Type  System Requirements & Navigation Specification  
+Team Size  6 Members  
+Platform  Mobil e App (Customer & Seller) + Web Admin Panel  
+Modules  6 Core Modules  
+Status  Draft — For Review  
+ 
+  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 2 System Overview  
+This document defines the complete functional requirements, flow specifications, and user navigation maps for 
+the Sri Lanka Clothing Boutique  Marketplace Application. It is intended as the single source of truth for the 6 -
+member development team.  
+ 
+Concept Summary  
+• Authentic boutique sellers are manually verified by platform admins before they can list products.  
+• Verified sellers manage their shop  and product listings through the mobile app.  
+• Registered customers browse listings, view product details, and place orders through the mobile app.  
+• Admins manage the entire platform through a separate web -based admin panel.  
+ 
+Key Business Rules  
+1. When a custom er places an order, the system automatically notifies the relevant seller with order and 
+customer details.  
+2. The seller manually handles packing, packaging, and courier handover.  
+3. Shipments use the app company address as the "from" address — not the seller's personal address.  
+4. Admins can cancel any order before the seller dispatches/couriers the item.  
+5. Payment methods: Card (online) or Cash on Delivery (COD).  
+6. All financial operations including seller payouts are managed exclusiv ely by admins.  
+7. Only customers who completed an order can submit a review for a product or seller.  
+ 
+Roles & Access Summary  
+Operation  Description  
+Customer  Mobile app — self-registers, browses products, places orders, submits reviews.  
+Seller  Mobile app — registers (pending verification), li sts products, updates orders.  
+Admin  Web panel — verifies sellers, manages all platform data, handles payments and 
+payouts.  
+ 
+Module Index  
+Operation  Description  
+Module 1  User Management — Customer Accounts  
+Module 2  Seller & Shop Management  
+Module 3  Prod uct & Inventory Management  
+Module 4  Order Management  
+Module 5  Reviews & Ratings Management  
+Module 6  Admin & Platform Management (Web)  
+  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 3 Module 1 — User Management  
+1.1  Module Breakdown  
+Handles everything related to customer accounts on the mobile app. Customers can only self -register — no 
+admin creation of customer accounts. The module covers registration, authentication, profile management, 
+address management, and account deactivation.  
+ 
+Operation  Description  
+Create  Customer self -registration with name , email, phone, password, and address.  
+Read  View own profile, login/authentication, view account details.  
+Update  Edit profile info, change password, add/update delivery addresses.  
+Delete  Deactivate or permanently delete own account.  
+ 
+1.2  Functional Re quirements  
+FR1.1  Customer Self -Registration  
+Actor: Unregistered User  
+Trigger: User taps "Register" on the Welcome screen  
+Inputs: Full name, email address, phone number, password (+ confirm), home address  
+Validation: Email uniqueness check, phone format, p assword minimum strength, all required fields  
+Output: New customer account crea ted; user directed to Login screen or auto -logged in  
+Constraints: Customers can ONLY self -register — no admin -created accounts  
+ 
+FR1.2  Customer Login / Authentication  
+Actor: Registered Customer  
+Trigger: User taps "Login" on the Welcome screen  
+Inputs: Email  + Password  
+Output: Authenticated session; redirect to Home (Browse Products)  
+Error Cases: Wrong credentials → error message; account deactivated → inform user; too many attempt s → 
+temporary lock  
+Security: JWT or session token; remember -me option  
+ 
+FR1.3  View Profile  
+Actor: Authenticated Customer  
+Trigger: Tap "My Profile" in bottom navigation or  settings menu  
+Output: Displays: name, email, phone, registered addresses, account creation date  
+Permissions: Customer can only view their own profile  
+ 
+FR1.4  Edit Profile Info  
+Actor: Authenticated Customer  
+Trigger: Tap "Edit" on the Profile screen  
+Inputs:  Name, phone number (email is read -only identifier)  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 4 Output: Profile updated; confirmation shown  
+ 
+FR1.5  Change Password  
+Actor: Authenticated Customer  
+Trigger: Tap "Change Password" in Profile or Settings  
+Inputs: Current password, new password, confirm new password  
+Validation: Current password must match; new password meets strength rules; new and confirm match  
+Output: Password upd ated; session may be refreshed  
+ 
+FR1.6  Manage Delivery Addresses  
+Actor: Authenticated Customer  
+Trigger: Tap "My Addresses" in Pro file 
+Operations: Add new address, edit existing address, delete address, set default address  
+Constraints: At least one address must exist if orders are active; default address auto -populates at checkout  
+ 
+FR1.7  Deactivate / Delete Account  
+Actor: Authentica ted Customer  
+Trigger: Tap "Deactivate Account" in Profile/Settings  
+Flow: Confirmation dialog shown → user confirms → account de activated (soft delete); data retained for order 
+history  
+Constraints: Cannot deactivate if an active order is in progress; admin can also deactivate any account from 
+the admin panel  
+ 
+1.3  Complete Flow for Each FR  
+FR1.1 — Registration Flow  
+8. User opens app → Welcome screen appears.  
+9. User taps "Register" → Registration screen loads.  
+10. User fills all required fields: name, email, phone, pa ssword, confirm password, home address.  
+11. System validates all fields in real -time (inline error messages).  
+12. User taps "Create Account" → system checks email uniqueness.  
+13. If email already exists → error: "A n account with this email already exists."  
+14. If valid → account cre ated → user redirected to Home (Browse Products) with session started.  
+15. Welcome/onboarding message displayed on first login.  
+ 
+FR1.2 — Login Flow  
+16. User opens app → Welcome screen → taps "Login".  
+17. Login screen loads. User enters email and password.  
+18. Tap "Login" → system validates credentials.  
+19. On success → session token issued → redirect to Home.  
+20. On failure → inline error message; after 5 failed attempts → account temporarily locked for 15 minutes.  
+21. Deactivated account → message shown, directed to contac t support.  
+ 
+FR1.3 — View Profile Flow  
+22. Authenticated customer taps "Profile" tab in bottom navigation.  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 5 23. Profile screen loads with all account details read -only.  
+24. User can tap "Edit" to enter edit mode (FR1 .4) or navigate to sub -sections (Addresses, Change 
+Password).  
+ 
+FR1.4 — Edit Profile Info Flow  
+25. From Profile screen → tap "Edit Profile".  
+26. Editable fields become active: name, phone.  
+27. User makes changes → taps "Save Changes".  
+28. System validates and saves → success toast shown.  
+29. User redirected back to read -only Prof ile screen.  
+ 
+FR1.5 — Change Password Flow  
+30. From Profile screen → tap "Change Password".  
+31. Change Password screen loads with three  fields.  
+32. User enters current password, new password, confirm new password.  
+33. Tap "Update Password" → system validates.  
+34. If current pa ssword incorrect → error shown.  
+35. If new passwords do not match → error shown.  
+36. If valid → password updated → success message → r edirect to Profile.  
+ 
+FR1.6 — Manage Addresses Flow  
+37. From Profile → tap "My Addresses".  
+38. Address list screen shows all saved addresse s with default badge.  
+39. Tap "Add New Address" → form opens; user enters address details → save.  
+40. Tap on existing address → option s: Edit, Set as Default, Delete.  
+41. Delete prompts confirmation dialog before removing.  
+ 
+FR1.7 — Deactivate Account Flow  
+42. From Profile  → Settings → tap "Deactivate Account".  
+43. Warning dialog: "This will deactivate your account. Active orders will not be affected ." 
+44. User must type "CONFIRM" or re -enter password to proceed.  
+45. System checks for active orders — if any, deactivation is blocked wit h guidance.  
+46. If no blockers → account soft -deleted → session terminated → app returns to Welcome screen.  
+ 
+1.4  User Navigation Flows  
+Screen: Welcome Screen  
+Property  Details  
+Access  All unauthenticated users; app entry point  
+Navigation Path  App launch (no s ession) → Welcome Screen  
+Previous Screen  None (entry point)  
+Next Screens  "Login" → Login Screen | "Register" → Registration Screen  
+Back Nav  Android back button exits app  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 6 Redirect Conditions  If valid session token exists → auto -redirect to Home  
+Permiss ion Public (no login required)  
+ 
+Screen: Registration Screen  
+Property  Details  
+Access  Unauthenticated users only  
+How to Reach  Welcome Screen → tap "Register"  
+Previous Screen  Welcome Screen  
+Next Screens  Success → Home Screen | Cancel → Welcome Screen  
+Back Nav  Tap back → Welcome Screen (with discard -changes warning if fields are filled)  
+Redirect Conditions  If already authenticated → redirect to Home  
+Permission  Public  
+ 
+Screen: Login Screen  
+Property  Details  
+Access  Unauthenticated users  
+How to Reach  Welcome Screen → tap "Login" | Session expired → auto -redirect here  
+Previous Screen  Welcome Screen  
+Next Screens  Success → Home Screen | "Register" link → Registration Screen | Forgot 
+Password → Password Reset Screen  
+Back Nav  Welcome Screen  
+Redirect Condit ions If already authenticated → redirect to Home  
+Permission  Public  
+ 
+Screen: Profile Screen  
+Property  Details  
+Access  Authenticated Customer only  
+How to Reach  Bottom navigation → "Profile" tab  
+Previous Screen  Any screen in bottom navigation  
+Next Screens  "Edit Profile" → Edit Profile Screen | "Change Password" → Change Password 
+Screen | "My Addresses" → Address Management Screen | "Settings" → 
+Settings Screen  
+Back Nav  Returns to previously active tab  
+Redirect Conditions  Unauthenticated user → Login Scre en Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 7 Permission  Customer (own data only)  
+ 
+Screen: Edit Profile Screen  
+Property  Details  
+Access  Authenticated Customer  
+How to Reach  Profile Screen → tap "Edit Profile"  
+Previous Screen  Profile Screen  
+Next Screens  Save → Profile Screen (with success toast)  | Cancel → Profile Screen  
+Back Nav  Profile Screen (with discard warning if unsaved changes)  
+Permission  Customer (own data only)  
+ 
+Screen: Address Management Screen  
+Property  Details  
+Access  Authenticated Customer  
+How to Reach  Profile Screen → "My Addres ses" | Checkout → "Add / Ch ange Address"  
+Previous Screen  Profile Screen or Checkout Screen  
+Next Screens  Add/Edit Address → Address Form Screen | Done → previous screen  
+Back Nav  Profile Screen or Checkout Screen (returns to caller)  
+Permission  Customer ( own addresses only)  
+  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 8 Module 2 — Seller & Shop Management  
+2.1  Module Breakdown  
+Manages boutique seller accounts and their shop profiles. Sellers register through the mobile app but cannot go 
+live until an admin manually verifies their business documents.  Sellers access their shop dashboard through the 
+same mobile app under a dedicate d seller mode.  
+ 
+Operation  Description  
+Create  Seller registration: shop name, owner details, business documents, contact 
+information.  
+Read  View own shop profile, shop listing s page, seller dashboard.  
+Update  Edit shop info, update business documents, update contact details.  
+Delete  Admin suspends or removes a seller/shop from the platform.  
+ 
+2.2  Functional Requirements  
+FR2.1  Seller Registration  
+Actor: Unregistered Seller  
+Trigger: User selects "Register as Seller" on the Welcome or Switch -Role screen  
+Inputs: Shop name, owner full name, email, phone number, business registration documents (upload), contact 
+address, bank account details (for payouts)  
+Output: Seller account creat ed with status: Pending Verification; seller notified that review is underway  
+Constraints: Seller cannot list products until admin approves; separate account from customer accounts  
+ 
+FR2.2  Admin Manual Seller Verification  
+Actor: Admin ( via Web Panel)  
+Trigg er: Admin reviews pending seller applications in the admin panel  
+Inputs: Uploaded business documents, shop details  
+Actions: Approve → seller status becomes Active | Reject → seller notified with reason  
+Output: Approved sellers can log i n to their seller dashboard and begin listing products; rejected sellers are 
+notified via in -app notification and email  
+ 
+FR2.3  View Shop Profil e 
+Actor: Verified Seller (own profile) | Customer (public view) | Admin  
+Trigger: Seller: bottom nav "Shop" | Cus tomer: tap shop name on product or listing page | Admin: from admin 
+panel seller list  
+Output: Shop name, logo/banner image, description, product  count, average rating, contact details, join date  
+ 
+FR2.4  Edit Shop Info  
+Actor: Verified Seller  
+Trigger: Seller  taps "Edit Shop" on their shop dashboard  
+Inputs: Shop name, description, logo/banner image, contact details  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 9 Output: Shop profile updated; visib le to all customers immediately  
+ 
+FR2.5  Update Business Documents  
+Actor: Verified Seller  
+Trigger: Seller taps "Update Documents" in Shop Settings  
+Inputs: New document files (PDF, image)  
+Output: Documents updated; admin may re -review if required by platform  policy  
+ 
+FR2.6  Suspend or Remove Seller  
+Actor: Admin (Web Panel)  
+Trigger: Admin selects a seller and chooses "Suspend" or "Remove"  
+Actions: Suspend → shop hidden from customers, seller cannot list new products, active orders are flagged for 
+admin | Remove  → permanent deactivation, all listings unpublished  
+Constraints: Admin must  provide a reason; seller is notified via email and in -app message  
+ 
+2.3  Complete Flow for Each FR  
+FR2.1 — Seller Registration Flow  
+47. User opens app → Welcome screen → taps "Register as Seller".  
+48. Seller registration form loads (multi -step if needed).  
+49. Step 1: Personal details (name, email, phone, password).  
+50. Step 2: Shop deta ils (shop name, description, category focus).  
+51. Step 3: Document upload (business registration certificate, NIC).  
+52. Step 4: Bank account details for payouts.  
+53. Seller taps "Submit for Verification" → account created with status: Pending.  
+54. In-app message and email  sent: "Your shop is under review. We'll notify you within 3 -5 business days."  
+55. Seller can log in but sees a "Pending Verification" dashboard — no listing capability.  
+ 
+FR2.2 — Admin Verification Flow  
+56. Admin logs into web panel → navigates to "Seller Verifica tion" queue.  
+57. Admin opens a pending seller application.  
+58. Reviews submitted documents, shop name, business details.  
+59. Option A — Approve: status changed to Act ive; seller receives in -app notification and email with 
+approval.  
+60. Option B — Reject: admin enters reje ction reason; seller notified with reason and option to reapply.  
+ 
+FR2.3 — View Shop Profile Flow  
+61. Customer view: tap shop name on any product card → Shop P rofile screen opens.  
+62. Seller view: tap "My Shop" in bottom navigation → own shop dashboard.  
+63. Admin view:  admin panel → Sellers list → tap seller → Shop Details screen.  
+ 
+FR2.4 — Edit Shop Info Flow  
+64. Verified seller navigates to "My Shop" → taps "Edit Shop".  
+65. Edit form pre -filled with current details.  
+66. Seller updates fields → taps "Save".  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 10 67. System validates → updat es applied immediately →  success toast shown.  
+68. Seller returns to Shop Dashboard.  
+ 
+FR2.6 — Suspend / Remove Seller Flow (Admin)  
+69. Admin opens web panel → Sell ers section → selects seller.  
+70. Chooses "Suspend" or "Remove" from action dropdown.  
+71. Confirmation modal a ppears with reason text box (required).  
+72. Admin confirms → platform executes action.  
+73. All active listings hidden immediately; active orders flagged for admin review.  
+74. Seller and affected customers receive notifications.  
+ 
+2.4  User Navigation Flows  
+Screen: Seller Welcome / Role Selection Screen  
+Property  Details  
+Access  Unauthenticated users  
+How to Reach  App launch (no session) → Welcome Screen → "Sell on Ceylon"  
+Previous Screen  Welcome Screen  
+Next Screens  "Register as Seller" → Seller Registration Form | "Log in as Seller" → Seller 
+Login Screen  
+Permission  Public  
+ 
+Screen: Seller Registration Form  
+Property  Details  
+Access  Unauthenticated users registering as sellers  
+How to Reach  Seller Welcome → "Register as Seller"  
+Previous Screen  Seller Welcome Screen  
+Next  Screens  Submit → Pending Dashboard | Back → Seller Welcome  
+Back Nav  Previous step in multi -step form; final back → Welcome Screen with discard 
+warning  
+Permission  Public  
+ 
+Screen: Seller Pending Dashboard  
+Property  Details  
+Access  Seller with Pending Veri fication status  
+How to Reach  After registration submission | Login before approval  
+Previous Screen  Seller Login Screen or Registration Form  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 11 Next Screens  Approved by admin → Seller Active Dashboard | Profile/Settings available  
+Back Nav  Android back → ex it app confirmati on 
+Permission  Seller (Pending status only)  
+ 
+Screen: Seller Active Dashboard (Home)  
+Property  Details  
+Access  Verified (Active) Seller  
+How to Reach  Login → auto -redirect | Notification of approval → Dashboard  
+Previous Screen  Login Screen  
+Next Screens  "My Products" → Product Management | "Orders" → Seller Orders Screen | 
+"My Shop" → Shop Profile | "Settings" → Seller Settings  
+Back Nav  Exit app confirmation dialog  
+Permission  Verified Seller only  
+ 
+Screen: Shop Profile Screen (Public View ) 
+Property  Details  
+Access  Any authenticated customer; any admin  
+How to Reach  Product Detail page → tap shop name | Search results → tap shop | Admin 
+panel → Seller list → tap shop  
+Previous Screen  Product Detail Screen, Search Results, or Admin Panel  
+Next Screens  Product cards → Product Detail Screen | "Contact" → Seller Contact page | 
+Back → previous screen  
+Back Nav  Returns to previous screen (product, search, or admin panel)  
+Permission  Authenticated customers (public shop view); Admin (full detail vi ew) 
+  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 12 Module 3 — Product & Inventory Management  
+3.1  Module Breakdown  
+Handles all product listings created by verified sellers. Customers can browse, search, filter, and view product 
+details. Sellers manage their own product catalogue including stock leve ls, images, sizes, colors, and pricing.  
+ 
+Operation  Description  
+Create  Seller adds a new product listing with name, description, category, price, sizes, 
+colors, images, and stock quantity.  
+Read  Customers browse products, apply filters, view product detail  pages. Sellers view 
+their own listings dashboard.  
+Update  Seller edits product info, updates stock quantity, marks items as out of stock.  
+Delete  Seller removes or unpublishes a product listing. Admin can forcibly unpublish.  
+ 
+3.2  Functional Requirements  
+FR3.1  Add New Product Listing  
+Actor: Verified Seller  
+Trigger: Seller taps "Add Product" on their Product Management screen  
+Inputs: Product name, description, category (from admin -managed list), price (LKR), sizes (multi -select: 
+XS/S/M/L/XL/XXL or custom) , colors (with swatches), images (min 1, max 10), stock quantity  per variant  
+Output: Product listed and visible to customers immediately after submission  
+Constraints: Seller must be verified; at least one image required; price must be greater than 0  
+ 
+FR3.2   Browse, Search, and Filter Products  
+Actor: Authenticated Custo mer 
+Trigger: Customer opens Home tab or Search tab  
+Browse: Paginated product grid sorted by newest/popular; filtered by category  
+Search: Keyword search on product name, description, and shop n ame 
+Filters: Category, price range, size, color, seller rating, in-stock only  
+Output: Filtered product grid displayed; empty state if no results  
+ 
+FR3.3  View Product Detail Page  
+Actor: Authenticated Customer  
+Trigger: Customer taps on any product card  
+Outpu t: Full product detail: name, image gallery (swipeable), descrip tion, price, available sizes & colors, stock 
+status, seller name (tappable → Shop Profile), average rating, recent reviews, "Add to Cart" / "Buy Now" button  
+Out of Stock: Add to Cart and Buy Now buttons are disabled; "Out of Stock" badge shown  
+ 
+FR3.4  Edit Product Info  
+Actor: Verified Seller (own products only)  
+Trigger: Seller taps a product from their listing → taps "Edit"  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 13 Editable Fields: Name, description, price, category, images, sizes, colors  
+Output: Product updated; changes reflected immediately on cu stomer -facing pages  
+ 
+FR3.5  Update Stock / Mark as Out of Stock  
+Actor: Verified Seller  
+Trigger: Seller taps "Manage Stock" on a product listing  
+Options: Update quantity per variant (size/color), manually mark as Out of Stock, restock item  
+Auto -trigger: System automatically marks item as Out of Stock when quantity reaches zero after an order  
+Output: Stock updated; product page reflects current availability instantly  
+ 
+FR3.6  Remove / Unpublish Product Listing  
+Actor: Verified Seller (own products) | Admin (any  product)  
+Trigger: Seller/Admin taps "Unpublish" or "Delete" on a product  
+Options: Unpublish (hidden from customers, no new orders) | Delete (permanent r emoval)  
+Constraints: Products with active orders cannot be deleted; admin override available; soft dele te preferred for 
+audit  
+ 
+3.3  Complete Flow for Each FR  
+FR3.1 — Add Product Flow  
+75. Seller navigates to "My Products" → taps "Add Product".  
+76. Product creation form loads (single or multi -step).  
+77. Seller fills: name, description, category (dropdown), price.  
+78. Seller adds sizes (checkboxes) and colors (color picker or tags).  
+79. Seller uploads produc t images (camera or gallery picker); can reorder.  
+80. Seller enters stock quantity for each variant (size x color combination).  
+81. Seller taps "Publish" → system validates all required fields.  
+82. Product goes live → appears in customer browse fe ed immediately.  
+83. Selle r receives confirmation and product appears in "My Products" list.  
+ 
+FR3.2 — Browse / Search Flow (Customer)  
+84. Customer opens app → Home tab shows featured/newest products.  
+85. Search tab: customer types keyword → results update in real time.  
+86. Filters icon (top ri ght) → Filter Sheet slides up; customer sets filters → applies.  
+87. Product grid updates to reflect search + filters.  
+88. Customer scrolls; infinite scroll or "Load More" paginat ion. 
+89. Empty state shown if no products match: "No products found. Try adjusting your fi lters."  
+ 
+FR3.3 — View Product Detail Flow (Customer)  
+90. Customer taps a product card from Home, Search, or Category view.  
+91. Product Detail screen loads with image gallery at t op. 
+92. Customer swipes images; selects size from size selector; selects color.  
+93. Stock stat us updates based on selected variant.  
+94. Customer scrolls down to see description, seller info, and reviews.  
+95. Taps seller name → Shop Profile screen.  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 14 96. Taps "Add to Cart" (if a vailable) or "Buy Now" → navigates to Cart or Checkout.  
+ 
+FR3.5 — Update Stock Flow  
+97. Seller taps product in "My Products" → taps "Manage Stock".  
+98. Stock management screen shows each variant with c urrent quantity.  
+99. Seller updates quantities or toggles "Out of St ock" per variant.  
+100. Taps "Save" → changes reflected on product page immediately.  
+ 
+3.4  User Navigation Flows  
+Screen: Home Screen (Browse Products)  
+Property  Details  
+Access  Authenticated Customer  
+How to Reach  Successful login → auto -redirect | Bottom nav "Home" tab  
+Previous Screen  Login Screen or any bottom nav tab  
+Next Screens  Product card tap → Product Detail | Category chip → Category View | Search 
+bar tap → Search Screen | Cart icon → Cart Screen  
+Back Nav  Android back → exit app confirmation  
+Permission  Authenticated Customer only  
+ 
+Screen: Search / Filter Screen  
+Property  Details  
+Access  Authenticated Customer  
+How to Reach  Home → tap search bar | Bottom nav "Search" tab  
+Previous Screen  Home Screen  
+Next Screens  Result tap → Product Detail Screen | Filter icon → Filter Sheet (modal) | Back 
+→ Home Screen  
+Back Nav  Home Screen  
+Permission  Authenticated Customer  
+ 
+Screen: Product Detail Screen  
+Property  Details  
+Access  Authenticated Customer  
+How to Reach  Home → product card tap | Search results → tap product | Shop Profile → 
+product tap  
+Previous Screen  Home, Search, Shop Profile, or Order History (re -order path)  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 15 Next Screens  "Add to Cart" → Cart Screen | "Buy Now" → Checkout Screen | Seller n ame → 
+Shop Profile Screen | Review count → Reviews Screen  
+Back Nav  Returns to previous screen  
+Permission  Authenticated Customer  
+ 
+Screen: Seller — My Products Screen  
+Property  Details  
+Access  Verified Seller only  
+How to Reach  Seller Dashboard → "My Produ cts" | Bottom nav "Products"  tab 
+Previous Screen  Seller Dashboard  
+Next Screens  "Add Product" → Product Creation Form | Product tap → Product Detail (edit 
+mode) | "Manage Stock" → Stock Management Screen  
+Back Nav  Seller Dashboard  
+Permission  Verified Sel ler (own products only)  
+ 
+Screen: Product Creation / Edit Form  
+Property  Details  
+Access  Verified Seller  
+How to Reach  My Products → "Add Product" | My Products → product → "Edit"  
+Previous Screen  My Products Screen  
+Next Screens  Publish/Save → My Products (with success toast) | Canc el → My Products 
+(discard warning)  
+Back Nav  My Products Screen (discard -changes warning if unsaved)  
+Permission  Verified Seller (own products only)  
+  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 16 Module 4 — Order Management  
+4.1  Module Breakdown  
+Handles the complete order lifecycle from placement through delivery. Includes automatic seller notification on 
+new orders, status progression, payment handling (Card / COD), admin oversight, and cancellati on rules.  
+ 
+Operation  Description  
+Create  Customer places an order — selects p roducts, quantity, delivery address, 
+payment method (Card or COD). System auto -notifies the seller with full order 
+and customer details.  
+Read  Customer views order history, order detail, real -time status tracking. Seller views 
+incoming orders. Admin views all orders platform -wide.  
+Update  Order status progresses: Pending → Confirmed → Shipped → Delivered 
+(automated/seller -triggered). Customer or Admin can cancel before dispatch.  
+Delete  Soft delete: cancelled or failed orders removed from active view but re tained for 
+audit and financial records.  
+ 
+4.2  Functional Requirements  
+FR4.1  Place an Order  
+Actor: Authenticated Customer  
+Trigger: "Buy Now" or "Checkout" from Cart screen  
+Inputs: Selected products (with sizes/colors/qty), delivery address (from saved lis t or new), payment method 
+(Card or COD)  
+Card Payment: Redirects to payment gateway (e.g., PayHere/Stripe); order created only on suc cessful 
+payment authorization  
+COD: Order created immediately; payment collected on delivery; admin manages reconciliation  
+Output: Order created with status: Pending; customer receives order confirmation; seller auto -notified (see 
+FR4.2)  
+ 
+FR4.2  Automatic S eller Notification on Order Placement  
+Actor: System (automated)  
+Trigger: Order successfully placed  
+Action: System sends in -app notification and email to the relevant seller with: order ID, product name, size, 
+color, quantity, customer name, delivery addres s, payment method, order timestamp  
+Constraint: If an order contains products from multiple sellers, each seller receives onl y their portion of the 
+order  
+Failure Handling: If notification fails → system retries 3 times; admin is alerted if all retries fail  
+ 
+FR4.3  View Order History  
+Actor: Authenticated Customer | Verified Seller | Admin  
+Customer: Sees all own past and active or ders: order ID, products thumbnail, date, total , status badge  
+Seller: Sees all orders related to their products: incoming orders, in -progress, completed  
+Admin: Sees all orders across all sellers with full customer and seller detail  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 17  
+FR4.4  View Order Detai l & Status Tracking  
+Actor: Customer (own orders) | Seller (own order items) | Admin (all)  
+Trigger: Tap on an order in Order History  
+Output: Order ID, item list (with images), quantities, sizes, total price, delivery address, payment method, 
+payment status,  seller details, order stat us timeline (with timestamps), tracking notes (when added by 
+seller/admin)  
+ 
+FR4.5  Order Status Lifecycle  
+Statuses: Pending → Confirmed → Shipped → Delivered  
+Pending: Order placed; awaiting seller confirmation. Admin can cancel a t this stage.  
+Confirmed: Seller has acknowledged the order and is preparing it. Admin can cancel at this stage.  
+Shipped: Seller has handed over to courier; dispatch address = app company address. Admin CANNOT cancel 
+after this point.  
+Delivered: Courier has  delivered to customer. Ord er closes. Review window opens.  
+Cancelled: Order cancelled by customer (before Confirmed) or admin (before Shipped). Refund handled by 
+admin if card payment.  
+ 
+FR4.6  Seller Updates Order Status  
+Actor: Verified Seller  
+Trigger: Seller taps an incoming order → updates status  
+Flow: Pending → taps "Confirm Order" | Confirmed → taps "Mark as Shipped" (enters courier name/tracking if 
+available)  
+Constraint: Seller uses app company address as "from" address; seller cannot mark as Delivered  — only 
+courier/system does  
+Notification: Customer receives in -app notification at each status change  
+ 
+FR4.7  Cancel Order  
+Actor: Customer (self -cancel) | Admin (platform -level cancel)  
+Customer: Can cancel only if order status is Pending. Must provide canc ellation reason.  
+Admin: Can cancel any order that has NOT yet reached Shipped status. Admin enters reason.  
+Output: Order marked Cancelled; seller notified; if card payment → admin initiates refun d process; COD → no 
+refund needed  
+ 
+FR4.8  Admin Order Oversight  
+Actor: Admin (Web Panel)  
+View: Full order list with filters: status, date range, seller, payment method, custome r 
+Actions: View full order detail, cancel order (before Shipped), add internal notes  
+Financial: Admin can see payment status (paid/pending), mark COD orders as paid, initiate payouts to sellers  
+ 
+4.3  Complete Flow for Each FR  
+FR4.1 + FR4.2 — Place Order & Auto -Notify Seller Flow  
+101. Customer on Product Detail → selects size, color, qty → taps "Buy Now" (or adds to Cart then 
+Checkout).  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 18 102. Checkout screen: delivery address auto -filled w ith default address (changeable); customer 
+selects payment method.  
+103. Card: taps "Pay Now" → payment gateway  opens → customer completes payment → returns 
+to app.  
+104. COD: taps "Place Order" → order created without payment processing.  
+105. System creates order with sta tus: Pending.  
+106. Order Confirmation screen displayed with order ID and estimated delivery window.  
+107. System imm ediately dispatches notification + email to seller with full order details.  
+108. Customer can view order in "My Orders" → Order History.  
+ 
+FR4.5 + FR4.6 — Order Status Progression Flow  
+109. Seller receives notification → opens "Orders" in their dashboard → sees new P ending order.  
+110. Seller reviews order details → taps "Confirm Order" → status: Confirmed. Customer notified.  
+111. Seller packs item → hands t o courier using the app company address as return/from address.  
+112. Seller taps "Mark as Shipped" → enters tracking number if a vailable → status: Shipped. 
+Customer notified.  
+113. On delivery → system or admin marks as Delivered. Customer receives "Your order has 
+arrived" notification.  
+114. Review window opens: customer can now submit a review for the product and/or seller.  
+ 
+FR4.7 — Cancel O rder Flow  
+115. Customer: Order History → selects Pending order → "Cancel Order" → picks reason → 
+confirms → order Cancelled.  
+116. Admin: Web panel → Orders list → selects order (Pending or Confirmed only) → "Cancel 
+Order" → enters reason → confirms.  
+117. Seller notified of cancell ation.  
+118. Card payment → admin manually processes refund through payment gateway dashboard.  
+119. COD → no financial action needed; order closed.  
+ 
+4.4  User Navigation Flows  
+Screen: Cart Screen  
+Property  Details  
+Access  Authenticated Customer  
+How to Reach  Product Detail → "Add to Cart" | Cart icon in top nav  
+Previous Screen  Product Detail Screen or Home  
+Next Screens  "Checkout" → Checkout Screen | Product tap → Product Detail | Remove item 
+→ stays on Cart  
+Back Nav  Previous screen (Product Detail or Home)  
+Permission  Authenticated Customer  
+ 
+Screen: Checkout Screen  
+Property  Details  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 19 Access  Authenticated Customer  
+How to Reach  Cart → "Proceed to Checkout" | Product Detail → "Buy Now"  
+Previous Screen  Cart Screen or Product Detail Screen  
+Next Screens  Address section → Address Management | Card payment → Payment 
+Gateway | COD → Order Confirmation Screen  
+Back Nav  Cart Screen or Product Detail (order not created until confirmed)  
+Redirect Conditions  Payment failure → back to Checkout with error | Payment  success → Order 
+Confirmation  
+Permission  Authenticated Customer  
+ 
+Screen: Order Confirmation Screen  
+Property  Details  
+Access  Authenticated Customer (post -order)  
+How to Reach  Checkout → successful order placement  
+Previous Screen  Checkout (cannot go back — order is placed)  
+Next Screens  "View Order" → Order Detail Screen | "Continue Shopping" → Home Screen  
+Back Nav  Disabled or redirects to Home (order already created; back would be 
+misleading)  
+Permission  Authenticated Customer  
+ 
+Screen: My Orders Screen (Customer)  
+Property  Details  
+Access  Authenticated Customer  
+How to Reach  Bottom nav "Orders" tab | Order Confirmation → "View Order"  
+Previous Screen  Any bottom nav tab or Order Confirmation  
+Next Screens  Order tap → Order Detail Screen  
+Back Nav  Previous active tab  
+Permission  Authenticated Customer (own orders only)  
+ 
+Screen: Order Detail Screen (Customer)  
+Property  Details  
+Access  Authenticated Customer  
+How to Reach  My Orders → tap an order  
+Previous Screen  My Orders Screen  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 20 Next Screens  "Cancel Order" ( if Pending) → Cancellation Confirmation | "Write Review" (if 
+Delivered) → Review Screen | Product tap → Product Detail  
+Back Nav  My Orders Screen  
+Permission  Authenticated Customer (own order only)  
+ 
+Screen: Seller — Orders Screen  
+Property  Details  
+Access  Verified Seller  
+How to Reach  Seller Dashboard → "Orders" | Bottom nav "Orders" tab | Notification tap  
+Previous Screen  Seller Dashboard or notification  
+Next Screens  Order tap → Seller Order Detail Screen  
+Back Nav  Seller Dashboard  
+Permission  Verified Se ller (own product orders only)  
+ 
+Screen: Seller — Order Detail Screen  
+Property  Details  
+Access  Verified Seller  
+How to Reach  Seller Orders → tap an order  
+Previous Screen  Seller Orders Screen  
+Next Screens  "Confirm Order" → updates status | "Mark as Shippe d" → updates status | 
+Back → Seller Orders Screen  
+Back Nav  Seller Orders Screen  
+Permission  Verified Seller (own orders only)  
+  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 21 Module 5 — Reviews & Ratings Management  
+5.1  Module Breakdown  
+Manages customer reviews and ratings for products and sellers. R eviews can only be submitted after a 
+completed (Delivered) order to ensure authenticity. Admins can remove reviews that violate pl atform policies.  
+ 
+Operation  Description  
+Create  Customer submits a review/rating (1 –5 stars + text) for a product or seller af ter a 
+completed order only.  
+Read  View product reviews, seller ratings, average rating display on product cards and 
+shop profiles.  
+Update  Customer can edit their review within a defined time window (e.g., 72 hours after 
+submission).  
+Delete  Admin removes policy -violating reviews; customer deletes their own review at 
+any time.  
+ 
+5.2  Functional Requirements  
+FR5.1  Submit a Review / Rating  
+Actor: Authenticated Customer  
+Trigger: Order status is Delivered → "Write a Review" prompt appears on Order Detail scree n and My Orders 
+list 
+Scope: Customer can submit one review for the product AND one separate rating/review for the seller per 
+completed order  
+Inputs: Star rating (1 –5), written  review text (optional), photos (optional, max 3)  
+Constraint: One review per prod uct per order; reviews cannot be submitted if order was cancelled or 
+incomplete  
+Output: Review published; product and seller average ratings recalculated; seller notified of new review  
+ 
+FR5.2  View Product Reviews  
+Actor: Any authenticate d customer  
+Trigger:  Product Detail screen → scroll to Reviews section | Tap "See All Reviews"  
+Output: Paginated list of reviews: reviewer name (first name + initial), star rating, review text, photos, date, 
+"Helpful" count  
+Sort: Most recent | Highest rated  | Most helpful  
+ 
+FR5.3  View Seller Ratings  
+Actor: Any authenticated customer  
+Trigger: Shop Profile screen → Ratings section  
+Output: Overall star rating (average), total review count, rating breakdown (5 -star%, 4 -star%, etc.), recent seller 
+reviews  
+ 
+FR5.4  Edit a Review  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 22 Acto r: Authenticated Customer (review author)  
+Trigger: My Reviews or Order Detail → "Edit Review"  
+Window: Editable within 72 hours of original submission  
+Output: Review updated; edit timestamp shown; original submission date retained  
+Constraints: After 72 hour s → review is locked; "Edit" button no longer visible  
+ 
+FR5.5  Customer Deletes Own Review  
+Actor: Authenticated Customer  
+Trigger: My Reviews → long -press or op tions menu → "Delete Review"  
+Output: Review removed; ratings recalculated; confirmation shown  
+Cons traints: Customer can only delete their own reviews; once deleted, cannot re -review the same order item  
+ 
+FR5.6  Admin Removes Violating Review  
+Actor: Admin (Web Panel)  
+Trigger: Flagged review in admin panel OR admin manually finds it  
+Reasons: Inappropriate  language, spam, off -topic, fake review, personal information shared  
+Output: Review removed from public view; customer notified via in -app message wit h reason; ratings 
+recalculated  
+Note: Admin can also flag and monitor reviews without immediately deleting them  
+ 
+5.3  Complete Flow for Each FR  
+FR5.1 — Submit Review Flow  
+120. Order reaches Delivered status → system generates review prompt notification.  
+121. Customer  sees "Rate your purchase" card on My Orders screen.  
+122. Customer taps "Write Review" → Review Submission scre en loads (pre -filled with product 
+thumbnail).  
+123. Customer taps star rating (1 –5) → optional: types review text → optional: uploads up to 3 
+photos.  
+124. Customer taps "Submit Review" → review published immediately.  
+125. Customer is optionally prompted: "Would you also l ike to rate the seller?" → separate seller 
+review form.  
+126. Product average rating and seller rating recalculated in real time.  
+127. Seller receives in -app notification: "You received a new review."  
+ 
+FR5.4 — Edit Review Flow  
+128. Customer navigates to Order Detail → Rev iew section, OR "My Reviews" in Profile.  
+129. If within 72 -hour edit window → "Edit" button is visible.  
+130. Customer taps "Edit" → review form opens pre -filled with existing content.  
+131. Customer makes changes → taps "Update Review" → review updated.  
+132. After 72 hours → " Edit" button hidden; review is read -only.  
+ 
+FR5.6 — Admin Removes Review Flow  
+133. Admin receives a "Flagged Review" notification or sees it in Flagge d Reviews queue.  
+134. Admin reads the review and assesses it against platform guidelines.  
+135. Admin selects removal reaso n from dropdown.  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 23 136. Admin taps "Remove Review" → confirmation dialog → confirms.  
+137. Review removed; customer notified with the reason code; ratings re calculated.  
+ 
+5.4  User Navigation Flows  
+Screen: Product Reviews Screen  
+Property  Details  
+Access  Authenticated Cu stomer  
+How to Reach  Product Detail → "See All Reviews" | Product Detail → Reviews section scroll  
+Previous Screen  Product Detail Screen  
+Next Screens  Review author profile (limited view) | Back → Product Detail Screen  
+Back Nav  Product Detail Screen  
+Perm ission  Authenticated Customer (read -only for others' reviews)  
+ 
+Screen: Review Submission Screen  
+Property  Details  
+Access  Authenticated Customer (completed order only)  
+How to Reach  My Orders → delivered order → "Write Review" | Notification tap  
+Previous Screen  My Orders or Order Detail Screen  
+Next Screens  Submit → Order Detail Screen (with success toast) | Cancel → Order Detail 
+Screen  
+Back Nav  Order Detail Screen (discard warning if rating or text entered)  
+Redirect Conditions  If review already submitte d for this order → redirect to read -only Review 
+screen  
+Permission  Customer who completed the specific order only  
+ 
+Screen: My Reviews Screen  
+Property  Details  
+Access  Authenticated Customer  
+How to Reach  Profile → "My Reviews"  
+Previous Screen  Profile Scre en 
+Next Screens  "Edit" (if within window) → Review Edit Screen | "Delete" → confirmation 
+dialog → Review removed | Back → Profile  
+Back Nav  Profile Screen  
+Permission  Customer (own reviews only)  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 24   Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 25 Module 6 — Admin & Platform Management (Web -Based)  
+6.1  M odule Breakdown  
+The centralized, web -based admin panel for managing the entire platform. Admins have full visibility and control 
+over all customers, sellers, products, orders, reviews, financial oper ations, and platform settings. This module is 
+NOT accessi ble via the mobile app.  
+ 
+Operation  Description  
+Create  Create admin accounts, publish platform -wide announcements, add product 
+categories.  
+Read  View all sellers, customers, orders, flagged reviews, financial records, and 
+platform analytics dashboard.  
+Update Approve or reject seller verification, manage reported reviews, update platform 
+settings, process payouts.  
+Delete  Remove fraudulent accounts, delete violating content, deactivate listings, cancel 
+orders.  
+ 
+6.2  Functional Requirements  
+FR6.1  Admin Acc ount Management  
+Actor: Admin  
+Trigger: Admin section → "Admin Accounts"  
+Operations: Create new admin account (name, email, role), deactivate admin, reset admin password  
+Roles: Admin (full access) | Admin (standard — cannot create other admins)  
+Constraint: Only Admin can create or deactivate other admin accounts  
+ 
+FR6.2  Seller Verification  
+Actor: Admin  
+Trigger: New seller registration queues in "Pending Verifications" section  
+Review: Admin views: shop name, owner details, uploaded business registration  docume nts, contact info, bank 
+details  
+Decision: Approve (status → Active, seller notified) | Reject (admin enters reason, seller notified) | Request 
+More Info (admin sends message to seller)  
+SLA: Recommended: review within 3 –5 business days; queue sorted by subm ission date  
+ 
+FR6.3  Customer Management  
+Actor: Admin  
+View: Searchable, filterable list of all customers: name, email, join date, order count, account status  
+Actions: View customer profile and order history, deactivate/reactivate account, flag for re view 
+Constraint: Admin can view customer details for support and fraud detection; cannot edit customer profile data  
+ 
+FR6.4  Seller Management  
+Actor: Admin  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 26 View: All sellers with: shop name, verification status, product count, total orders, average rating, join da te, 
+payout balance  
+Actions: View seller profile, view seller's product listings, suspend seller, remove seller, update seller status  
+ 
+FR6.5  Order Managem ent (Admin View)  
+Actor: Admin  
+View: All orders platform -wide with full detail: customer, seller, produ ct, status, payment method, payment 
+status, timestamps  
+Filters: Date range, status, seller, customer, payment method, payment status (paid / unpaid / refu nded)  
+Actions: View full order detail, add internal admin notes, cancel order (before Shipped), view C OD payment 
+status  
+ 
+FR6.6  Cancel Any Order (Before Dispatch)  
+Actor: Admin  
+Trigger: Order Detail in admin panel → "Cancel Order"  
+Constraint: Can only cancel orders with status: Pending or Confirmed (not Shipped or Delivered)  
+Flow: Admin selects reason → con firms → order cancelled → seller and customer notified → refund initiated (if 
+card payment)  
+ 
+FR6.7  Financial Operations & Seller Payouts  
+Actor: Admin  
+Principle: All financial operations are exclusively managed by admins; sellers do not process payments di rectly  
+Card Orders: Payment received by platform at checkout; admin marks settlemen t in system  
+COD Orders: Seller collects from courier; admin confirms COD received; admin marks as settled  
+Payouts: Admin calculates seller balance (completed orders - platfo rm commission); marks payout as 
+processed in system  
+Records: All financial transact ions logged with timestamps, amounts, and order references for audit  
+ 
+FR6.8  Review & Moderation Management  
+Actor: Admin  
+Triggers: Customer reports a review → it appears in "Flagged Reviews" queue | Admin manually searches 
+reviews  
+Actions: View flagged review in context, remove review (with reason), dismiss flag, warn reviewer account, ban 
+repeat violators  
+Audit: All moderation action s logged with admin username, timestamp, a nd reason  
+ 
+FR6.9  Platform Analytics Dashboard  
+Actor: Admin  
+Metrics: Total orders (daily/weekly/monthly), revenue (gross/net), new customers, new sellers, top -selling 
+products, top sellers by revenue, average order  value, COD vs card payment split, refund count and amount  
+Filters: Date range picker, category filter, seller filter  
+Output: Visual charts (bar, line, pie) and exportable summary tables  
+ 
+FR6.10  Product Category Management  
+Actor: Admin  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 27 Trigger: Admin pane l → "Categories" section  
+Operations: Add n ew category (name, icon), edit category name, deactivate category (products remain but 
+category hidden from new listings)  
+Constraint: Deleting a category with active products is blocked; admin must migrate or deactivate first  
+ 
+FR6.11  Platform Announc ement s 
+Actor: Admin  
+Trigger: Admin panel → "Announcements" → "Create Announcement"  
+Inputs: Title, body text, target audience (all users / customers only / sellers only), publish date, expiry date  
+Output: Announcement shown as a banner or notification in th e mob ile app to the target audience  
+ 
+6.3  Complete Flow for Each FR  
+FR6.2 — Seller Verification Flow  
+138. New seller submits registration → appears in "Pending Verifications" queue in admin panel.  
+139. Admin logs into web panel → navigates to Seller Verification.  
+140. Admin o pens the pending application; views all submitted info and documents.  
+141. Option A — Approve: taps " Approve" → system activates seller account → auto -notification 
+sent to seller.  
+142. Option B — Reject: taps "Reject" → enters rejection reason (required) → notificat ion sent to 
+seller with reason.  
+143. Option C — Request Info: taps "Request More Information" → enter s specific message → 
+seller receives in -app message and email.  
+144. All decisions are logged in the admin action log.  
+ 
+FR6.7 — Seller Payout Flow  
+145. Admin navigates to "Financials" → "Seller Payouts".  
+146. Admin selects a seller → views: completed orders, gross order v alue, platform commission (%), 
+net payout due.  
+147. Admin marks COD orders as collected/settled individually.  
+148. Admin calculates and processes bank transfer externally  → returns to panel → marks payout 
+as "Processed" with amount and date.  
+149. Seller receives in -app n otification: "Your payout of LKR X has been processed."  
+150. All payout records remain in system for audit.  
+ 
+FR6.9 — Analytics Dashboard Flow  
+151. Admin logs in → Dashboa rd is the default landing page showing key KPIs.  
+152. Admin can use the date range picker to filter all metrics.  
+153. Sections: Overview cards (orders, revenue, customers, sellers), Charts panel (trends), 
+Product/Seller Rankings table.  
+154. Admin c an export any table as CSV for offline reporting.  
+ 
+6.4  Admin Web Panel Navigation Flows  
+Screen: Admin Login Page (Web)  
+Property  Details  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 28 Access  Admin accounts only  
+How to Reach  Direct URL to admin web portal  
+Previous Screen  None (web entry point)  
+Next Screens  Successful logi n → Analytics Dashboard  
+Back Nav  Browser back exits to browser home  
+Redirect Conditions  Active session → skip to Dashboard  
+Permission  Admin role  only 
+ 
+Screen: Analytics Dashboard (Admin Home)  
+Property  Details  
+Access  Admin  
+How to Reach  Login → auto -redirect | Left sidebar "Dashboard" link  
+Previous Screen  Admin Login  
+Next Screens  Sidebar navigation → any admin section | Quick action cards → relevant 
+sections  
+Back Nav  Not applicable (main panel home)  
+Permission  All admin roles  
+ 
+Screen: Seller Verifi cation Queue  
+Property  Details  
+Access  Admin  
+How to Reach  Sidebar → "Sellers" → "Pending Verification" | Dashboard quick card  
+Previous Screen  Dashboard or Sellers List  
+Next Screens  Application tap → Seller Application Detail | Back → Sellers List  
+Permis sion Admin (all roles)  
+ 
+Screen: Seller Application Detail  
+Property  Details  
+Access  Admin  
+How to Reach  Seller Verification Queue → tap application  
+Previous Screen  Seller Verification Queue  
+Next Screens  "Approve" / "Reject" / "Request Info" → action moda l → back to Queue | 
+Document preview → document viewer overlay  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 29 Back Nav  Seller Verification Queue  
+Permission  Admin  
+ 
+Screen: All Orders (Admin)  
+Property  Details  
+Access  Admin  
+How to Reach  Sidebar → "Orders"  
+Previous Screen  Any admin panel page  
+Next Sc reens  Order row click → Order Detail Screen | Filters → filtered results | "Export" → 
+CSV download  
+Permission  Admin (all roles)  
+ 
+Screen: Order Detail (Admin)  
+Property  Details  
+Access  Admin  
+How to Reach  All Orders → click order row  
+Previous Screen  All O rders Screen  
+Next Screens  "Cancel Order" (if allowed) → confirmation modal | "Add Note" → inline note 
+form | Customer link → Customer Profile | Seller link → Seller Profile | Back → 
+All Orders  
+Back Nav  All Orders Screen  
+Permission  Admin  
+ 
+Screen: Financ ials / Seller Payouts (Admin)  
+Property  Details  
+Access  Admin  
+How to Reach  Sidebar → "Financials" → "Seller Payouts"  
+Previous Screen  Any admin section  
+Next Screens  Seller row → Payout Detail Screen | "Mark as Paid" → modal | "Export" → 
+CSV 
+Permission  Admin 
+ 
+Screen: Flagged Reviews Queue (Admin)  
+Property  Details  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 30 Access  Admin  
+How to Reach  Sidebar → "Reviews" → "Flagged Reviews" | Dashboard alert card  
+Previous Screen  Dashboard or Reviews section  
+Next Screens  Review tap → Review Detail | "Remove" / "Di smiss" → action modal | Back → 
+Reviews List  
+Permission  Admin  
+ 
+Screen: Platform Settings (Admin)  
+Property  Details  
+Access  Admin only  
+How to Reach  Sidebar → "Settings"  
+Previous Screen  Any admin panel page  
+Next Screens  "Categories" → Category Management | "Announcements" → Announcements 
+Screen | "Admin Accounts" → Admin User Management | Commission 
+Settings  
+Permission  Admin only  
+  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 31 Appendix — Quick Reference  
+A. Order Status Reference  
+Operation  Description  
+Pending  Order placed; awaiting seller confirmat ion. Cancellable by customer or admin.  
+Confirmed  Seller acknowledged. Being prepared. Cancellable by admin only.  
+Shipped  Courier collected. From address = app company address. CANNOT be 
+cancelled.  
+Delivered  Delivered to customer. Order complete. Review window opens.  
+Cancelled  Cancelled before dispatch. Refund processed by admin for card payments.  
+ 
+* Seller must be Verified (Approved) to add products.  
+ 
+C. FR Index  
+Operation  Description  
+FR1.1–FR1.7  Module 1: User Management (Customer Accounts)  
+FR2.1–FR2.6 Module 2: Seller & Shop Management  
+FR3.1–FR3.6  Module 3: Product & Inventory Management  
+FR4.1–FR4.8  Module 4: Order Management  
+FR5.1–FR5.6  Module 5: Reviews & Ratings Management  
+FR6.1–FR6.11  Module 6: Admin & Platform Management  
+ 
+D. Notification E vents Reference  
+Operation  Description  
+New Order Placed  Seller receives in -app + email with full order details.  
+Order Confirmed  Customer receives in -app notification.  
+Order Shipped  Customer receives in -app notification.  
+Order Delivered  Customer receives  in-app notification; review prompt shown.  
+Order Cancelled  Both seller and customer notified; refund note included for card payments.  
+Seller Approved  Seller receives in -app + email approval notification.  
+Seller Rejected  Seller receives in -app + email wi th rejection reason.  Ceylon Boutique Marketplace — System Documentation  v1.0 
+Confidential — Internal Project Document  Page 32 New Review 
+Received  Seller receives in -app notification.  
+Review Removed 
+(Admin)  Customer receives in -app message with policy reason code.  
+Payout Processed  Seller receives in -app + email with payout amount.  
+Platform 
+Announcement  Target audience receives in -app banner notification.  
+ 

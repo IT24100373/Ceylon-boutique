@@ -1,0 +1,194 @@
+# Ceylon Boutique Marketplace
+
+Sri Lanka's Authentic Clothing Boutique Marketplace App  
+**Version:** 1.0.0 | **Team Size:** 6 Members | **Status:** In Development
+
+---
+
+## Project Structure
+
+```
+WMT-PROJECT/
+├── backend/      # Node.js + Express REST API
+└── mobile/       # Expo React Native app
+```
+
+---
+
+## Module Progress
+
+| Module | Description | Status |
+|--------|-------------|--------|
+| Module 1 | User Management (Customer Accounts) | ✅ Complete |
+| Module 2 | Seller & Shop Management | 🔲 Not Started |
+| Module 3 | Product & Inventory Management | 🔲 Not Started |
+| Module 4 | Order Management | 🔲 Not Started |
+| Module 5 | Reviews & Ratings | 🔲 Not Started |
+| Module 6 | Admin & Platform Management (Web) | 🔲 Not Started |
+
+---
+
+## Prerequisites
+
+Make sure these are installed on your machine:
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [npm](https://www.npmjs.com/)
+- [Expo Go](https://expo.dev/go) app on your phone (for testing)
+- A [MongoDB Atlas](https://cloud.mongodb.com) account (free M0 cluster)
+
+---
+
+## Step 1 — MongoDB Atlas Setup (One-time, done by one team member)
+
+1. Go to [https://cloud.mongodb.com](https://cloud.mongodb.com) and create a free account
+2. Click **"Create a Free Cluster"** → choose **M0 (Free)** → select any region
+3. Under **Database Access** → Add a new database user (username + password)
+4. Under **Network Access** → Add IP Address → choose **"Allow access from anywhere"** (`0.0.0.0/0`)
+5. Go to your cluster → click **"Connect"** → **"Connect your application"**
+6. Copy the connection string — it looks like:
+   ```
+   mongodb+srv://youruser:yourpassword@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority
+   ```
+7. Add your database name to the URI:
+   ```
+   mongodb+srv://youruser:yourpassword@cluster0.xxxxx.mongodb.net/ceylon_boutique?retryWrites=true&w=majority
+   ```
+8. Share this URI with your team (via a secure channel — NOT in Git)
+
+---
+
+## Step 2 — Backend Setup (Local Development)
+
+```bash
+# 1. Navigate to backend folder
+cd backend
+
+# 2. Install dependencies
+npm install
+
+# 3. Create your .env file from the template
+copy .env.example .env    # Windows
+# OR
+cp .env.example .env      # Mac/Linux
+
+# 4. Open .env and fill in your values:
+#    - MONGODB_URI = your Atlas connection string from Step 1
+#    - JWT_SECRET  = generate one by running: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+#    - PORT        = 5000
+
+# 5. Start the development server
+npm run dev
+```
+
+The API will run at: `http://localhost:5000`  
+Test it: open a browser and go to `http://localhost:5000` — you should see a JSON response.
+
+---
+
+## Step 3 — Mobile App Setup (Local Development)
+
+```bash
+# 1. Navigate to mobile folder
+cd mobile
+
+# 2. Install dependencies
+npm install
+
+# 3. Set your backend URL
+#    Open: mobile/src/api/client.js
+#    Change BASE_URL to your local machine's IP address (NOT localhost)
+#    Find your IP: run "ipconfig" in Windows terminal → look for IPv4 Address
+#    Example: const BASE_URL = 'http://192.168.1.45:5000';
+
+# 4. Start the Expo development server
+npm start
+
+# 5. On your phone:
+#    - Install "Expo Go" from the App Store or Play Store
+#    - Scan the QR code shown in the terminal
+#    - Your phone and computer must be on the SAME Wi-Fi network
+```
+
+---
+
+## Step 4 — Deploy Backend to Render (Production)
+
+1. Push your code to GitHub (make sure `.env` is in `.gitignore`)
+2. Go to [https://render.com](https://render.com) and sign up/login
+3. Click **"New +"** → **"Web Service"**
+4. Connect your GitHub repository
+5. Configure:
+   - **Name:** `ceylon-boutique-api`
+   - **Root Directory:** `backend`
+   - **Runtime:** `Node`
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start`
+6. Under **"Environment Variables"**, add:
+   - `MONGODB_URI` = your Atlas connection string
+   - `JWT_SECRET` = your generated secret
+   - `JWT_EXPIRE` = `7d`
+   - `NODE_ENV` = `production`
+   - `CORS_ORIGIN` = `*`
+7. Click **"Create Web Service"**
+8. Wait for deployment — your API will be at: `https://ceylon-boutique-api.onrender.com`
+
+9. **Update mobile app:** open `mobile/src/api/client.js` and change `BASE_URL` to your Render URL
+
+---
+
+## Environment Variables Reference
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `PORT` | Server port | `5000` |
+| `NODE_ENV` | Environment | `development` or `production` |
+| `MONGODB_URI` | MongoDB Atlas connection string | `mongodb+srv://...` |
+| `JWT_SECRET` | Secret key for signing tokens | 64-char random hex string |
+| `JWT_EXPIRE` | Token expiry duration | `7d` |
+| `CORS_ORIGIN` | Allowed origins for CORS | `*` or your app domain |
+
+---
+
+## API Endpoints — Module 1
+
+Base URL: `http://localhost:5000` (dev) or `https://your-app.onrender.com` (prod)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/api/users/register` | No | Register a new customer |
+| POST | `/api/users/login` | No | Login and get JWT token |
+| GET | `/api/users/profile` | Yes | Get your profile |
+| PUT | `/api/users/profile` | Yes | Update name and phone |
+| PUT | `/api/users/change-password` | Yes | Change password |
+| GET | `/api/users/addresses` | Yes | List all addresses |
+| POST | `/api/users/addresses` | Yes | Add a new address |
+| PUT | `/api/users/addresses/:id` | Yes | Edit an address |
+| DELETE | `/api/users/addresses/:id` | Yes | Delete an address |
+| PUT | `/api/users/addresses/:id/default` | Yes | Set default address |
+| PUT | `/api/users/deactivate` | Yes | Deactivate account |
+
+**Auth Header format:** `Authorization: Bearer <your_token>`
+
+---
+
+## Team Conventions
+
+- Never commit `.env` files — they contain secrets
+- Always create a feature branch: `git checkout -b feature/your-feature-name`
+- Write clear commit messages: `feat: add login endpoint` / `fix: password validation bug`
+- Test your API endpoints with Postman before pushing
+- Each module has its own controller, route, and model files
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Mobile Frontend | React Native (Expo) |
+| Backend API | Node.js + Express.js |
+| Database | MongoDB Atlas (Mongoose ODM) |
+| Authentication | JWT (JSON Web Tokens) |
+| Password Security | bcryptjs |
+| Deployment (API) | Render |
+| Deployment (Mobile) | Expo Go (dev) / EAS Build (prod) |
