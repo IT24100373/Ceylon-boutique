@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
     loadSession();
   }, []);
 
-  // --- Register ---
+  // --- Register (Customer) ---
   const register = async (fullName, email, phone, password, confirmPassword) => {
     const response = await apiClient.post('/api/users/register', {
       fullName,
@@ -42,12 +42,35 @@ export const AuthProvider = ({ children }) => {
     return response.data;
   };
 
-  // --- Login ---
+  // --- Login (Customer) ---
   const login = async (email, password) => {
     const response = await apiClient.post('/api/users/login', { email, password });
     const { token: newToken, user: newUser } = response.data;
     await _saveSession(newToken, newUser);
     return response.data;
+  };
+
+  // --- Seller Login ---
+  const sellerLoginAction = async (email, password) => {
+    const response = await apiClient.post('/api/sellers/login', { email, password });
+    const { token: newToken, user: newUser, seller } = response.data;
+
+    // Merge seller info into user object for navigation decisions
+    const enrichedUser = {
+      ...newUser,
+      verificationStatus: seller.verificationStatus,
+      shopName: seller.shopName,
+      sellerId: seller.id,
+      rejectionReason: seller.rejectionReason,
+    };
+
+    await _saveSession(newToken, enrichedUser);
+    return response.data;
+  };
+
+  // --- Seller Login (from registration — token already obtained) ---
+  const sellerLogin = async (newToken, enrichedUser) => {
+    await _saveSession(newToken, enrichedUser);
   };
 
   // --- Logout ---
@@ -74,7 +97,17 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, isLoading, register, login, logout, updateLocalUser }}
+      value={{
+        user,
+        token,
+        isLoading,
+        register,
+        login,
+        sellerLoginAction,
+        sellerLogin,
+        logout,
+        updateLocalUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

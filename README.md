@@ -20,7 +20,7 @@ WMT-PROJECT/
 | Module | Description | Status |
 |--------|-------------|--------|
 | Module 1 | User Management (Customer Accounts) | ✅ Complete |
-| Module 2 | Seller & Shop Management | 🔲 Not Started |
+| Module 2 | Seller & Shop Management | ✅ Complete |
 | Module 3 | Product & Inventory Management | 🔲 Not Started |
 | Module 4 | Order Management | 🔲 Not Started |
 | Module 5 | Reviews & Ratings | 🔲 Not Started |
@@ -149,7 +149,7 @@ npm start
 
 ---
 
-## API Endpoints — Module 1
+## API Endpoints — Module 1 (User Management)
 
 Base URL: `http://localhost:5000` (dev) or `https://your-app.onrender.com` (prod)
 
@@ -171,6 +171,96 @@ Base URL: `http://localhost:5000` (dev) or `https://your-app.onrender.com` (prod
 
 ---
 
+## API Endpoints — Module 2 (Seller & Shop Management)
+
+### Public Routes (No Auth Required)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/sellers/register` | Register a new seller (creates User + Shop) |
+| POST | `/api/sellers/login` | Seller login (returns verification status) |
+| GET | `/api/sellers/shop/:id` | View a shop's public profile |
+
+### Seller Routes (JWT Required — role: seller)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/sellers/my-shop` | View own shop profile |
+| GET | `/api/sellers/dashboard` | Get seller dashboard data |
+| PUT | `/api/sellers/my-shop` | Edit shop info (verified only) |
+| PUT | `/api/sellers/my-shop/documents` | Update business documents (verified only) |
+
+### Admin Routes (JWT Required — role: admin)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/sellers/admin/all` | List all sellers (with filters) |
+| GET | `/api/sellers/admin/:id` | Get full seller details |
+| PUT | `/api/sellers/admin/:id/verify` | Approve or reject a seller |
+| PUT | `/api/sellers/admin/:id/suspend` | Suspend a seller |
+| PUT | `/api/sellers/admin/:id/remove` | Permanently remove a seller |
+
+### Seller Registration — Request Body Example
+
+```json
+{
+  "fullName": "Kasun Perera",
+  "email": "kasun@email.com",
+  "phone": "0771234567",
+  "password": "MyPass123",
+  "confirmPassword": "MyPass123",
+  "shopName": "Colombo Silk House",
+  "shopDescription": "Premium handloom sarees from Sri Lanka",
+  "categoryFocus": "Saree & Traditional",
+  "businessRegNumber": "PV00123456",
+  "nicNumber": "200012345678",
+  "bankName": "Commercial Bank",
+  "bankBranch": "Colombo Fort",
+  "bankAccountNumber": "1234567890",
+  "bankAccountName": "Kasun Perera",
+  "contactAddress": {
+    "addressLine1": "45 Galle Road",
+    "addressLine2": "Floor 2",
+    "city": "Colombo",
+    "province": "Western",
+    "postalCode": "10100"
+  }
+}
+```
+
+### Admin Verify Seller — Request Body
+
+```json
+{
+  "status": "approved"
+}
+```
+or
+```json
+{
+  "status": "rejected",
+  "rejectionReason": "Business registration document is not valid"
+}
+```
+
+### Admin Filter Sellers — Query Parameters
+
+```
+GET /api/sellers/admin/all?status=pending&search=silk&page=1&limit=10
+```
+
+---
+
+## Database Collections (MongoDB)
+
+| Collection | Module | Description |
+|------------|--------|-------------|
+| `users` | Module 1 | Customer, Seller, and Admin accounts |
+| `addresses` | Module 1 | Customer delivery addresses |
+| `sellers` | Module 2 | Seller shop profiles (linked to users) |
+
+---
+
 ## Team Conventions
 
 - Never commit `.env` files — they contain secrets
@@ -184,7 +274,7 @@ Base URL: `http://localhost:5000` (dev) or `https://your-app.onrender.com` (prod
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
+|-------|-----------| 
 | Mobile Frontend | React Native (Expo) |
 | Backend API | Node.js + Express.js |
 | Database | MongoDB Atlas (Mongoose ODM) |

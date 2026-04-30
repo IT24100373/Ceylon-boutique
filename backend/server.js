@@ -33,8 +33,8 @@ app.get('/', (req, res) => {
 
 // --- API Routes ---
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/sellers', require('./routes/sellerRoutes'));
 // Future modules will be added here:
-// app.use('/api/sellers', require('./routes/sellerRoutes'));
 // app.use('/api/products', require('./routes/productRoutes'));
 // app.use('/api/orders', require('./routes/orderRoutes'));
 // app.use('/api/reviews', require('./routes/reviewRoutes'));

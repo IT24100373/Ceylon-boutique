@@ -1,320 +1,314 @@
-# Module 1 — User Management (Customer Accounts)
+# Module 2: Seller & Shop Management — Implementation Plan
 
-## Background
+## Project Analysis Summary
 
-**Project**: Ceylon Boutique Marketplace — a Sri Lanka clothing boutique marketplace app.  
-**This Plan**: Covers full project scaffolding + Module 1 (FR1.1–FR1.7) which handles customer registration, login, profile management, address management, and account deactivation.
+I've thoroughly analyzed your entire codebase. Here's what's already in place:
 
-**Stack**: React Native (mobile) · Node.js + Express.js (backend) · MongoDB (database)
+| Layer | What Exists (Module 1) |
+|-------|----------------------|
+| **Backend** | `server.js`, `config/db.js`, `models/User.js` + `Address.js`, `controllers/userController.js`, `routes/userRoutes.js`, `middleware/auth.js` + `errorHandler.js` + `rateLimiter.js`, `utils/validators.js` |
+| **Mobile** | `App.js`, `api/client.js`, `context/AuthContext.js`, `navigation/AppNavigator.js`, 8 screens (Welcome, Login, Register, Home, Profile, EditProfile, ChangePassword, AddressManagement), 4 components (Button, InputField, LoadingSpinner, AddressCard) |
+| **Patterns** | Express + Mongoose, JWT auth with `protect` + `authorize` middleware, `express-validator` for input validation, consistent `{ success, message, ... }` JSON responses, Expo React Native with stack navigation, AuthContext for state |
 
----
-
-## Proposed Project Structure
-
-```
-WMT-PROJECT/
-├── backend/                        # Node.js + Express API server
-│   ├── package.json
-│   ├── .env                        # Environment variables (DB URI, JWT secret, etc.)
-│   ├── .env.example                # Template for team members
-│   ├── server.js                   # Entry point — starts Express app
-│   ├── config/
-│   │   └── db.js                   # MongoDB connection using Mongoose
-│   ├── middleware/
-│   │   ├── auth.js                 # JWT authentication middleware
-│   │   ├── errorHandler.js         # Global error handling middleware
-│   │   └── rateLimiter.js          # Login attempt rate limiting
-│   ├── models/
-│   │   ├── User.js                 # Customer user model (Module 1)
-│   │   └── Address.js              # Delivery address model (Module 1)
-│   ├── routes/
-│   │   └── userRoutes.js           # All /api/users/* routes
-│   ├── controllers/
-│   │   └── userController.js       # Route handler logic
-│   ├── utils/
-│   │   └── validators.js           # Input validation helpers
-│   └── .gitignore
-│
-├── mobile/                         # React Native app (Expo)
-│   ├── package.json
-│   ├── app.json
-│   ├── App.js                      # Root component with navigation
-│   ├── src/
-│   │   ├── api/
-│   │   │   └── client.js           # Axios instance with base URL + token
-│   │   ├── context/
-│   │   │   └── AuthContext.js      # Auth state (token, user) shared app-wide
-│   │   ├── navigation/
-│   │   │   └── AppNavigator.js     # Stack navigator (Welcome→Login→Home etc.)
-│   │   ├── screens/
-│   │   │   ├── WelcomeScreen.js
-│   │   │   ├── RegisterScreen.js
-│   │   │   ├── LoginScreen.js
-│   │   │   ├── HomeScreen.js
-│   │   │   ├── ProfileScreen.js
-│   │   │   ├── EditProfileScreen.js
-│   │   │   ├── ChangePasswordScreen.js
-│   │   │   └── AddressManagementScreen.js
-│   │   ├── components/
-│   │   │   ├── InputField.js       # Reusable text input with validation
-│   │   │   ├── Button.js           # Styled button component
-│   │   │   ├── AddressCard.js      # Address list item
-│   │   │   └── LoadingSpinner.js   # Loading indicator
-│   │   └── utils/
-│   │       └── validators.js       # Client-side validation (email, phone, password)
-│   └── .gitignore
-│
-├── system_documentation.pdf
-└── README.md
-```
-
-> [!IMPORTANT]
-> **Why this structure?** Separating `backend/` and `mobile/` keeps the codebase modular so different team members can work independently. Each folder has its own `package.json` so dependencies don't conflict.
-
----
-
-## Database Schema (MongoDB via Mongoose)
-
-### User Model (`models/User.js`)
-
-| Field | Type | Rules |
-|-------|------|-------|
-| `fullName` | String | Required |
-| `email` | String | Required, unique, lowercase, trimmed |
-| `phone` | String | Required, validated format |
-| `password` | String | Required, hashed with bcrypt (min 8 chars) |
-| `role` | String | Default: `"customer"` (enum: `customer`, `seller`, `admin`) |
-| `isActive` | Boolean | Default: `true` (soft-delete flag for deactivation) |
-| `loginAttempts` | Number | Default: `0` (tracks failed logins) |
-| `lockUntil` | Date | `null` or timestamp when lock expires |
-| `createdAt` | Date | Auto (timestamps: true) |
-| `updatedAt` | Date | Auto (timestamps: true) |
-
-### Address Model (`models/Address.js`)
-
-| Field | Type | Rules |
-|-------|------|-------|
-| `user` | ObjectId → User | Required, ref: "User" |
-| `label` | String | e.g., "Home", "Work" |
-| `addressLine1` | String | Required |
-| `addressLine2` | String | Optional |
-| `city` | String | Required |
-| `province` | String | Required |
-| `postalCode` | String | Required |
-| `isDefault` | Boolean | Default: `false` |
-| `createdAt` | Date | Auto |
-| `updatedAt` | Date | Auto |
-
----
-
-## API Endpoints
-
-All routes are prefixed with `/api/users`.
-
-| FR | Method | Endpoint | Auth? | Description |
-|----|--------|----------|-------|-------------|
-| FR1.1 | POST | `/api/users/register` | No | Customer self-registration |
-| FR1.2 | POST | `/api/users/login` | No | Login, returns JWT token |
-| FR1.3 | GET | `/api/users/profile` | Yes | Get own profile |
-| FR1.4 | PUT | `/api/users/profile` | Yes | Update name & phone (email read-only) |
-| FR1.5 | PUT | `/api/users/change-password` | Yes | Change password |
-| FR1.6 | GET | `/api/users/addresses` | Yes | List all addresses |
-| FR1.6 | POST | `/api/users/addresses` | Yes | Add new address |
-| FR1.6 | PUT | `/api/users/addresses/:id` | Yes | Edit an address |
-| FR1.6 | DELETE | `/api/users/addresses/:id` | Yes | Delete an address |
-| FR1.6 | PUT | `/api/users/addresses/:id/default` | Yes | Set address as default |
-| FR1.7 | PUT | `/api/users/deactivate` | Yes | Soft-delete account |
-
----
-
-## Key Implementation Details
-
-### Authentication (JWT)
-- On register/login → server creates a JWT token containing `{ userId, role }` with a 7-day expiry
-- Token is sent back in the response body; mobile app stores it in `AsyncStorage`
-- Every protected route reads the `Authorization: Bearer <token>` header via `auth.js` middleware
-
-### Rate Limiting (FR1.2)
-- Track `loginAttempts` on the User model
-- After 5 failed attempts → set `lockUntil = now + 15 minutes`
-- On each login attempt, check if account is locked before validating credentials
-
-### Password Security
-- Hash passwords using `bcrypt` (salt rounds: 10) before saving
-- Never return the password field in any API response
-
-### Deactivation (FR1.7)
-- Sets `isActive = false` (soft delete — data retained for order history)
-- Before deactivating, the system will check for active orders (placeholder check for now, full implementation in Module 4)
-- Deactivated users cannot log in — they see a "contact support" message
-
-### Address Default Logic (FR1.6)
-- When setting a new default, unset the previous default first (atomic operation)
-- The default address auto-populates at checkout (used in Module 4)
+> [!NOTE]
+> The existing `User.js` model already has `role: enum ['customer', 'seller', 'admin']` — perfect! The auth middleware already has `authorize(...roles)` ready for role-based access. The `WelcomeScreen` already has a "Register as Seller" link placeholder.
 
 ---
 
 ## Proposed Changes
 
-### Backend Setup
+### Component 1: Backend — Seller Model
 
-#### [NEW] [.env.example](file:///c:/Users/DELL/Desktop/WMT-PROJECT/backend/.env.example)
-Template with `PORT`, `MONGODB_URI`, `JWT_SECRET`, `JWT_EXPIRE` placeholders.
+#### [NEW] [Seller.js](file:///c:/Users/itsme/OneDrive/Desktop/Ceylon-boutique/backend/models/Seller.js)
 
-#### [NEW] [package.json](file:///c:/Users/DELL/Desktop/WMT-PROJECT/backend/package.json)
-Dependencies: `express`, `mongoose`, `bcryptjs`, `jsonwebtoken`, `dotenv`, `cors`, `express-validator`, `express-rate-limit`. Dev: `nodemon`.
+A new Mongoose model for the seller/shop profile, linked to the `User` model via `ObjectId` reference. This follows the **same pattern** as `Address.js` (a separate collection referencing `User`).
 
-#### [NEW] [server.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/backend/server.js)
-Express app setup — loads env, connects to MongoDB, mounts routes, applies error handler.
+**Schema fields:**
+```js
+{
+  user:              ObjectId → ref 'User'  (1-to-1, required, unique)
+  shopName:          String   (required, unique, 3-100 chars)
+  shopDescription:   String   (max 1000 chars)
+  shopLogo:          String   (URL — placeholder for now, image upload in future)
+  shopBanner:        String   (URL — placeholder)
+  categoryFocus:     String   (e.g., "Casual Wear", "Saree & Traditional")
+  businessRegNumber: String   (required — business registration certificate number)
+  nicNumber:         String   (required — National Identity Card)
+  documentsUrl:      String   (URL to uploaded doc — placeholder for file upload)
+  bankName:          String   (required)
+  bankBranch:        String   (required)
+  bankAccountNumber: String   (required)
+  bankAccountName:   String   (required)
+  contactAddress: {
+    addressLine1:    String   (required)
+    addressLine2:    String
+    city:            String   (required)
+    province:        String   (enum — 9 Sri Lankan provinces)
+    postalCode:      String   (5-digit)
+  }
+  verificationStatus: String  (enum: 'pending', 'approved', 'rejected', 'suspended', 'removed')
+  rejectionReason:    String
+  suspensionReason:   String
+  productCount:       Number  (default 0 — updated by Module 3)
+  averageRating:      Number  (default 0 — updated by Module 5)
+  totalReviews:       Number  (default 0)
+  timestamps:         true    (createdAt, updatedAt)
+}
+```
 
-#### [NEW] [config/db.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/backend/config/db.js)
-Mongoose connection with error handling and connection success logging.
-
----
-
-### Backend Models
-
-#### [NEW] [models/User.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/backend/models/User.js)
-Customer schema with pre-save bcrypt hashing and a `comparePassword` instance method.
-
-#### [NEW] [models/Address.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/backend/models/Address.js)
-Address schema linked to User via ObjectId reference.
-
----
-
-### Backend Middleware
-
-#### [NEW] [middleware/auth.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/backend/middleware/auth.js)
-Extracts JWT from `Authorization` header, verifies it, attaches `req.user` with `userId` and `role`.
-
-#### [NEW] [middleware/errorHandler.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/backend/middleware/errorHandler.js)
-Catches all errors, returns consistent JSON format: `{ success: false, message, errors }`.
-
-#### [NEW] [middleware/rateLimiter.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/backend/middleware/rateLimiter.js)
-Rate limiter for the login endpoint (max 10 requests per 15 min window per IP).
-
----
-
-### Backend Routes & Controllers
-
-#### [NEW] [routes/userRoutes.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/backend/routes/userRoutes.js)
-Defines all 11 endpoints listed above with validation middleware using `express-validator`.
-
-#### [NEW] [controllers/userController.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/backend/controllers/userController.js)
-All handler functions: `register`, `login`, `getProfile`, `updateProfile`, `changePassword`, `getAddresses`, `addAddress`, `updateAddress`, `deleteAddress`, `setDefaultAddress`, `deactivateAccount`.
-
-#### [NEW] [utils/validators.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/backend/utils/validators.js)
-Reusable validation chains for registration, login, profile update, password change, and address operations.
+> [!IMPORTANT]
+> **Design Decision — Separate `Seller` collection vs. embedding in `User`:**  
+> We use a **separate collection** (like `Address`) because the seller profile has many fields unrelated to the user account. This keeps the `User` model clean and follows the existing pattern.
+> The `user` field creates a 1-to-1 link: one User (with role: 'seller') → one Seller profile.
 
 ---
 
-### Mobile App Setup
+### Component 2: Backend — Seller Controller
 
-#### [NEW] [package.json](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/package.json)
-Expo-based React Native project. Dependencies: `@react-navigation/native`, `@react-navigation/stack`, `axios`, `@react-native-async-storage/async-storage`.
+#### [NEW] [sellerController.js](file:///c:/Users/itsme/OneDrive/Desktop/Ceylon-boutique/backend/controllers/sellerController.js)
 
-#### [NEW] [App.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/App.js)
-Root component wrapping `AuthProvider` and `AppNavigator`.
+All controller functions follow the **exact same pattern** as `userController.js`:
+- `try/catch` wrapping with `next(error)`
+- `checkValidation(req, res)` for express-validator errors
+- Consistent `{ success, message, ... }` response format
 
----
+**Functions to implement (mapped to system docs):**
 
-### Mobile Navigation & Auth
+| Function | FR | Method + Route | Auth |
+|----------|-----|----------------|------|
+| `registerSeller` | FR2.1 | `POST /api/sellers/register` | No (public) |
+| `loginSeller` | FR2.1 | `POST /api/sellers/login` | No (public) |
+| `getMyShop` | FR2.3 | `GET /api/sellers/my-shop` | Seller |
+| `getShopPublic` | FR2.3 | `GET /api/sellers/shop/:id` | Customer/Any |
+| `updateShopInfo` | FR2.4 | `PUT /api/sellers/my-shop` | Seller (verified) |
+| `updateDocuments` | FR2.5 | `PUT /api/sellers/my-shop/documents` | Seller (verified) |
+| `getSellerDashboard` | FR2.3 | `GET /api/sellers/dashboard` | Seller |
+| `getAllSellers` | FR6.4 | `GET /api/sellers/admin/all` | Admin |
+| `getSellerDetails` | FR6.4 | `GET /api/sellers/admin/:id` | Admin |
+| `verifySeller` | FR2.2 | `PUT /api/sellers/admin/:id/verify` | Admin |
+| `suspendSeller` | FR2.6 | `PUT /api/sellers/admin/:id/suspend` | Admin |
+| `removeSeller` | FR2.6 | `PUT /api/sellers/admin/:id/remove` | Admin |
 
-#### [NEW] [src/navigation/AppNavigator.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/src/navigation/AppNavigator.js)
-Stack navigator with conditional rendering: unauthenticated → Welcome/Login/Register; authenticated → Home/Profile/etc.
+**Key logic details:**
 
-#### [NEW] [src/context/AuthContext.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/src/context/AuthContext.js)
-React Context providing: `user`, `token`, `login()`, `logout()`, `register()`, `isLoading`. Persists token in AsyncStorage and auto-loads on app start.
-
-#### [NEW] [src/api/client.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/src/api/client.js)
-Axios instance with `baseURL` pointed at backend. Interceptor auto-attaches JWT token to every request.
-
----
-
-### Mobile Screens (Module 1)
-
-#### [NEW] [src/screens/WelcomeScreen.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/src/screens/WelcomeScreen.js)
-App entry point with "Login" and "Register" buttons. Auto-redirects to Home if valid session exists.
-
-#### [NEW] [src/screens/RegisterScreen.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/src/screens/RegisterScreen.js)
-Registration form: full name, email, phone, password, confirm password, home address. Real-time validation. Calls `POST /api/users/register`.
-
-#### [NEW] [src/screens/LoginScreen.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/src/screens/LoginScreen.js)
-Login form: email + password. Shows error messages for wrong credentials, locked accounts, and deactivated accounts.
-
-#### [NEW] [src/screens/HomeScreen.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/src/screens/HomeScreen.js)
-Placeholder home screen (Browse Products — will be fully built in Module 3). Shows welcome message for now.
-
-#### [NEW] [src/screens/ProfileScreen.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/src/screens/ProfileScreen.js)
-Read-only profile view showing name, email, phone, registered date. Links to Edit Profile, Change Password, My Addresses, Deactivate Account.
-
-#### [NEW] [src/screens/EditProfileScreen.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/src/screens/EditProfileScreen.js)
-Editable form for name and phone (email is read-only). Calls `PUT /api/users/profile`.
-
-#### [NEW] [src/screens/ChangePasswordScreen.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/src/screens/ChangePasswordScreen.js)
-Three fields: current password, new password, confirm new password. Calls `PUT /api/users/change-password`.
-
-#### [NEW] [src/screens/AddressManagementScreen.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/src/screens/AddressManagementScreen.js)
-Lists saved addresses with default badge. Add, edit, delete, set-default actions. Uses a modal/form for add/edit.
+1. **`registerSeller`** — Creates both a `User` (role: 'seller') and a `Seller` profile in one operation. Uses a Mongoose transaction to ensure atomicity.
+2. **`loginSeller`** — Same login logic as customer but enforces `role === 'seller'`. Returns verification status so the mobile app knows which dashboard to show (pending vs. active).
+3. **`getMyShop`** — Seller views their own shop profile. If status is 'pending', returns limited data with a "pending" indicator.
+4. **`updateShopInfo`** — Only allowed if `verificationStatus === 'approved'`.
+5. **`verifySeller`** — Admin approves or rejects. Sets status and optional rejection reason.
 
 ---
 
-### Shared Files
+### Component 3: Backend — Seller Routes
 
-#### [NEW] [src/components/InputField.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/src/components/InputField.js)
-Reusable text input with label, error message display, and icon support.
+#### [NEW] [sellerRoutes.js](file:///c:/Users/itsme/OneDrive/Desktop/Ceylon-boutique/backend/routes/sellerRoutes.js)
 
-#### [NEW] [src/components/Button.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/src/components/Button.js)
-Styled button with loading state, primary/secondary variants.
+Follows the **exact same structure** as `userRoutes.js`:
 
-#### [NEW] [src/components/AddressCard.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/src/components/AddressCard.js)
-Address list item card with default badge, edit/delete icons.
+```
+Public:
+  POST /register      → registerSeller
+  POST /login         → loginSeller
+  GET  /shop/:id      → getShopPublic      (anyone can view a shop)
 
-#### [NEW] [src/components/LoadingSpinner.js](file:///c:/Users/DELL/Desktop/WMT-PROJECT/mobile/src/components/LoadingSpinner.js)
-Centered loading indicator overlay.
+Protected (Seller):
+  GET  /my-shop        → getMyShop
+  GET  /dashboard      → getSellerDashboard
+  PUT  /my-shop        → updateShopInfo      (verified only)
+  PUT  /my-shop/documents → updateDocuments  (verified only)
 
-#### [NEW] [README.md](file:///c:/Users/DELL/Desktop/WMT-PROJECT/README.md)
-Project overview, setup instructions for both backend and mobile, environment variable documentation, and team conventions.
+Protected (Admin):
+  GET  /admin/all              → getAllSellers
+  GET  /admin/:id              → getSellerDetails
+  PUT  /admin/:id/verify       → verifySeller
+  PUT  /admin/:id/suspend      → suspendSeller
+  PUT  /admin/:id/remove       → removeSeller
+```
+
+---
+
+### Component 4: Backend — Validators Update
+
+#### [MODIFY] [validators.js](file:///c:/Users/itsme/OneDrive/Desktop/Ceylon-boutique/backend/utils/validators.js)
+
+**Add new validation arrays** (appended after existing Module 1 validators):
+
+- `sellerRegisterValidation` — Validates all registration fields (shop name, personal details, business docs, bank details, contact address)
+- `sellerLoginValidation` — Same as `loginValidation` (email + password)
+- `updateShopValidation` — Optional fields for shop name, description, category focus
+- `updateDocumentsValidation` — Business reg number, NIC, document URL
+- `sellerIdValidation` — `param('id').isMongoId()`
+- `verifySellerValidation` — Status (approved/rejected) + optional rejection reason
+
+---
+
+### Component 5: Backend — Auth Middleware Enhancement
+
+#### [MODIFY] [auth.js](file:///c:/Users/itsme/OneDrive/Desktop/Ceylon-boutique/backend/middleware/auth.js)
+
+Add a new `requireVerifiedSeller` middleware that checks:
+1. User is authenticated (via `protect`)
+2. User role is `'seller'`
+3. Seller profile exists with `verificationStatus === 'approved'`
+
+This is used on routes like `PUT /my-shop` where only verified sellers can make changes.
+
+---
+
+### Component 6: Backend — Server Registration
+
+#### [MODIFY] [server.js](file:///c:/Users/itsme/OneDrive/Desktop/Ceylon-boutique/backend/server.js)
+
+Uncomment and activate the seller routes:
+
+```diff
+ app.use('/api/users', require('./routes/userRoutes'));
+-// app.use('/api/sellers', require('./routes/sellerRoutes'));
++app.use('/api/sellers', require('./routes/sellerRoutes'));
+```
+
+---
+
+### Component 7: Mobile — Seller Screens
+
+> [!NOTE]
+> All screens follow the **exact same patterns** as existing Module 1 screens: `SafeAreaView`, `StyleSheet.create`, the `#8B2635` brand color, the `Button` and `InputField` components, and the `useAuth()` hook.
+
+#### [NEW] [SellerRegisterScreen.js](file:///c:/Users/itsme/OneDrive/Desktop/Ceylon-boutique/mobile/src/screens/SellerRegisterScreen.js)
+
+Multi-step registration form (4 steps matching the system docs):
+- **Step 1:** Personal details (name, email, phone, password)
+- **Step 2:** Shop details (shop name, description, category focus)
+- **Step 3:** Document upload (business registration number, NIC number)
+- **Step 4:** Bank account details + contact address
+
+Uses `apiClient.post('/api/sellers/register', ...)` and navigates to `SellerPending` on success.
+
+#### [NEW] [SellerLoginScreen.js](file:///c:/Users/itsme/OneDrive/Desktop/Ceylon-boutique/mobile/src/screens/SellerLoginScreen.js)
+
+Same layout as `LoginScreen.js` but posts to `/api/sellers/login`. After login, checks `verificationStatus` to decide navigation:
+- `pending` → `SellerPending` screen
+- `approved` → `SellerDashboard` screen
+- `rejected` → Show rejection message with option to reapply
+
+#### [NEW] [SellerPendingScreen.js](file:///c:/Users/itsme/OneDrive/Desktop/Ceylon-boutique/mobile/src/screens/SellerPendingScreen.js)
+
+Simple informational screen shown when seller is awaiting verification:
+- "Your shop is under review" message
+- Estimated timeline (3-5 business days)
+- Logout button
+- Refresh button to recheck status
+
+#### [NEW] [SellerDashboardScreen.js](file:///c:/Users/itsme/OneDrive/Desktop/Ceylon-boutique/mobile/src/screens/SellerDashboardScreen.js)
+
+The seller's home screen after verification. Shows:
+- Shop name and status badge
+- Quick stats cards (product count, rating — placeholder 0s until Modules 3 & 5)
+- Navigation cards: "My Products" (Module 3 placeholder), "Orders" (Module 4 placeholder), "My Shop Profile", "Settings"
+
+#### [NEW] [SellerShopProfileScreen.js](file:///c:/Users/itsme/OneDrive/Desktop/Ceylon-boutique/mobile/src/screens/SellerShopProfileScreen.js)
+
+Displays the seller's shop profile details. Has an "Edit Shop" button that navigates to `EditShop`.
+
+#### [NEW] [EditShopScreen.js](file:///c:/Users/itsme/OneDrive/Desktop/Ceylon-boutique/mobile/src/screens/EditShopScreen.js)
+
+Pre-filled form for editing shop name, description, and category focus. Same pattern as `EditProfileScreen.js`.
+
+---
+
+### Component 8: Mobile — Navigation Update
+
+#### [MODIFY] [AppNavigator.js](file:///c:/Users/itsme/OneDrive/Desktop/Ceylon-boutique/mobile/src/navigation/AppNavigator.js)
+
+Add a **third navigation stack** for seller flow, alongside `AuthStack` and `AppStack`:
+
+```
+SellerAuthStack:    SellerLogin → SellerRegister
+SellerPendingStack: SellerPending (status = pending)
+SellerAppStack:     SellerDashboard → SellerShopProfile → EditShop
+
+Navigation logic:
+  if (!user) → AuthStack (customer auth + seller auth entry)
+  if (user.role === 'seller' && verificationStatus === 'pending') → SellerPendingStack
+  if (user.role === 'seller' && verificationStatus === 'approved') → SellerAppStack
+  if (user.role === 'customer') → AppStack (existing)
+```
+
+#### [MODIFY] [WelcomeScreen.js](file:///c:/Users/itsme/OneDrive/Desktop/Ceylon-boutique/mobile/src/screens/WelcomeScreen.js)
+
+Wire the existing "Register as Seller" link to navigate to `SellerRegister`.
+
+#### [MODIFY] [AuthContext.js](file:///c:/Users/itsme/OneDrive/Desktop/Ceylon-boutique/mobile/src/context/AuthContext.js)
+
+Add `sellerLogin` and `sellerRegister` functions alongside existing `login` and `register`. Store `verificationStatus` in context for navigation decisions.
+
+---
+
+### Component 9: README Update
+
+#### [MODIFY] [README.md](file:///c:/Users/itsme/OneDrive/Desktop/Ceylon-boutique/README.md)
+
+- Update Module 2 status from `🔲 Not Started` to `✅ Complete`
+- Add full **API Endpoints — Module 2** table (same format as Module 1)
+- Add `.env` variables if any new ones are needed (none for Module 2)
 
 ---
 
 ## Open Questions
 
 > [!IMPORTANT]
-> **MongoDB Atlas**: Do you already have a MongoDB Atlas cluster set up for online hosting? If not, I'll include setup instructions. The free tier (M0) works for development.
+> **Q1: File uploads for business documents and shop images?**
+> The system docs mention uploading business registration certificates and shop logo/banner images. For now, I'll implement these as **URL string fields** (sellers paste a link). Real file upload (using `multer` + cloud storage like Cloudinary/AWS S3) can be added as a follow-up. Is this acceptable for your current scope?
 
 > [!IMPORTANT]
-> **Backend Hosting**: For deploying the Node.js backend online, which platform do you prefer? Options:
-> - **Render** (free tier available, easy setup)
-> - **Railway** (generous free tier)
-> - **Vercel** (good for serverless, but less ideal for Express)
-> - **AWS / DigitalOcean** (more control, not free)
+> **Q2: Email notifications?**
+> The docs mention sending emails when a seller is approved/rejected. Should I set up email sending now (requires an email service like SendGrid/Nodemailer + SMTP), or should we skip email for now and rely on the API response / in-app checking? Setting up email would require new `.env` variables.
 
 > [!IMPORTANT]
-> **Expo or Bare React Native?** I recommend **Expo** (managed workflow) for faster development since your team has 6 members and this is a team project. It simplifies builds, testing on real devices, and deployment. Is that okay?
+> **Q3: Which team member is building Module 2?**
+> This plan creates **9 new files** and modifies **5 existing files**. If one team member is building the entire module, I'll create everything. If it's split among members, I can organize the files by person.
 
-> [!IMPORTANT]
-> **Image uploads**: The seller registration (Module 2) requires document uploads. Should I set up **Cloudinary** or **AWS S3** for file storage from the beginning, or add it when we reach Module 2?
+---
+
+## File Summary
+
+| Action | File | Description |
+|--------|------|-------------|
+| **NEW** | `backend/models/Seller.js` | Seller/Shop Mongoose model |
+| **NEW** | `backend/controllers/sellerController.js` | All 12 seller endpoint handlers |
+| **NEW** | `backend/routes/sellerRoutes.js` | Express router for `/api/sellers` |
+| **MODIFY** | `backend/utils/validators.js` | Add seller validation rules |
+| **MODIFY** | `backend/middleware/auth.js` | Add `requireVerifiedSeller` middleware |
+| **MODIFY** | `backend/server.js` | Register seller routes |
+| **NEW** | `mobile/src/screens/SellerRegisterScreen.js` | Multi-step seller registration |
+| **NEW** | `mobile/src/screens/SellerLoginScreen.js` | Seller login screen |
+| **NEW** | `mobile/src/screens/SellerPendingScreen.js` | Pending verification screen |
+| **NEW** | `mobile/src/screens/SellerDashboardScreen.js` | Seller home dashboard |
+| **NEW** | `mobile/src/screens/SellerShopProfileScreen.js` | View shop profile |
+| **NEW** | `mobile/src/screens/EditShopScreen.js` | Edit shop info |
+| **MODIFY** | `mobile/src/navigation/AppNavigator.js` | Add seller navigation stacks |
+| **MODIFY** | `mobile/src/screens/WelcomeScreen.js` | Wire seller link |
+| **MODIFY** | `mobile/src/context/AuthContext.js` | Add seller auth functions |
+| **MODIFY** | `README.md` | Add Module 2 docs |
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-1. **Backend API testing** with Postman/Thunder Client:
-   - Register a new customer → expect 201 + token
-   - Register with duplicate email → expect 400
-   - Login with correct credentials → expect 200 + token
-   - Login with wrong password 5 times → expect 429 (locked)
-   - Get profile with valid token → expect 200 + user data
-   - Update profile → expect 200
-   - Change password → expect 200
-   - CRUD addresses → expect correct responses
-   - Deactivate account → expect 200, then login should fail
-
-2. **MongoDB verification**: Check documents are created correctly in Atlas/Compass
+1. **Start backend server:** `cd backend && npm run dev` — verify no crash
+2. **Test all 12 endpoints** with Postman/curl:
+   - `POST /api/sellers/register` → new seller + user created
+   - `POST /api/sellers/login` → JWT returned with seller info
+   - `GET /api/sellers/my-shop` → seller profile returned
+   - `PUT /api/sellers/admin/:id/verify` → status changes to approved
+   - All other CRUD operations
+3. **Start mobile app:** `cd mobile && npm start` — scan QR, verify:
+   - "Register as Seller" link works from Welcome screen
+   - Multi-step registration completes
+   - Pending dashboard shows after registration
+   - After admin approval, seller dashboard loads
 
 ### Manual Verification
-- Team members test on their local machines using `npm run dev`
-- React Native app tested on real devices via Expo Go
-- Backend tested via Postman collection (will be shared)
+- Have one team member register as seller, another approve via admin API call (Postman)
+- Verify MongoDB Atlas shows both `users` and `sellers` collections with linked documents

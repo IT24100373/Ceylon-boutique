@@ -5,7 +5,7 @@ import { ActivityIndicator, View } from 'react-native';
 
 import { useAuth } from '../context/AuthContext';
 
-// --- Screens ---
+// --- Module 1 Screens ---
 import WelcomeScreen from '../screens/WelcomeScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import LoginScreen from '../screens/LoginScreen';
@@ -15,19 +15,34 @@ import EditProfileScreen from '../screens/EditProfileScreen';
 import ChangePasswordScreen from '../screens/ChangePasswordScreen';
 import AddressManagementScreen from '../screens/AddressManagementScreen';
 
+// --- Module 2 Screens ---
+import SellerRegisterScreen from '../screens/SellerRegisterScreen';
+import SellerLoginScreen from '../screens/SellerLoginScreen';
+import SellerPendingScreen from '../screens/SellerPendingScreen';
+import SellerDashboardScreen from '../screens/SellerDashboardScreen';
+import SellerShopProfileScreen from '../screens/SellerShopProfileScreen';
+import EditShopScreen from '../screens/EditShopScreen';
+
 const Stack = createNativeStackNavigator();
 
-// Screens shown when user is NOT logged in
+// -------------------------------------------------------
+// Auth Stack — shown when user is NOT logged in
+// Includes both customer and seller auth entry points
+// -------------------------------------------------------
 const AuthStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Welcome" component={WelcomeScreen} />
     <Stack.Screen name="Login" component={LoginScreen} />
     <Stack.Screen name="Register" component={RegisterScreen} />
+    <Stack.Screen name="SellerLogin" component={SellerLoginScreen} />
+    <Stack.Screen name="SellerRegister" component={SellerRegisterScreen} />
   </Stack.Navigator>
 );
 
-// Screens shown when user IS logged in
-const AppStack = () => (
+// -------------------------------------------------------
+// Customer App Stack — shown when a CUSTOMER is logged in
+// -------------------------------------------------------
+const CustomerAppStack = () => (
   <Stack.Navigator
     screenOptions={{
       headerStyle: { backgroundColor: '#8B2635' },
@@ -43,6 +58,35 @@ const AppStack = () => (
   </Stack.Navigator>
 );
 
+// -------------------------------------------------------
+// Seller Pending Stack — shown when seller is awaiting verification
+// -------------------------------------------------------
+const SellerPendingStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="SellerPending" component={SellerPendingScreen} />
+  </Stack.Navigator>
+);
+
+// -------------------------------------------------------
+// Seller App Stack — shown when a VERIFIED SELLER is logged in
+// -------------------------------------------------------
+const SellerAppStack = () => (
+  <Stack.Navigator
+    screenOptions={{
+      headerStyle: { backgroundColor: '#8B2635' },
+      headerTintColor: '#fff',
+      headerTitleStyle: { fontWeight: 'bold' },
+    }}
+  >
+    <Stack.Screen name="SellerDashboard" component={SellerDashboardScreen} options={{ headerShown: false }} />
+    <Stack.Screen name="SellerShopProfile" component={SellerShopProfileScreen} options={{ title: 'My Shop' }} />
+    <Stack.Screen name="EditShop" component={EditShopScreen} options={{ title: 'Edit Shop' }} />
+  </Stack.Navigator>
+);
+
+// -------------------------------------------------------
+// Main Navigator — decides which stack to show
+// -------------------------------------------------------
 const AppNavigator = () => {
   const { user, isLoading } = useAuth();
 
@@ -55,9 +99,28 @@ const AppNavigator = () => {
     );
   }
 
+  // Decide which stack to render based on user state
+  const getActiveStack = () => {
+    // Not logged in → show auth screens
+    if (!user) return <AuthStack />;
+
+    // Seller flow
+    if (user.role === 'seller') {
+      // Check verification status
+      if (user.verificationStatus === 'approved') {
+        return <SellerAppStack />;
+      }
+      // Pending, rejected, or any other status → pending screen
+      return <SellerPendingStack />;
+    }
+
+    // Customer flow (default)
+    return <CustomerAppStack />;
+  };
+
   return (
     <NavigationContainer>
-      {user ? <AppStack /> : <AuthStack />}
+      {getActiveStack()}
     </NavigationContainer>
   );
 };

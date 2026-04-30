@@ -72,4 +72,46 @@ const authorize = (...roles) => {
   };
 };
 
-module.exports = { protect, authorize };
+// -------------------------------------------------------
+// Module 2: Require verified seller
+// Checks that the user is a seller AND their shop is approved.
+// Must be used AFTER protect middleware.
+// -------------------------------------------------------
+const Seller = require('../models/Seller');
+
+const requireVerifiedSeller = async (req, res, next) => {
+  try {
+    // Check role first
+    if (req.user.role !== 'seller') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. This action is for sellers only.',
+      });
+    }
+
+    // Check verification status
+    const seller = await Seller.findOne({ user: req.user._id });
+
+    if (!seller) {
+      return res.status(404).json({
+        success: false,
+        message: 'Seller profile not found. Please contact support.',
+      });
+    }
+
+    if (seller.verificationStatus !== 'approved') {
+      return res.status(403).json({
+        success: false,
+        message: `Your shop is not yet verified. Current status: ${seller.verificationStatus}. Only verified sellers can perform this action.`,
+      });
+    }
+
+    // Attach seller to request for downstream use
+    req.seller = seller;
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { protect, authorize, requireVerifiedSeller };

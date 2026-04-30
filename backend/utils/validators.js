@@ -131,11 +131,214 @@ const addressIdValidation = [
     .isMongoId().withMessage('Invalid address ID'),
 ];
 
+// -------------------------------------------------------
+// FR2.1 — Seller Registration
+// -------------------------------------------------------
+const sellerRegisterValidation = [
+  // Step 1: Personal details
+  body('fullName')
+    .trim()
+    .notEmpty().withMessage('Full name is required')
+    .isLength({ max: 100 }).withMessage('Full name cannot exceed 100 characters'),
+
+  body('email')
+    .trim()
+    .notEmpty().withMessage('Email is required')
+    .isEmail().withMessage('Please provide a valid email address')
+    .normalizeEmail(),
+
+  body('phone')
+    .trim()
+    .notEmpty().withMessage('Phone number is required')
+    .matches(/^(\+94|0)[0-9]{9}$/).withMessage('Please provide a valid Sri Lankan phone number'),
+
+  body('password')
+    .notEmpty().withMessage('Password is required')
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
+    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
+    .matches(/[0-9]/).withMessage('Password must contain at least one number'),
+
+  body('confirmPassword')
+    .notEmpty().withMessage('Please confirm your password')
+    .custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error('Passwords do not match');
+      }
+      return true;
+    }),
+
+  // Step 2: Shop details
+  body('shopName')
+    .trim()
+    .notEmpty().withMessage('Shop name is required')
+    .isLength({ min: 3, max: 100 }).withMessage('Shop name must be between 3 and 100 characters'),
+
+  body('shopDescription')
+    .optional()
+    .trim()
+    .isLength({ max: 1000 }).withMessage('Shop description cannot exceed 1000 characters'),
+
+  body('categoryFocus')
+    .optional()
+    .trim()
+    .isLength({ max: 100 }).withMessage('Category focus cannot exceed 100 characters'),
+
+  // Step 3: Business documents
+  body('businessRegNumber')
+    .trim()
+    .notEmpty().withMessage('Business registration number is required'),
+
+  body('nicNumber')
+    .trim()
+    .notEmpty().withMessage('NIC number is required')
+    .matches(/^([0-9]{9}[vVxX]|[0-9]{12})$/).withMessage('Please enter a valid Sri Lankan NIC number'),
+
+  body('documentsUrl')
+    .optional()
+    .trim(),
+
+  // Step 4: Bank details
+  body('bankName')
+    .trim()
+    .notEmpty().withMessage('Bank name is required'),
+
+  body('bankBranch')
+    .trim()
+    .notEmpty().withMessage('Bank branch is required'),
+
+  body('bankAccountNumber')
+    .trim()
+    .notEmpty().withMessage('Bank account number is required'),
+
+  body('bankAccountName')
+    .trim()
+    .notEmpty().withMessage('Bank account holder name is required'),
+
+  // Contact address
+  body('contactAddress.addressLine1')
+    .trim()
+    .notEmpty().withMessage('Contact address line 1 is required')
+    .isLength({ max: 200 }).withMessage('Address line 1 cannot exceed 200 characters'),
+
+  body('contactAddress.addressLine2')
+    .optional()
+    .trim()
+    .isLength({ max: 200 }).withMessage('Address line 2 cannot exceed 200 characters'),
+
+  body('contactAddress.city')
+    .trim()
+    .notEmpty().withMessage('City is required'),
+
+  body('contactAddress.province')
+    .trim()
+    .notEmpty().withMessage('Province is required')
+    .isIn([
+      'Western', 'Central', 'Southern', 'Northern', 'Eastern',
+      'North Western', 'North Central', 'Uva', 'Sabaragamuwa',
+    ]).withMessage('Please select a valid Sri Lankan province'),
+
+  body('contactAddress.postalCode')
+    .trim()
+    .notEmpty().withMessage('Postal code is required')
+    .matches(/^[0-9]{5}$/).withMessage('Please enter a valid 5-digit postal code'),
+];
+
+// -------------------------------------------------------
+// FR2.1 — Seller Login
+// -------------------------------------------------------
+const sellerLoginValidation = [
+  body('email')
+    .trim()
+    .notEmpty().withMessage('Email is required')
+    .isEmail().withMessage('Please provide a valid email address')
+    .normalizeEmail(),
+
+  body('password')
+    .notEmpty().withMessage('Password is required'),
+];
+
+// -------------------------------------------------------
+// FR2.4 — Update Shop Info
+// -------------------------------------------------------
+const updateShopValidation = [
+  body('shopName')
+    .optional()
+    .trim()
+    .isLength({ min: 3, max: 100 }).withMessage('Shop name must be between 3 and 100 characters'),
+
+  body('shopDescription')
+    .optional()
+    .trim()
+    .isLength({ max: 1000 }).withMessage('Shop description cannot exceed 1000 characters'),
+
+  body('shopLogo')
+    .optional()
+    .trim(),
+
+  body('shopBanner')
+    .optional()
+    .trim(),
+
+  body('categoryFocus')
+    .optional()
+    .trim()
+    .isLength({ max: 100 }).withMessage('Category focus cannot exceed 100 characters'),
+];
+
+// -------------------------------------------------------
+// FR2.5 — Update Business Documents
+// -------------------------------------------------------
+const updateDocumentsValidation = [
+  body('businessRegNumber')
+    .optional()
+    .trim()
+    .notEmpty().withMessage('Business registration number cannot be empty'),
+
+  body('nicNumber')
+    .optional()
+    .trim()
+    .matches(/^([0-9]{9}[vVxX]|[0-9]{12})$/).withMessage('Please enter a valid Sri Lankan NIC number'),
+
+  body('documentsUrl')
+    .optional()
+    .trim(),
+];
+
+// -------------------------------------------------------
+// Module 2 — Seller ID param validation
+// -------------------------------------------------------
+const sellerIdValidation = [
+  param('id')
+    .isMongoId().withMessage('Invalid seller ID'),
+];
+
+// -------------------------------------------------------
+// FR2.2 — Admin Verify Seller
+// -------------------------------------------------------
+const verifySellerValidation = [
+  body('status')
+    .notEmpty().withMessage('Verification status is required')
+    .isIn(['approved', 'rejected']).withMessage('Status must be either "approved" or "rejected"'),
+
+  body('rejectionReason')
+    .optional()
+    .trim()
+    .isLength({ max: 500 }).withMessage('Rejection reason cannot exceed 500 characters'),
+];
+
 module.exports = {
+  // Module 1
   registerValidation,
   loginValidation,
   updateProfileValidation,
   changePasswordValidation,
   addressValidation,
   addressIdValidation,
+  // Module 2
+  sellerRegisterValidation,
+  sellerLoginValidation,
+  updateShopValidation,
+  updateDocumentsValidation,
+  sellerIdValidation,
+  verifySellerValidation,
 };

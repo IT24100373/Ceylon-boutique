@@ -30,7 +30,7 @@ const WelcomeScreen = ({ navigation }) => {
           style={styles.registerBtn}
         />
         <TouchableOpacity
-          onPress={() => {/* Navigate to Seller flow — Module 2 */}}
+          onPress={() => navigation.navigate('SellerLogin')}
           style={styles.sellerLink}
         >
           <Text style={styles.sellerLinkText}>Want to sell? Register as a Seller →</Text>
