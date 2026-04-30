@@ -44,7 +44,7 @@ const SellerDashboardScreen = ({ navigation }) => {
 
   const menuItems = [
     { title: 'My Shop Profile', desc: 'View and edit your shop details', icon: '🏪', screen: 'SellerShopProfile' },
-    { title: 'My Products', desc: 'Manage your product listings', icon: '📦', screen: null, placeholder: 'Module 3' },
+    { title: 'My Products', desc: 'Manage your product listings', icon: '📦', screen: 'MyProducts' },
     { title: 'Orders', desc: 'View and manage customer orders', icon: '🛒', screen: null, placeholder: 'Module 4' },
     { title: 'Reviews', desc: 'See what customers are saying', icon: '⭐', screen: null, placeholder: 'Module 5' },
   ];

@@ -326,6 +326,125 @@ const verifySellerValidation = [
     .isLength({ max: 500 }).withMessage('Rejection reason cannot exceed 500 characters'),
 ];
 
+// -------------------------------------------------------
+// FR3.1 — Add New Product
+// -------------------------------------------------------
+const addProductValidation = [
+  body('name')
+    .trim()
+    .notEmpty().withMessage('Product name is required')
+    .isLength({ min: 3, max: 200 }).withMessage('Product name must be between 3 and 200 characters'),
+
+  body('description')
+    .trim()
+    .notEmpty().withMessage('Product description is required')
+    .isLength({ max: 2000 }).withMessage('Description cannot exceed 2000 characters'),
+
+  body('category')
+    .trim()
+    .notEmpty().withMessage('Product category is required')
+    .isIn([
+      'Saree & Traditional', 'Dresses', 'Tops & Blouses', 'Pants & Trousers',
+      'Skirts', "Men's Shirts", "Men's Trousers", 'Kids Wear',
+      'Accessories', 'Footwear', 'Other',
+    ]).withMessage('Please select a valid product category'),
+
+  body('price')
+    .notEmpty().withMessage('Price is required')
+    .isFloat({ min: 1 }).withMessage('Price must be at least LKR 1'),
+
+  body('sizes')
+    .isArray({ min: 1 }).withMessage('At least one size is required'),
+
+  body('sizes.*')
+    .trim()
+    .notEmpty().withMessage('Size value cannot be empty'),
+
+  body('images')
+    .isArray({ min: 1, max: 10 }).withMessage('Between 1 and 10 images are required'),
+
+  body('images.*')
+    .trim()
+    .notEmpty().withMessage('Image URL cannot be empty'),
+
+  body('variants')
+    .isArray({ min: 1 }).withMessage('At least one variant (size/color/stock) is required'),
+
+  body('variants.*.size')
+    .trim()
+    .notEmpty().withMessage('Variant size is required'),
+
+  body('variants.*.color')
+    .trim()
+    .notEmpty().withMessage('Variant color is required'),
+
+  body('variants.*.stock')
+    .isInt({ min: 0 }).withMessage('Stock must be a non-negative integer'),
+];
+
+// -------------------------------------------------------
+// FR3.4 — Update Product Info
+// -------------------------------------------------------
+const updateProductValidation = [
+  body('name')
+    .optional()
+    .trim()
+    .isLength({ min: 3, max: 200 }).withMessage('Product name must be between 3 and 200 characters'),
+
+  body('description')
+    .optional()
+    .trim()
+    .isLength({ max: 2000 }).withMessage('Description cannot exceed 2000 characters'),
+
+  body('category')
+    .optional()
+    .trim()
+    .isIn([
+      'Saree & Traditional', 'Dresses', 'Tops & Blouses', 'Pants & Trousers',
+      'Skirts', "Men's Shirts", "Men's Trousers", 'Kids Wear',
+      'Accessories', 'Footwear', 'Other',
+    ]).withMessage('Please select a valid product category'),
+
+  body('price')
+    .optional()
+    .isFloat({ min: 1 }).withMessage('Price must be at least LKR 1'),
+
+  body('sizes')
+    .optional()
+    .isArray({ min: 1 }).withMessage('At least one size is required'),
+
+  body('images')
+    .optional()
+    .isArray({ min: 1, max: 10 }).withMessage('Between 1 and 10 images are required'),
+];
+
+// -------------------------------------------------------
+// FR3.5 — Update Stock
+// -------------------------------------------------------
+const updateStockValidation = [
+  body('variants')
+    .isArray({ min: 1 }).withMessage('At least one variant is required'),
+
+  body('variants.*.size')
+    .trim()
+    .notEmpty().withMessage('Variant size is required'),
+
+  body('variants.*.color')
+    .trim()
+    .notEmpty().withMessage('Variant color is required'),
+
+  body('variants.*.stock')
+    .isInt({ min: 0 }).withMessage('Stock must be a non-negative integer'),
+];
+
+// -------------------------------------------------------
+// Module 3 — Product ID param validation
+// -------------------------------------------------------
+const productIdValidation = [
+  param('id')
+    .isMongoId().withMessage('Invalid product ID'),
+];
+
 module.exports = {
   // Module 1
   registerValidation,
@@ -341,4 +460,10 @@ module.exports = {
   updateDocumentsValidation,
   sellerIdValidation,
   verifySellerValidation,
+  // Module 3
+  addProductValidation,
+  updateProductValidation,
+  updateStockValidation,
+  productIdValidation,
 };
+

@@ -23,6 +23,17 @@ import SellerDashboardScreen from '../screens/SellerDashboardScreen';
 import SellerShopProfileScreen from '../screens/SellerShopProfileScreen';
 import EditShopScreen from '../screens/EditShopScreen';
 
+// --- Module 3 Screens (Seller — Product Management) ---
+import MyProductsScreen from '../screens/MyProductsScreen';
+import AddProductScreen from '../screens/AddProductScreen';
+import EditProductScreen from '../screens/EditProductScreen';
+import ManageStockScreen from '../screens/ManageStockScreen';
+
+// --- Module 3 Screens (Customer — Product Browsing) ---
+import ProductBrowseScreen from '../screens/ProductBrowseScreen';
+import ProductDetailScreen from '../screens/ProductDetailScreen';
+import SearchFilterScreen from '../screens/SearchFilterScreen';
+
 const Stack = createNativeStackNavigator();
 
 // -------------------------------------------------------
@@ -41,6 +52,7 @@ const AuthStack = () => (
 
 // -------------------------------------------------------
 // Customer App Stack — shown when a CUSTOMER is logged in
+// Includes Module 1 profile screens + Module 3 product browsing
 // -------------------------------------------------------
 const CustomerAppStack = () => (
   <Stack.Navigator
@@ -50,7 +62,12 @@ const CustomerAppStack = () => (
       headerTitleStyle: { fontWeight: 'bold' },
     }}
   >
-    <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Ceylon Boutique' }} />
+    {/* Module 3 — Product Browsing (replaces placeholder Home) */}
+    <Stack.Screen name="Home" component={ProductBrowseScreen} options={{ title: 'Ceylon Boutique' }} />
+    <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ title: 'Product Details' }} />
+    <Stack.Screen name="SearchFilter" component={SearchFilterScreen} options={{ title: 'Search & Filter' }} />
+
+    {/* Module 1 — Profile Management */}
     <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'My Profile' }} />
     <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ title: 'Edit Profile' }} />
     <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ title: 'Change Password' }} />
@@ -69,6 +86,7 @@ const SellerPendingStack = () => (
 
 // -------------------------------------------------------
 // Seller App Stack — shown when a VERIFIED SELLER is logged in
+// Includes Module 2 shop screens + Module 3 product management
 // -------------------------------------------------------
 const SellerAppStack = () => (
   <Stack.Navigator
@@ -78,9 +96,16 @@ const SellerAppStack = () => (
       headerTitleStyle: { fontWeight: 'bold' },
     }}
   >
+    {/* Module 2 — Shop Management */}
     <Stack.Screen name="SellerDashboard" component={SellerDashboardScreen} options={{ headerShown: false }} />
     <Stack.Screen name="SellerShopProfile" component={SellerShopProfileScreen} options={{ title: 'My Shop' }} />
     <Stack.Screen name="EditShop" component={EditShopScreen} options={{ title: 'Edit Shop' }} />
+
+    {/* Module 3 — Product Management */}
+    <Stack.Screen name="MyProducts" component={MyProductsScreen} options={{ title: 'My Products' }} />
+    <Stack.Screen name="AddProduct" component={AddProductScreen} options={{ title: 'Add Product' }} />
+    <Stack.Screen name="EditProduct" component={EditProductScreen} options={{ title: 'Edit Product' }} />
+    <Stack.Screen name="ManageStock" component={ManageStockScreen} options={{ title: 'Manage Stock' }} />
   </Stack.Navigator>
 );
 

@@ -21,7 +21,7 @@ WMT-PROJECT/
 |--------|-------------|--------|
 | Module 1 | User Management (Customer Accounts) | ✅ Complete |
 | Module 2 | Seller & Shop Management | ✅ Complete |
-| Module 3 | Product & Inventory Management | 🔲 Not Started |
+| Module 3 | Product & Inventory Management | ✅ Complete |
 | Module 4 | Order Management | 🔲 Not Started |
 | Module 5 | Reviews & Ratings | 🔲 Not Started |
 | Module 6 | Admin & Platform Management (Web) | 🔲 Not Started |
@@ -251,6 +251,118 @@ GET /api/sellers/admin/all?status=pending&search=silk&page=1&limit=10
 
 ---
 
+## API Endpoints — Module 3 (Product & Inventory Management)
+
+### Public Routes (JWT Required — any authenticated user)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/products` | Browse, search, and filter products (paginated) |
+| GET | `/api/products/:id` | View full product detail page |
+| GET | `/api/products/shop/:sellerId` | Get all published products for a shop |
+
+### Seller Routes (JWT Required — verified seller only)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/products/seller/my-products` | View own product listings (with status filter) |
+| POST | `/api/products` | Add a new product listing |
+| PUT | `/api/products/:id` | Edit product info (name, description, price, etc.) |
+| PUT | `/api/products/:id/stock` | Update stock quantity per variant |
+| PUT | `/api/products/:id/unpublish` | Hide product from customers |
+| PUT | `/api/products/:id/republish` | Make hidden product visible again |
+| DELETE | `/api/products/:id` | Soft-delete a product |
+
+### Admin Routes (JWT Required — role: admin)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| PUT | `/api/products/admin/:id/unpublish` | Force-unpublish any product |
+
+### Browse Products — Query Parameters
+
+```
+GET /api/products?search=saree&category=Saree%20%26%20Traditional&minPrice=1000&maxPrice=5000&size=M&color=Red&inStock=true&sortBy=newest&page=1&limit=10
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `search` | string | Keyword search on product name and description |
+| `category` | string | Filter by product category |
+| `minPrice` | number | Minimum price (LKR) |
+| `maxPrice` | number | Maximum price (LKR) |
+| `size` | string | Filter by size (e.g. S, M, L, XL) |
+| `color` | string | Filter by color name |
+| `inStock` | boolean | Show only in-stock products (`true`) |
+| `sortBy` | string | Sort order: `newest`, `price_low`, `price_high`, `popular` |
+| `page` | number | Page number (default: 1) |
+| `limit` | number | Results per page (default: 20) |
+
+### Add Product — Request Body Example
+
+```json
+{
+  "name": "Handloom Cotton Saree",
+  "description": "Beautiful handloom cotton saree from Kandy region. Perfect for daily wear and casual occasions.",
+  "category": "Saree & Traditional",
+  "price": 3500,
+  "sizes": ["Free Size"],
+  "colors": [
+    { "name": "Red", "hexCode": "#FF0000" },
+    { "name": "Blue", "hexCode": "#0000FF" }
+  ],
+  "images": [
+    "https://example.com/saree-red.jpg",
+    "https://example.com/saree-blue.jpg"
+  ],
+  "variants": [
+    { "size": "Free Size", "color": "Red", "stock": 15 },
+    { "size": "Free Size", "color": "Blue", "stock": 10 }
+  ]
+}
+```
+
+### Update Stock — Request Body Example
+
+```json
+{
+  "variants": [
+    { "size": "Free Size", "color": "Red", "stock": 8 },
+    { "size": "Free Size", "color": "Blue", "stock": 0 }
+  ]
+}
+```
+
+### Product Categories
+
+The following categories are available for product listings:
+
+| Category |
+|----------|
+| Saree & Traditional |
+| Dresses |
+| Tops & Blouses |
+| Pants & Trousers |
+| Skirts |
+| Men's Shirts |
+| Men's Trousers |
+| Kids Wear |
+| Accessories |
+| Footwear |
+| Other |
+
+### My Products — Query Parameters
+
+```
+GET /api/products/seller/my-products?status=published&page=1&limit=20
+```
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `status` | `published`, `unpublished`, `out_of_stock` | Filter own products by status |
+
+---
+
 ## Database Collections (MongoDB)
 
 | Collection | Module | Description |
@@ -258,6 +370,7 @@ GET /api/sellers/admin/all?status=pending&search=silk&page=1&limit=10
 | `users` | Module 1 | Customer, Seller, and Admin accounts |
 | `addresses` | Module 1 | Customer delivery addresses |
 | `sellers` | Module 2 | Seller shop profiles (linked to users) |
+| `products` | Module 3 | Product listings with variants and stock (linked to sellers) |
 
 ---
 
@@ -274,7 +387,7 @@ GET /api/sellers/admin/all?status=pending&search=silk&page=1&limit=10
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------| 
+|-------|-----------|
 | Mobile Frontend | React Native (Expo) |
 | Backend API | Node.js + Express.js |
 | Database | MongoDB Atlas (Mongoose ODM) |
