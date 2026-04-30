@@ -45,6 +45,13 @@ import OrderDetailScreen from '../screens/OrderDetailScreen';
 import SellerOrdersScreen from '../screens/SellerOrdersScreen';
 import SellerOrderDetailScreen from '../screens/SellerOrderDetailScreen';
 
+// --- Module 5 Screens (Reviews & Ratings) ---
+import ReviewSubmitScreen from '../screens/ReviewSubmitScreen';
+import ProductReviewsScreen from '../screens/ProductReviewsScreen';
+import SellerReviewsScreen from '../screens/SellerReviewsScreen';
+import MyReviewsScreen from '../screens/MyReviewsScreen';
+import EditReviewScreen from '../screens/EditReviewScreen';
+
 const Stack = createNativeStackNavigator();
 
 // -------------------------------------------------------
@@ -90,6 +97,13 @@ const CustomerAppStack = () => (
     <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} options={{ headerShown: false }} />
     <Stack.Screen name="MyOrders" component={MyOrdersScreen} options={{ title: 'My Orders' }} />
     <Stack.Screen name="OrderDetail" component={OrderDetailScreen} options={{ title: 'Order Details' }} />
+
+    {/* Module 5 — Reviews & Ratings */}
+    <Stack.Screen name="ReviewSubmit" component={ReviewSubmitScreen} options={{ title: 'Write a Review' }} />
+    <Stack.Screen name="ProductReviews" component={ProductReviewsScreen} options={{ title: 'Product Reviews' }} />
+    <Stack.Screen name="SellerReviews" component={SellerReviewsScreen} options={{ title: 'Shop Reviews' }} />
+    <Stack.Screen name="MyReviews" component={MyReviewsScreen} options={{ title: 'My Reviews' }} />
+    <Stack.Screen name="EditReview" component={EditReviewScreen} options={{ title: 'Edit Review' }} />
   </Stack.Navigator>
 );
 
@@ -128,6 +142,9 @@ const SellerAppStack = () => (
     {/* Module 4 — Order Management */}
     <Stack.Screen name="SellerOrders" component={SellerOrdersScreen} options={{ title: 'Manage Orders' }} />
     <Stack.Screen name="SellerOrderDetail" component={SellerOrderDetailScreen} options={{ title: 'Order Details' }} />
+
+    {/* Module 5 — Seller can view their own shop reviews */}
+    <Stack.Screen name="SellerReviews" component={SellerReviewsScreen} options={{ title: 'Shop Reviews' }} />
   </Stack.Navigator>
 );
 

@@ -121,16 +121,25 @@ const ProductDetailScreen = ({ route, navigation }) => {
           <Text style={styles.name}>{product.name}</Text>
           <Text style={styles.price}>LKR {product.price?.toLocaleString()}</Text>
 
-          {/* Rating */}
-          {product.averageRating > 0 && (
-            <View style={styles.ratingRow}>
+          {/* Rating — tappable to view all reviews */}
+          {product.averageRating > 0 ? (
+            <TouchableOpacity
+              style={styles.ratingRow}
+              onPress={() => navigation.navigate('ProductReviews', {
+                productId: product._id,
+                productName: product.name,
+              })}
+              activeOpacity={0.7}
+            >
               <Text style={styles.ratingStars}>
                 {'★'.repeat(Math.round(product.averageRating))}
                 {'☆'.repeat(5 - Math.round(product.averageRating))}
               </Text>
               <Text style={styles.ratingValue}>{product.averageRating.toFixed(1)}</Text>
-              <Text style={styles.reviewCount}>({product.totalReviews} reviews)</Text>
-            </View>
+              <Text style={styles.reviewCount}>({product.totalReviews} reviews) →</Text>
+            </TouchableOpacity>
+          ) : (
+            <Text style={styles.noRatingText}>No reviews yet</Text>
           )}
         </View>
 
@@ -294,7 +303,8 @@ const styles = StyleSheet.create({
   ratingRow: { flexDirection: 'row', alignItems: 'center' },
   ratingStars: { color: '#F57C00', fontSize: 16, marginRight: 6 },
   ratingValue: { fontSize: 14, fontWeight: '700', color: '#333', marginRight: 4 },
-  reviewCount: { fontSize: 13, color: '#888' },
+  reviewCount: { fontSize: 13, color: '#8B2635', fontWeight: '600' },
+  noRatingText: { fontSize: 13, color: '#aaa', fontStyle: 'italic' },
   section: { padding: 20, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
   sectionTitle: { fontSize: 15, fontWeight: '800', color: '#333', marginBottom: 12 },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap' },

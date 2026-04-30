@@ -23,7 +23,7 @@ WMT-PROJECT/
 | Module 2 | Seller & Shop Management | ✅ Complete |
 | Module 3 | Product & Inventory Management | ✅ Complete |
 | Module 4 | Order Management | ✅ Complete |
-| Module 5 | Reviews & Ratings | 🔲 Not Started |
+| Module 5 | Reviews & Ratings | ✅ Complete |
 | Module 6 | Admin & Platform Management (Web) | 🔲 Not Started |
 
 ---
@@ -488,6 +488,84 @@ GET /api/orders/admin/all?status=pending&paymentMethod=COD&paymentStatus=pending
 
 ---
 
+## API Endpoints — Module 5 (Reviews & Ratings)
+
+### Customer Routes (JWT Required)
+
+| Method | Endpoint | Description |
+|--------|----------|--------------|
+| POST | `/api/reviews` | Submit a review for a product or seller (delivered orders only) |
+| GET | `/api/reviews/my-reviews` | View all your submitted reviews |
+| GET | `/api/reviews/order/:orderId/status` | Check which items in an order you have reviewed |
+| PUT | `/api/reviews/:id` | Edit your review (within 72 hours only) |
+| DELETE | `/api/reviews/:id` | Delete your review |
+| PUT | `/api/reviews/:id/helpful` | Mark a review as helpful |
+
+### Public Routes (Any Authenticated User)
+
+| Method | Endpoint | Description |
+|--------|----------|--------------|
+| GET | `/api/reviews/product/:productId` | View all reviews for a product (paginated) |
+| GET | `/api/reviews/seller/:sellerId` | View all reviews for a seller (paginated) |
+
+### Admin Routes (JWT Required — role: admin)
+
+| Method | Endpoint | Description |
+|--------|----------|--------------|
+| GET | `/api/reviews/admin/all` | List all reviews with filters |
+| PUT | `/api/reviews/admin/:id/remove` | Remove a policy-violating review |
+
+### Submit Review — Request Body Example
+
+```json
+{
+  "orderId": "664f1a2b3c4d5e6f7a8b9c0d",
+  "orderItemId": "664f1a2b3c4d5e6f7a8b9c0e",
+  "reviewType": "product",
+  "productId": "664f1a2b3c4d5e6f7a8b9c0f",
+  "rating": 5,
+  "reviewText": "Beautiful saree, excellent quality and fast delivery!",
+  "photos": ["https://example.com/photo1.jpg"]
+}
+```
+
+> **reviewType:** `product` or `seller`. For seller reviews, send `sellerId` instead of `productId`.
+
+### Admin Remove Review — Request Body
+
+```json
+{
+  "reason": "Inappropriate language violating community guidelines"
+}
+```
+
+### View Product Reviews — Query Parameters
+
+```
+GET /api/reviews/product/:productId?sortBy=newest&page=1&limit=10
+```
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `sortBy` | `newest`, `highest`, `helpful` | Sort order |
+| `page` | number | Page number (default: 1) |
+| `limit` | number | Results per page (default: 10) |
+
+### Admin All Reviews — Query Parameters
+
+```
+GET /api/reviews/admin/all?reviewType=product&rating=1&adminRemoved=false&page=1&limit=20
+```
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `reviewType` | `product`, `seller` | Filter by review type |
+| `rating` | 1–5 | Filter by star rating |
+| `adminRemoved` | `true`, `false` | Filter by removal status |
+| `search` | string | Search by product name, shop name, or review text |
+
+---
+
 ## Database Collections (MongoDB)
 
 | Collection | Module | Description |
@@ -497,6 +575,7 @@ GET /api/orders/admin/all?status=pending&paymentMethod=COD&paymentStatus=pending
 | `sellers` | Module 2 | Seller shop profiles (linked to users) |
 | `products` | Module 3 | Product listings with variants and stock (linked to sellers) |
 | `orders` | Module 4 | Customer orders with embedded items, status history, and shipping address |
+| `reviews` | Module 5 | Customer reviews and ratings for products and sellers (linked to orders) |
 
 ---
 

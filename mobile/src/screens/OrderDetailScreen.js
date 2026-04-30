@@ -21,6 +21,7 @@ const OrderDetailScreen = ({ route, navigation }) => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
+  const [reviewStatus, setReviewStatus] = useState(null);
 
   useEffect(() => {
     fetchOrder();
@@ -29,7 +30,17 @@ const OrderDetailScreen = ({ route, navigation }) => {
   const fetchOrder = async () => {
     try {
       const response = await apiClient.get(`/api/orders/${orderId}`);
-      setOrder(response.data.order);
+      const fetchedOrder = response.data.order;
+      setOrder(fetchedOrder);
+      // If delivered, also fetch which items have been reviewed
+      if (fetchedOrder.status === 'delivered') {
+        try {
+          const rvRes = await apiClient.get(`/api/reviews/order/${orderId}/status`);
+          setReviewStatus(rvRes.data);
+        } catch (_) {
+          // Non-critical — don't block the screen
+        }
+      }
     } catch (error) {
       console.log('Error fetching order detail:', error);
       Alert.alert('Error', 'Failed to load order details.');
@@ -162,6 +173,72 @@ const OrderDetailScreen = ({ route, navigation }) => {
           </View>
         </View>
 
+        {/* Review Section — only visible for delivered orders */}
+        {order.status === 'delivered' && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>⭐ Rate Your Purchase</Text>
+            {order.items.map((item, idx) => {
+              const statusItem = reviewStatus?.items?.find(
+                (s) => s.orderItemId === item._id?.toString()
+              );
+              return (
+                <View key={idx} style={styles.reviewItemRow}>
+                  <View style={styles.reviewItemInfo}>
+                    <Text style={styles.reviewItemName} numberOfLines={1}>
+                      {item.productName}
+                    </Text>
+                    <Text style={styles.reviewItemVariant}>{item.size} · {item.color}</Text>
+                  </View>
+                  <View style={styles.reviewBtns}>
+                    <TouchableOpacity
+                      style={[
+                        styles.reviewBtn,
+                        statusItem?.productReviewed && styles.reviewBtnDone,
+                      ]}
+                      disabled={statusItem?.productReviewed}
+                      onPress={() =>
+                        navigation.navigate('ReviewSubmit', {
+                          orderId: order._id,
+                          orderItem: item,
+                          initialReviewType: 'product',
+                        })
+                      }
+                    >
+                      <Text style={[
+                        styles.reviewBtnText,
+                        statusItem?.productReviewed && styles.reviewBtnTextDone,
+                      ]}>
+                        {statusItem?.productReviewed ? '✓ Product' : 'Rate Product'}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.reviewBtn,
+                        statusItem?.sellerReviewed && styles.reviewBtnDone,
+                      ]}
+                      disabled={statusItem?.sellerReviewed}
+                      onPress={() =>
+                        navigation.navigate('ReviewSubmit', {
+                          orderId: order._id,
+                          orderItem: item,
+                          initialReviewType: 'seller',
+                        })
+                      }
+                    >
+                      <Text style={[
+                        styles.reviewBtnText,
+                        statusItem?.sellerReviewed && styles.reviewBtnTextDone,
+                      ]}>
+                        {statusItem?.sellerReviewed ? '✓ Seller' : 'Rate Seller'}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        )}
+
         <View style={{ height: 30 }} />
       </ScrollView>
 
@@ -220,6 +297,22 @@ const styles = StyleSheet.create({
   cancelBtn: { padding: 16, borderRadius: 12, alignItems: 'center', borderWidth: 2, borderColor: '#D32F2F' },
   cancelBtnDisabled: { opacity: 0.5 },
   cancelBtnText: { color: '#D32F2F', fontSize: 16, fontWeight: '700' },
+  // Module 5 — Review section styles
+  reviewItemRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#f0f0f0',
+  },
+  reviewItemInfo: { flex: 1, marginRight: 10 },
+  reviewItemName: { fontSize: 13, fontWeight: '600', color: '#333' },
+  reviewItemVariant: { fontSize: 12, color: '#888', marginTop: 2 },
+  reviewBtns: { flexDirection: 'row', gap: 6 },
+  reviewBtn: {
+    paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8,
+    borderWidth: 1.5, borderColor: '#8B2635', backgroundColor: '#fff',
+  },
+  reviewBtnDone: { borderColor: '#388E3C', backgroundColor: '#E8F5E9' },
+  reviewBtnText: { fontSize: 11, fontWeight: '700', color: '#8B2635' },
+  reviewBtnTextDone: { color: '#388E3C' },
 });
 
 export default OrderDetailScreen;

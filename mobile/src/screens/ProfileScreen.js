@@ -71,6 +71,11 @@ const ProfileScreen = ({ navigation }) => {
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
           <View style={styles.divider} />
+          <TouchableOpacity style={styles.actionItem} onPress={() => navigation.navigate('MyReviews')}>
+            <Text style={styles.actionText}>⭐  My Reviews</Text>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+          <View style={styles.divider} />
           <TouchableOpacity style={styles.actionItem} onPress={() => navigation.navigate('EditProfile')}>
             <Text style={styles.actionText}>✏️  Edit Profile</Text>
             <Text style={styles.chevron}>›</Text>

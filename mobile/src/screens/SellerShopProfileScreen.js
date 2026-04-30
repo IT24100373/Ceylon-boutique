@@ -93,22 +93,36 @@ const SellerShopProfileScreen = ({ navigation }) => {
           <InfoRow label="Member Since" value={seller?.createdAt ? new Date(seller.createdAt).toLocaleDateString() : '—'} />
         </View>
 
-        {/* Stats Section */}
+        {/* Stats Section — Rating is tappable to view all reviews */}
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{seller?.productCount ?? 0}</Text>
             <Text style={styles.statLabel}>Products</Text>
           </View>
           <View style={styles.statDivider} />
-          <View style={styles.statItem}>
+          <TouchableOpacity
+            style={styles.statItem}
+            onPress={() => navigation.navigate('SellerReviews', {
+              sellerId: seller?._id,
+              shopName: seller?.shopName,
+            })}
+            activeOpacity={0.7}
+          >
             <Text style={styles.statValue}>{seller?.averageRating?.toFixed(1) ?? '0.0'}</Text>
-            <Text style={styles.statLabel}>Rating</Text>
-          </View>
+            <Text style={styles.statLabel}>Rating ›</Text>
+          </TouchableOpacity>
           <View style={styles.statDivider} />
-          <View style={styles.statItem}>
+          <TouchableOpacity
+            style={styles.statItem}
+            onPress={() => navigation.navigate('SellerReviews', {
+              sellerId: seller?._id,
+              shopName: seller?.shopName,
+            })}
+            activeOpacity={0.7}
+          >
             <Text style={styles.statValue}>{seller?.totalReviews ?? 0}</Text>
-            <Text style={styles.statLabel}>Reviews</Text>
-          </View>
+            <Text style={styles.statLabel}>Reviews ›</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Owner Info */}

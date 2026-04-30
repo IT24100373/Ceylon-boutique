@@ -535,6 +535,85 @@ const orderIdValidation = [
     .isMongoId().withMessage('Invalid order ID'),
 ];
 
+// -------------------------------------------------------
+// FR5.1 — Submit Review
+// -------------------------------------------------------
+const submitReviewValidation = [
+  body('orderId')
+    .notEmpty().withMessage('Order ID is required')
+    .isMongoId().withMessage('Invalid order ID'),
+
+  body('orderItemId')
+    .notEmpty().withMessage('Order item ID is required')
+    .trim(),
+
+  body('reviewType')
+    .notEmpty().withMessage('Review type is required')
+    .isIn(['product', 'seller']).withMessage('Review type must be "product" or "seller"'),
+
+  body('productId')
+    .optional()
+    .isMongoId().withMessage('Invalid product ID'),
+
+  body('sellerId')
+    .optional()
+    .isMongoId().withMessage('Invalid seller ID'),
+
+  body('rating')
+    .notEmpty().withMessage('Rating is required')
+    .isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),
+
+  body('reviewText')
+    .optional()
+    .trim()
+    .isLength({ max: 1000 }).withMessage('Review text cannot exceed 1000 characters'),
+
+  body('photos')
+    .optional()
+    .isArray({ max: 3 }).withMessage('Maximum 3 photos allowed'),
+
+  body('photos.*')
+    .optional()
+    .trim()
+    .notEmpty().withMessage('Photo URL cannot be empty'),
+];
+
+// -------------------------------------------------------
+// FR5.4 — Edit Review
+// -------------------------------------------------------
+const editReviewValidation = [
+  body('rating')
+    .optional()
+    .isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),
+
+  body('reviewText')
+    .optional()
+    .trim()
+    .isLength({ max: 1000 }).withMessage('Review text cannot exceed 1000 characters'),
+
+  body('photos')
+    .optional()
+    .isArray({ max: 3 }).withMessage('Maximum 3 photos allowed'),
+];
+
+// -------------------------------------------------------
+// Module 5 — Review ID param validation
+// -------------------------------------------------------
+const reviewIdValidation = [
+  param('id')
+    .isMongoId().withMessage('Invalid review ID'),
+];
+
+// -------------------------------------------------------
+// FR5.6 — Admin Remove Review
+// -------------------------------------------------------
+const adminRemoveReviewValidation = [
+  body('reason')
+    .trim()
+    .notEmpty().withMessage('Removal reason is required')
+    .isLength({ max: 500 }).withMessage('Reason cannot exceed 500 characters'),
+];
+
 module.exports = {
   // Module 1
   registerValidation,
@@ -560,5 +639,10 @@ module.exports = {
   cancelOrderValidation,
   shipOrderValidation,
   orderIdValidation,
+  // Module 5
+  submitReviewValidation,
+  editReviewValidation,
+  reviewIdValidation,
+  adminRemoveReviewValidation,
 };
 
