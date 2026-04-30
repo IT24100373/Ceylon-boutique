@@ -1,0 +1,400 @@
+# Module 6 — Admin & Platform Management (Web)
+
+## Project Analysis Summary
+
+After thorough analysis of your entire codebase, here is your current state:
+
+| Component | Details |
+|-----------|---------|
+| **Backend** | Node.js + Express, 5 controllers, 5 route files, 6 models, 3 middleware files, 1 validators util |
+| **Mobile** | Expo React Native, 33 screens, 2 context providers, 1 API client, 1 navigator |
+| **Database** | MongoDB Atlas via Mongoose — collections: users, addresses, sellers, products, orders, reviews |
+| **Auth** | JWT-based, roles: `customer`, `seller`, `admin` (admin role exists in User model but unused so far) |
+| **Existing Admin APIs** | Already built across Modules 2–5: seller verification, order management, review moderation |
+
+> [!IMPORTANT]
+> Your backend **already has** admin-level endpoints scattered across sellerRoutes, orderRoutes, productRoutes, and reviewRoutes. Module 6 does NOT need to rebuild these — it needs to **add the missing admin-specific APIs** and **build the web frontend** that calls everything.
+
+---
+
+## Answers to Your Key Questions
+
+### 1. Do we need a separate web frontend?
+
+**Yes.** You'll create a third folder `admin/` alongside `backend/` and `mobile/`. This will be a **React web app** (using Vite) that runs in the browser. Your project structure becomes:
+
+```
+Ceylon-boutique/
+├── backend/      # Node.js + Express REST API (existing)
+├── mobile/       # Expo React Native app (existing)
+└── admin/        # React + Vite Admin Web Panel (NEW)
+```
+
+### 2. Can all three run together locally?
+
+**Yes, absolutely.** Here's how:
+
+| App | Port | URL |
+|-----|------|-----|
+| Backend API | 5000 | `http://localhost:5000` |
+| Admin Web | 5173 (Vite default) | `http://localhost:5173` |
+| Mobile App | Expo Go | Via QR code on your phone |
+
+All three connect to the **same backend** on port 5000, which connects to the **same MongoDB Atlas** database. The admin web runs on `localhost` (not a mobile IP) so it can use `http://localhost:5000` directly.
+
+> [!NOTE]
+> The mobile app uses your machine's IP (e.g., `192.168.x.x:5000`) because phones can't resolve `localhost`. The admin web panel runs on your computer's browser, so it **can** use `localhost:5000`.
+
+### 3. Can we reuse the existing login system for admin?
+
+**Yes — with a separate admin login page.** Your User model already has `role: 'admin'`. The admin web will:
+1. Have its own login page (separate from mobile)
+2. Call a **new** `/api/admin/login` endpoint (which checks `role === 'admin'`)
+3. Use the **same JWT system** — same `protect` middleware, same `authorize('admin')` checks
+4. Store the token in browser `localStorage` (like mobile uses `AsyncStorage`)
+
+We'll also create a **seed script** to insert the first admin account into the database, since admins can't self-register.
+
+---
+
+## Proposed Changes
+
+### Component 1: Backend — New Admin APIs
+
+We need to add endpoints that don't exist yet. Existing admin endpoints (seller verify, order management, review moderation) **stay where they are** — the admin frontend will call them at their current paths.
+
+---
+
+#### [NEW] [adminController.js](file:///c:/Users/User/Desktop/Ceylon-boutique/backend/controllers/adminController.js)
+
+New controller with these functions:
+
+| Function | Route | Purpose |
+|----------|-------|---------|
+| `adminLogin` | `POST /api/admin/login` | Login with admin-only validation |
+| `getAdminProfile` | `GET /api/admin/profile` | Get logged-in admin's profile |
+| `getDashboardStats` | `GET /api/admin/dashboard` | Platform analytics (FR6.9) |
+| `getAllCustomers` | `GET /api/admin/customers` | List all customers with filters (FR6.3) |
+| `getCustomerDetail` | `GET /api/admin/customers/:id` | View customer profile + order history |
+| `toggleCustomerStatus` | `PUT /api/admin/customers/:id/status` | Activate/deactivate customer (FR6.3) |
+| `getAllAdmins` | `GET /api/admin/accounts` | List all admin accounts (FR6.1) |
+| `createAdmin` | `POST /api/admin/accounts` | Create new admin account (FR6.1) |
+| `getCategories` | `GET /api/admin/categories` | List product categories (FR6.10) |
+| `addCategory` | `POST /api/admin/categories` | Add new category |
+| `updateCategory` | `PUT /api/admin/categories/:id` | Edit category |
+| `getFinancialSummary` | `GET /api/admin/financials` | Revenue, payout summary (FR6.7) |
+| `getSellerPayouts` | `GET /api/admin/financials/payouts` | List seller payout records |
+| `recordPayout` | `POST /api/admin/financials/payouts` | Mark a seller payout as processed |
+
+#### [NEW] [adminRoutes.js](file:///c:/Users/User/Desktop/Ceylon-boutique/backend/routes/adminRoutes.js)
+
+Routes file wiring all the above controller functions with `protect` + `authorize('admin')` middleware.
+
+#### [NEW] [Category.js](file:///c:/Users/User/Desktop/Ceylon-boutique/backend/models/Category.js)
+
+New Mongoose model for dynamic categories (FR6.10):
+```js
+{
+  name: String,        // e.g., "Saree & Traditional"
+  icon: String,        // optional emoji or icon name
+  isActive: Boolean,   // admin can deactivate
+  productCount: Number, // auto-updated
+  createdAt, updatedAt
+}
+```
+
+#### [NEW] [Payout.js](file:///c:/Users/User/Desktop/Ceylon-boutique/backend/models/Payout.js)
+
+New Mongoose model for financial records (FR6.7):
+```js
+{
+  seller: ObjectId,     // ref: Seller
+  amount: Number,       // LKR payout amount
+  ordersIncluded: [ObjectId], // orders covered
+  commissionRate: Number, // platform commission %
+  commissionAmount: Number,
+  method: String,       // 'bank_transfer'
+  status: String,       // 'pending', 'processed'
+  processedAt: Date,
+  processedBy: ObjectId, // admin who processed it
+  notes: String,
+  createdAt, updatedAt
+}
+```
+
+#### [NEW] [seedAdmin.js](file:///c:/Users/User/Desktop/Ceylon-boutique/backend/scripts/seedAdmin.js)
+
+One-time script to create the first admin account:
+```bash
+node scripts/seedAdmin.js
+```
+Creates: `admin@ceylonboutique.com` / `Admin@123456` (changeable after login).
+
+#### [MODIFY] [server.js](file:///c:/Users/User/Desktop/Ceylon-boutique/backend/server.js)
+
+- Uncomment/add: `app.use('/api/admin', require('./routes/adminRoutes'));`
+- Update CORS to allow `http://localhost:5173` (admin frontend) alongside the existing wildcard.
+
+#### [MODIFY] [.env.example](file:///c:/Users/User/Desktop/Ceylon-boutique/backend/.env.example)
+
+Add:
+```
+ADMIN_WEB_URL=http://localhost:5173
+PLATFORM_COMMISSION_RATE=10
+```
+
+#### [MODIFY] [validators.js](file:///c:/Users/User/Desktop/Ceylon-boutique/backend/utils/validators.js)
+
+Add validation chains for admin login, customer ID params, create admin, category CRUD, and payout operations.
+
+---
+
+### Component 2: Admin Web Frontend (Vite + React)
+
+#### Setup
+
+```bash
+npx -y create-vite@latest admin -- --template react
+cd admin
+npm install axios react-router-dom recharts lucide-react
+```
+
+> [!NOTE]
+> We use **vanilla CSS** (not Tailwind) to match the project styling approach. **Recharts** is for the analytics dashboard charts. **Lucide-react** provides clean icons.
+
+#### Project Structure
+
+```
+admin/
+├── public/
+├── src/
+│   ├── api/
+│   │   └── client.js           # Axios instance (like mobile's client.js)
+│   ├── context/
+│   │   └── AdminAuthContext.jsx # Auth state for admin web
+│   ├── components/
+│   │   ├── Layout.jsx          # Sidebar + topbar layout wrapper
+│   │   ├── Sidebar.jsx         # Left navigation sidebar
+│   │   ├── Topbar.jsx          # Top header bar
+│   │   ├── StatCard.jsx        # KPI metric card
+│   │   ├── DataTable.jsx       # Reusable table with pagination
+│   │   ├── StatusBadge.jsx     # Color-coded status badges
+│   │   ├── Modal.jsx           # Reusable modal dialog
+│   │   ├── LoadingSpinner.jsx  # Loading state indicator
+│   │   └── ProtectedRoute.jsx  # Route guard for auth
+│   ├── pages/
+│   │   ├── LoginPage.jsx              # Admin login (FR6 entry point)
+│   │   ├── DashboardPage.jsx          # Analytics dashboard (FR6.9)
+│   │   ├── SellerVerificationPage.jsx # Pending sellers queue (FR6.2)
+│   │   ├── SellerDetailPage.jsx       # Full seller detail + actions
+│   │   ├── SellersListPage.jsx        # All sellers with filters (FR6.4)
+│   │   ├── CustomersPage.jsx          # Customer management (FR6.3)
+│   │   ├── CustomerDetailPage.jsx     # Customer profile + orders
+│   │   ├── OrdersPage.jsx             # All orders (FR6.5)
+│   │   ├── OrderDetailPage.jsx        # Order detail + admin actions (FR6.6)
+│   │   ├── ReviewsPage.jsx            # Review moderation (FR6.8)
+│   │   ├── FinancialsPage.jsx         # Revenue + payouts (FR6.7)
+│   │   ├── CategoriesPage.jsx         # Category management (FR6.10)
+│   │   └── AdminAccountsPage.jsx      # Admin user management (FR6.1)
+│   ├── styles/
+│   │   ├── index.css            # Global design tokens + resets
+│   │   ├── layout.css           # Sidebar + topbar layout
+│   │   ├── login.css            # Login page styles
+│   │   ├── dashboard.css        # Dashboard page styles
+│   │   ├── tables.css           # Table styles
+│   │   ├── forms.css            # Form styles
+│   │   ├── modals.css           # Modal styles
+│   │   └── components.css       # Component-level styles
+│   ├── App.jsx                  # Root with Router + AuthProvider
+│   └── main.jsx                 # Vite entry point
+├── index.html
+├── package.json
+└── vite.config.js
+```
+
+---
+
+#### Page-by-Page Detail
+
+##### Login Page
+- Clean, centered login form with Ceylon Boutique branding
+- Email + Password fields
+- Calls `POST /api/admin/login`
+- Stores JWT in `localStorage`
+- Redirects to Dashboard on success
+
+##### Dashboard (Analytics — FR6.9)
+- **KPI Cards**: Total orders, revenue, new customers, new sellers, pending verifications
+- **Charts** (Recharts): Orders trend (line), revenue trend (bar), payment method split (pie), category breakdown (donut)
+- **Quick Action Cards**: Pending sellers, flagged reviews, recent orders
+- **Date Range Picker**: Filter all metrics by time period
+
+##### Seller Verification Queue (FR6.2)
+- Table: Pending sellers sorted by submission date
+- Each row: shop name, owner, submitted date, actions
+- Click → Seller Detail Page with approve/reject/request-info actions
+- Approve/Reject via modal with reason (rejection only)
+
+##### Sellers List (FR6.4)
+- Filterable table: all sellers
+- Filters: status (pending/approved/rejected/suspended), search
+- Columns: shop name, owner, status badge, products, rating, join date
+- Actions: view detail, suspend, remove
+
+##### Customer Management (FR6.3)
+- Searchable table of all customers
+- Columns: name, email, join date, order count, status
+- Actions: view detail, activate/deactivate
+- Click → Customer Detail with order history
+
+##### Orders (FR6.5 + FR6.6)
+- Full order table with rich filters: status, payment method, payment status, search
+- Status tabs: All, Pending, Confirmed, Shipped, Delivered, Cancelled
+- Click → Order Detail with admin actions (cancel, mark delivered)
+- Admin notes section
+
+##### Reviews Moderation (FR6.8)
+- Table of all reviews with filters: type, rating, removal status
+- Actions: remove review (with reason), view in context
+- Removed reviews shown with strikethrough
+
+##### Financials (FR6.7)
+- Revenue summary cards: total revenue, platform commission, net payouts
+- Seller payout table: seller, balance due, orders completed, action
+- "Mark Payout Processed" button with amount + date fields
+- COD settlement tracking
+
+##### Categories (FR6.10)
+- List of all categories with product counts
+- Add/edit/deactivate categories
+- Cannot delete category with active products
+
+##### Admin Accounts (FR6.1)
+- List of all admin users
+- Create new admin form: name, email, password
+- Deactivate admin account
+
+---
+
+#### Design System
+
+The admin panel will use a **professional dark sidebar + white content** layout:
+
+| Token | Value |
+|-------|-------|
+| Primary (brand) | `#8B2635` (matching mobile theme) |
+| Primary hover | `#6D1E2A` |
+| Sidebar BG | `#1a1a2e` |
+| Sidebar active | `#8B2635` |
+| Content BG | `#f5f7fa` |
+| Card BG | `#ffffff` |
+| Text primary | `#1a1a2e` |
+| Text secondary | `#64748b` |
+| Success | `#10b981` |
+| Warning | `#f59e0b` |
+| Danger | `#ef4444` |
+| Info | `#3b82f6` |
+| Border | `#e2e8f0` |
+| Font family | `'Inter', sans-serif` |
+| Border radius | `12px` (cards), `8px` (buttons), `6px` (inputs) |
+
+---
+
+### Component 3: CORS & Connectivity Configuration
+
+#### [MODIFY] [server.js](file:///c:/Users/User/Desktop/Ceylon-boutique/backend/server.js)
+
+Update CORS config to accept multiple origins:
+
+```js
+const allowedOrigins = [
+  'http://localhost:5173',  // Admin web (Vite dev)
+  'http://localhost:3000',  // Admin web (alternative)
+  process.env.ADMIN_WEB_URL,
+].filter(Boolean);
+
+app.use(cors({
+  origin: process.env.CORS_ORIGIN === '*' ? '*' : allowedOrigins,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}));
+```
+
+> [!TIP]
+> During local development, `CORS_ORIGIN=*` (already your default) allows all origins. In production, set it to your specific domains.
+
+---
+
+### Component 4: README Updates
+
+#### [MODIFY] [README.md](file:///c:/Users/User/Desktop/Ceylon-boutique/README.md)
+
+Add:
+- Module 6 marked as ✅ Complete in progress table
+- Updated project structure showing `admin/` folder
+- Admin web setup instructions (Step 5)
+- Admin seed script instructions
+- Admin deployment guide (Vercel)
+- Module 6 API endpoints table
+- Three-app local testing guide
+- Tech stack updated with Vite + React Web
+
+---
+
+## Implementation Order
+
+We'll build in this sequence to ensure each piece is testable:
+
+```mermaid
+graph TD
+    A["1. Backend: Models + Seed Script"] --> B["2. Backend: Controller + Routes"]
+    B --> C["3. Backend: Wire into server.js + Test APIs"]
+    C --> D["4. Admin Web: Project setup + Auth"]
+    D --> E["5. Admin Web: Layout + Dashboard"]
+    E --> F["6. Admin Web: Seller pages"]
+    F --> G["7. Admin Web: Customer + Order pages"]
+    G --> H["8. Admin Web: Reviews + Financials + Categories"]
+    H --> I["9. Admin Web: Admin accounts + Settings"]
+    I --> J["10. Polish, test, update README"]
+```
+
+---
+
+## Verification Plan
+
+### Automated Tests
+1. **Backend APIs**: Test all 14 new admin endpoints with Postman/curl
+2. **Seed script**: Run `node scripts/seedAdmin.js` and verify admin login works
+3. **CORS**: Confirm admin web on `:5173` can call backend on `:5000` without errors
+
+### Manual Verification
+1. **Full flow test**:
+   - Register a seller via mobile → appears in admin pending queue
+   - Admin approves seller → seller can now list products on mobile
+   - Customer places order → appears in admin orders list
+   - Admin cancels/delivers order → status updates correctly
+   - Admin views dashboard → charts reflect real data
+2. **Three-app simultaneous test**:
+   - Run `npm run dev` in backend (port 5000)
+   - Run `npm run dev` in admin (port 5173)  
+   - Run `npm start` in mobile (Expo Go)
+   - All three work simultaneously with the same database
+
+### Deployment
+1. Deploy admin web to **Vercel** (free tier)
+2. Update admin web's `API_URL` to point to Render backend URL
+3. Update backend's `CORS_ORIGIN` on Render to include Vercel domain
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> **Platform commission rate**: The documentation mentions platform commission for seller payouts. What percentage should we use? I'll default to **10%** — you can change this in `.env` (`PLATFORM_COMMISSION_RATE=10`).
+
+> [!IMPORTANT]
+> **Default admin credentials**: The seed script will create an admin with `admin@ceylonboutique.com` / `Admin@123456`. Are these acceptable for initial setup? The password should be changed after first login.
+
+> [!NOTE]
+> **Announcements (FR6.11)**: The system docs mention platform announcements. Should we include this in the initial build, or defer it as a future enhancement? I've included it as a stretch goal but it won't block the core module.

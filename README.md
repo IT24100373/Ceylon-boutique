@@ -587,16 +587,55 @@ GET /api/reviews/admin/all?reviewType=product&rating=1&adminRemoved=false&page=1
 - Test your API endpoints with Postman before pushing
 - Each module has its own controller, route, and model files
 
----
+## Architecture (3-App System)
+
+Ceylon Boutique operates across three integrated platforms sharing a single backend:
+1. **Mobile App (React Native)**: For Customers and Sellers.
+2. **Admin Web Portal (React/Vite)**: For Platform Administrators (Module 6).
+3. **Backend API (Node/Express)**: Central hub connecting mobile and web.
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
 | Mobile Frontend | React Native (Expo) |
+| Web Frontend (Admin) | React (Vite) + Tailwind/CSS + Recharts |
 | Backend API | Node.js + Express.js |
 | Database | MongoDB Atlas (Mongoose ODM) |
 | Authentication | JWT (JSON Web Tokens) |
 | Password Security | bcryptjs |
 | Deployment (API) | Render |
+| Deployment (Admin Web) | Vercel / Netlify |
 | Deployment (Mobile) | Expo Go (dev) / EAS Build (prod) |
+
+---
+
+## 🚀 Running the Full Stack Locally
+
+To run the complete Ceylon Boutique ecosystem on your local machine:
+
+**1. Start the Backend API**
+```bash
+cd backend
+npm install
+npm run dev
+# Runs on http://localhost:5000
+```
+
+**2. Start the Mobile App (Customers & Sellers)**
+```bash
+cd mobile
+npm install
+npx expo start
+# Opens Expo Metro bundler
+```
+
+**3. Start the Admin Web Portal (Module 6)**
+```bash
+cd admin
+npm install
+npm run dev
+# Runs on http://localhost:5173
+```
+
+*Note: You must run `node scripts/seedAdmin.js` inside the `backend` folder once to create your first admin account.*

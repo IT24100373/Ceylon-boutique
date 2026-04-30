@@ -614,6 +614,101 @@ const adminRemoveReviewValidation = [
     .isLength({ max: 500 }).withMessage('Reason cannot exceed 500 characters'),
 ];
 
+// -------------------------------------------------------
+// FR6.1 — Admin Login
+// -------------------------------------------------------
+const adminLoginValidation = [
+  body('email')
+    .trim()
+    .notEmpty().withMessage('Email is required')
+    .isEmail().withMessage('Please provide a valid email address')
+    .normalizeEmail(),
+
+  body('password')
+    .notEmpty().withMessage('Password is required'),
+];
+
+// -------------------------------------------------------
+// FR6.1 — Create Admin Account
+// -------------------------------------------------------
+const createAdminValidation = [
+  body('fullName')
+    .trim()
+    .notEmpty().withMessage('Full name is required')
+    .isLength({ max: 100 }).withMessage('Full name cannot exceed 100 characters'),
+
+  body('email')
+    .trim()
+    .notEmpty().withMessage('Email is required')
+    .isEmail().withMessage('Please provide a valid email address')
+    .normalizeEmail(),
+
+  body('phone')
+    .trim()
+    .notEmpty().withMessage('Phone number is required')
+    .matches(/^(\+94|0)[0-9]{9}$/).withMessage('Please provide a valid Sri Lankan phone number'),
+
+  body('password')
+    .notEmpty().withMessage('Password is required')
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
+    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
+    .matches(/[0-9]/).withMessage('Password must contain at least one number'),
+];
+
+// -------------------------------------------------------
+// FR6.3 — Customer ID param validation
+// -------------------------------------------------------
+const customerIdValidation = [
+  param('id')
+    .isMongoId().withMessage('Invalid customer ID'),
+];
+
+// -------------------------------------------------------
+// FR6.10 — Category Validation
+// -------------------------------------------------------
+const categoryValidation = [
+  body('name')
+    .optional()
+    .trim()
+    .notEmpty().withMessage('Category name cannot be empty')
+    .isLength({ min: 2, max: 100 }).withMessage('Category name must be between 2 and 100 characters'),
+
+  body('icon')
+    .optional()
+    .trim(),
+
+  body('isActive')
+    .optional()
+    .isBoolean().withMessage('isActive must be a boolean'),
+];
+
+const categoryIdValidation = [
+  param('id')
+    .isMongoId().withMessage('Invalid category ID'),
+];
+
+// -------------------------------------------------------
+// FR6.7 — Record Payout Validation
+// -------------------------------------------------------
+const payoutValidation = [
+  body('sellerId')
+    .notEmpty().withMessage('Seller ID is required')
+    .isMongoId().withMessage('Invalid seller ID'),
+
+  body('amount')
+    .notEmpty().withMessage('Payout amount is required')
+    .isFloat({ min: 1 }).withMessage('Payout amount must be at least LKR 1'),
+
+  body('method')
+    .optional()
+    .isIn(['bank_transfer', 'cash', 'other']).withMessage('Invalid payout method'),
+
+  body('notes')
+    .optional()
+    .trim()
+    .isLength({ max: 500 }).withMessage('Notes cannot exceed 500 characters'),
+];
+
 module.exports = {
   // Module 1
   registerValidation,
@@ -644,5 +739,12 @@ module.exports = {
   editReviewValidation,
   reviewIdValidation,
   adminRemoveReviewValidation,
+  // Module 6
+  adminLoginValidation,
+  createAdminValidation,
+  customerIdValidation,
+  categoryValidation,
+  categoryIdValidation,
+  payoutValidation,
 };
 

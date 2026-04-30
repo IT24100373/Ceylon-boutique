@@ -11,10 +11,27 @@ connectDB();
 const app = express();
 
 // --- Core Middleware ---
+// CORS: Allow mobile app, admin web panel, and any configured origins
+const allowedOrigins = [
+  'http://localhost:5173',   // Admin web (Vite dev server)
+  'http://localhost:3000',   // Admin web (alternative port)
+  process.env.ADMIN_WEB_URL, // Production admin URL (from .env)
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
+  origin: process.env.CORS_ORIGIN === '*'
+    ? '*'  // Development: allow all origins
+    : function (origin, callback) {
+        // Allow requests with no origin (mobile apps, Postman, etc.)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+        return callback(new Error('Not allowed by CORS'));
+      },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
 }));
 
 app.use(express.json()); // Parse incoming JSON request bodies
@@ -40,8 +57,8 @@ app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 // Module 5 — Reviews & Ratings
 app.use('/api/reviews', require('./routes/reviewRoutes'));
-// Module 6 (future):
-// app.use('/api/admin', require('./routes/adminRoutes'));
+// Module 6 — Admin & Platform Management
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 // --- 404 Handler (for unknown routes) ---
 app.use((req, res) => {
@@ -59,3 +76,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
 });
+
