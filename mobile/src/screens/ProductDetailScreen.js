@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
-  Image, TouchableOpacity, ActivityIndicator, Dimensions,
+  Image, TouchableOpacity, ActivityIndicator, Dimensions, Alert
 } from 'react-native';
 import apiClient from '../api/client';
+import { useCart } from '../context/CartContext';
 
 // -------------------------------------------------------
 // Customer — Product Detail Screen
@@ -19,6 +20,8 @@ const ProductDetailScreen = ({ route, navigation }) => {
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -225,8 +228,12 @@ const ProductDetailScreen = ({ route, navigation }) => {
           style={[styles.cartBtn, (isOutOfStock || isVariantOutOfStock) && styles.btnDisabled]}
           disabled={isOutOfStock || isVariantOutOfStock}
           onPress={() => {
-            // Module 4 placeholder
-            alert('🛒 Cart functionality will be available in Module 4!');
+            if (!selectedSize || !selectedColor) {
+              Alert.alert('Error', 'Please select a size and color.');
+              return;
+            }
+            addToCart(product, selectedSize, selectedColor, 1);
+            Alert.alert('Added', 'Item added to your cart.');
           }}
         >
           <Text style={styles.cartBtnText}>🛒 Add to Cart</Text>
@@ -235,8 +242,12 @@ const ProductDetailScreen = ({ route, navigation }) => {
           style={[styles.buyBtn, (isOutOfStock || isVariantOutOfStock) && styles.btnDisabled]}
           disabled={isOutOfStock || isVariantOutOfStock}
           onPress={() => {
-            // Module 4 placeholder
-            alert('⚡ Buy Now functionality will be available in Module 4!');
+            if (!selectedSize || !selectedColor) {
+              Alert.alert('Error', 'Please select a size and color.');
+              return;
+            }
+            addToCart(product, selectedSize, selectedColor, 1);
+            navigation.navigate('Cart');
           }}
         >
           <Text style={styles.buyBtnText}>⚡ Buy Now</Text>

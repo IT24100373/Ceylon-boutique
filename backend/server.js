@@ -36,8 +36,9 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/sellers', require('./routes/sellerRoutes'));
 // Module 3 — Product & Inventory Management
 app.use('/api/products', require('./routes/productRoutes'));
+// Module 4 — Order Management
+app.use('/api/orders', require('./routes/orderRoutes'));
 // Future modules will be added here:
-// app.use('/api/orders', require('./routes/orderRoutes'));
 // app.use('/api/reviews', require('./routes/reviewRoutes'));
 // app.use('/api/admin', require('./routes/adminRoutes'));
 

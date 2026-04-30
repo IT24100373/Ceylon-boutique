@@ -22,7 +22,7 @@ WMT-PROJECT/
 | Module 1 | User Management (Customer Accounts) | ✅ Complete |
 | Module 2 | Seller & Shop Management | ✅ Complete |
 | Module 3 | Product & Inventory Management | ✅ Complete |
-| Module 4 | Order Management | 🔲 Not Started |
+| Module 4 | Order Management | ✅ Complete |
 | Module 5 | Reviews & Ratings | 🔲 Not Started |
 | Module 6 | Admin & Platform Management (Web) | 🔲 Not Started |
 
@@ -363,6 +363,131 @@ GET /api/products/seller/my-products?status=published&page=1&limit=20
 
 ---
 
+## API Endpoints — Module 4 (Order Management)
+
+### Customer Routes (JWT Required)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/api/orders` | Yes | Place a new order |
+| GET | `/api/orders/my-orders` | Yes | View order history (with status filter) |
+| GET | `/api/orders/:id` | Yes | View full order detail |
+| PUT | `/api/orders/:id/cancel` | Yes | Cancel a pending order |
+
+### Seller Routes (JWT Required — role: seller, verified)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/orders/seller/my-orders` | View incoming orders for own products |
+| GET | `/api/orders/seller/:id` | View full detail of a specific order |
+| PUT | `/api/orders/seller/:id/confirm` | Confirm a pending order |
+| PUT | `/api/orders/seller/:id/ship` | Mark order as shipped (with optional tracking info) |
+
+### Admin Routes (JWT Required — role: admin)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/orders/admin/all` | List all orders platform-wide (with filters) |
+| GET | `/api/orders/admin/:id` | View full detail of any order |
+| PUT | `/api/orders/admin/:id/cancel` | Cancel order (before shipped) |
+| PUT | `/api/orders/admin/:id/deliver` | Mark order as delivered |
+
+### Order Status Lifecycle
+
+```
+Pending → Confirmed → Shipped → Delivered
+              ↘           ↘
+           Cancelled   (Admin can cancel up to Confirmed only)
+```
+
+| Status | Who Changes It | Customer Can Cancel? | Admin Can Cancel? |
+|--------|----------------|---------------------|------------------|
+| `pending` | System (on placement) | ✅ Yes | ✅ Yes |
+| `confirmed` | Seller | ❌ No | ✅ Yes |
+| `shipped` | Seller | ❌ No | ❌ No |
+| `delivered` | Admin | ❌ No | ❌ No |
+| `cancelled` | Customer / Admin | — | — |
+
+### Place Order — Request Body Example
+
+```json
+{
+  "items": [
+    {
+      "product": "664f1a2b3c4d5e6f7a8b9c0d",
+      "size": "M",
+      "color": "Red",
+      "quantity": 2
+    },
+    {
+      "product": "664f1a2b3c4d5e6f7a8b9c0e",
+      "size": "Free Size",
+      "color": "Blue",
+      "quantity": 1
+    }
+  ],
+  "shippingAddress": {
+    "label": "Home",
+    "addressLine1": "45 Galle Road",
+    "addressLine2": "Floor 2",
+    "city": "Colombo",
+    "province": "Western",
+    "postalCode": "10100"
+  },
+  "paymentMethod": "COD"
+}
+```
+
+> **Payment Methods:** `COD` (Cash on Delivery) or `card` (simulated as paid — real gateway pluggable later).
+
+### Cancel Order — Request Body
+
+```json
+{
+  "reason": "Changed my mind about the color"
+}
+```
+
+### Ship Order — Request Body (Seller)
+
+```json
+{
+  "courierName": "DHL Express",
+  "trackingNumber": "DHL123456789LK"
+}
+```
+
+> Both fields are optional. You can ship without entering courier details.
+
+### My Orders — Query Parameters
+
+```
+GET /api/orders/my-orders?status=pending&page=1&limit=10
+```
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `status` | `pending`, `confirmed`, `shipped`, `delivered`, `cancelled` | Filter by order status |
+| `page` | number | Page number (default: 1) |
+| `limit` | number | Results per page (default: 10) |
+
+### Admin All Orders — Query Parameters
+
+```
+GET /api/orders/admin/all?status=pending&paymentMethod=COD&paymentStatus=pending&search=CB-171&page=1&limit=20
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `status` | string | Filter by order status |
+| `paymentMethod` | `COD` or `card` | Filter by payment method |
+| `paymentStatus` | `pending`, `paid`, `refund_initiated` | Filter by payment status |
+| `search` | string | Search by order number (e.g. `CB-171`) |
+| `page` | number | Page number (default: 1) |
+| `limit` | number | Results per page (default: 20) |
+
+---
+
 ## Database Collections (MongoDB)
 
 | Collection | Module | Description |
@@ -371,6 +496,7 @@ GET /api/products/seller/my-products?status=published&page=1&limit=20
 | `addresses` | Module 1 | Customer delivery addresses |
 | `sellers` | Module 2 | Seller shop profiles (linked to users) |
 | `products` | Module 3 | Product listings with variants and stock (linked to sellers) |
+| `orders` | Module 4 | Customer orders with embedded items, status history, and shipping address |
 
 ---
 

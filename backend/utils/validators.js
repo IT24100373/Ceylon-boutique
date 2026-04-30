@@ -445,6 +445,96 @@ const productIdValidation = [
     .isMongoId().withMessage('Invalid product ID'),
 ];
 
+// -------------------------------------------------------
+// FR4.1 — Place Order
+// -------------------------------------------------------
+const placeOrderValidation = [
+  body('items')
+    .isArray({ min: 1 }).withMessage('At least one item is required'),
+
+  body('items.*.product')
+    .notEmpty().withMessage('Product ID is required for each item')
+    .isMongoId().withMessage('Invalid product ID'),
+
+  body('items.*.size')
+    .trim()
+    .notEmpty().withMessage('Size is required for each item'),
+
+  body('items.*.color')
+    .trim()
+    .notEmpty().withMessage('Color is required for each item'),
+
+  body('items.*.quantity')
+    .isInt({ min: 1 }).withMessage('Quantity must be at least 1'),
+
+  body('shippingAddress')
+    .notEmpty().withMessage('Shipping address is required'),
+
+  body('shippingAddress.addressLine1')
+    .trim()
+    .notEmpty().withMessage('Shipping address line 1 is required')
+    .isLength({ max: 200 }).withMessage('Address line 1 cannot exceed 200 characters'),
+
+  body('shippingAddress.addressLine2')
+    .optional()
+    .trim()
+    .isLength({ max: 200 }).withMessage('Address line 2 cannot exceed 200 characters'),
+
+  body('shippingAddress.city')
+    .trim()
+    .notEmpty().withMessage('City is required'),
+
+  body('shippingAddress.province')
+    .trim()
+    .notEmpty().withMessage('Province is required')
+    .isIn([
+      'Western', 'Central', 'Southern', 'Northern', 'Eastern',
+      'North Western', 'North Central', 'Uva', 'Sabaragamuwa',
+    ]).withMessage('Please select a valid Sri Lankan province'),
+
+  body('shippingAddress.postalCode')
+    .trim()
+    .notEmpty().withMessage('Postal code is required')
+    .matches(/^[0-9]{5}$/).withMessage('Please enter a valid 5-digit postal code'),
+
+  body('paymentMethod')
+    .notEmpty().withMessage('Payment method is required')
+    .isIn(['COD', 'card']).withMessage('Payment method must be "COD" or "card"'),
+];
+
+// -------------------------------------------------------
+// FR4.7 — Cancel Order (Customer or Admin)
+// -------------------------------------------------------
+const cancelOrderValidation = [
+  body('reason')
+    .trim()
+    .notEmpty().withMessage('Cancellation reason is required')
+    .isLength({ max: 500 }).withMessage('Reason cannot exceed 500 characters'),
+];
+
+// -------------------------------------------------------
+// FR4.6 — Ship Order (Seller)
+// -------------------------------------------------------
+const shipOrderValidation = [
+  body('courierName')
+    .optional()
+    .trim()
+    .isLength({ max: 100 }).withMessage('Courier name cannot exceed 100 characters'),
+
+  body('trackingNumber')
+    .optional()
+    .trim()
+    .isLength({ max: 100 }).withMessage('Tracking number cannot exceed 100 characters'),
+];
+
+// -------------------------------------------------------
+// Module 4 — Order ID param validation
+// -------------------------------------------------------
+const orderIdValidation = [
+  param('id')
+    .isMongoId().withMessage('Invalid order ID'),
+];
+
 module.exports = {
   // Module 1
   registerValidation,
@@ -465,5 +555,10 @@ module.exports = {
   updateProductValidation,
   updateStockValidation,
   productIdValidation,
+  // Module 4
+  placeOrderValidation,
+  cancelOrderValidation,
+  shipOrderValidation,
+  orderIdValidation,
 };
 

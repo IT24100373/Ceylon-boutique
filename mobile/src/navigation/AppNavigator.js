@@ -34,6 +34,17 @@ import ProductBrowseScreen from '../screens/ProductBrowseScreen';
 import ProductDetailScreen from '../screens/ProductDetailScreen';
 import SearchFilterScreen from '../screens/SearchFilterScreen';
 
+// --- Module 4 Screens (Customer — Orders & Cart) ---
+import CartScreen from '../screens/CartScreen';
+import CheckoutScreen from '../screens/CheckoutScreen';
+import OrderConfirmationScreen from '../screens/OrderConfirmationScreen';
+import MyOrdersScreen from '../screens/MyOrdersScreen';
+import OrderDetailScreen from '../screens/OrderDetailScreen';
+
+// --- Module 4 Screens (Seller — Order Management) ---
+import SellerOrdersScreen from '../screens/SellerOrdersScreen';
+import SellerOrderDetailScreen from '../screens/SellerOrderDetailScreen';
+
 const Stack = createNativeStackNavigator();
 
 // -------------------------------------------------------
@@ -72,6 +83,13 @@ const CustomerAppStack = () => (
     <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ title: 'Edit Profile' }} />
     <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ title: 'Change Password' }} />
     <Stack.Screen name="Addresses" component={AddressManagementScreen} options={{ title: 'My Addresses' }} />
+
+    {/* Module 4 — Cart & Orders */}
+    <Stack.Screen name="Cart" component={CartScreen} options={{ title: 'My Cart' }} />
+    <Stack.Screen name="Checkout" component={CheckoutScreen} options={{ title: 'Checkout' }} />
+    <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} options={{ headerShown: false }} />
+    <Stack.Screen name="MyOrders" component={MyOrdersScreen} options={{ title: 'My Orders' }} />
+    <Stack.Screen name="OrderDetail" component={OrderDetailScreen} options={{ title: 'Order Details' }} />
   </Stack.Navigator>
 );
 
@@ -106,6 +124,10 @@ const SellerAppStack = () => (
     <Stack.Screen name="AddProduct" component={AddProductScreen} options={{ title: 'Add Product' }} />
     <Stack.Screen name="EditProduct" component={EditProductScreen} options={{ title: 'Edit Product' }} />
     <Stack.Screen name="ManageStock" component={ManageStockScreen} options={{ title: 'Manage Stock' }} />
+
+    {/* Module 4 — Order Management */}
+    <Stack.Screen name="SellerOrders" component={SellerOrdersScreen} options={{ title: 'Manage Orders' }} />
+    <Stack.Screen name="SellerOrderDetail" component={SellerOrderDetailScreen} options={{ title: 'Order Details' }} />
   </Stack.Navigator>
 );
 

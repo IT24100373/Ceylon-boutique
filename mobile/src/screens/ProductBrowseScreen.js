@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import apiClient from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 
 // -------------------------------------------------------
 // Customer — Product Browse Screen (Home)
@@ -19,6 +20,7 @@ const CATEGORIES = [
 
 const ProductBrowseScreen = ({ navigation }) => {
   const { user } = useAuth();
+  const { cartItems } = useCart();
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
@@ -210,6 +212,17 @@ const ProductBrowseScreen = ({ navigation }) => {
           <Text style={styles.navIcon}>🏠</Text>
           <Text style={[styles.navLabel, styles.navLabelActive]}>Home</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Cart')}>
+          <View>
+            <Text style={styles.navIcon}>🛒</Text>
+            {cartItems.length > 0 && (
+              <View style={styles.cartBadge}>
+                <Text style={styles.cartBadgeText}>{cartItems.length}</Text>
+              </View>
+            )}
+          </View>
+          <Text style={styles.navLabel}>Cart</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.navItem}
           onPress={() => navigation.navigate('Profile')}
@@ -298,6 +311,11 @@ const styles = StyleSheet.create({
   navIcon: { fontSize: 22, marginBottom: 2 },
   navLabel: { fontSize: 11, color: '#888', fontWeight: '600' },
   navLabelActive: { color: '#8B2635' },
+  cartBadge: {
+    position: 'absolute', top: -5, right: -10, backgroundColor: '#D32F2F',
+    borderRadius: 10, width: 20, height: 20, justifyContent: 'center', alignItems: 'center'
+  },
+  cartBadgeText: { color: '#fff', fontSize: 10, fontWeight: 'bold' }
 });
 
 export default ProductBrowseScreen;

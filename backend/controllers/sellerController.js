@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const User = require('../models/User');
 const Seller = require('../models/Seller');
+const Order = require('../models/Order');
 
 // -------------------------------------------------------
 // Helpers (same pattern as userController)
@@ -249,6 +250,25 @@ const getSellerDashboard = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Seller profile not found.' });
     }
 
+    // --- Module 4: Real order stats ---
+    const sellerId = seller._id;
+
+    const pendingOrders = await Order.countDocuments({
+      'items.seller': sellerId,
+      status: 'pending',
+    });
+
+    const totalOrders = await Order.countDocuments({
+      'items.seller': sellerId,
+    });
+
+    // Revenue = sum of totalAmount for all delivered orders
+    const revenueResult = await Order.aggregate([
+      { $match: { 'items.seller': sellerId, status: 'delivered' } },
+      { $group: { _id: null, total: { $sum: '$totalAmount' } } },
+    ]);
+    const revenue = revenueResult.length > 0 ? revenueResult[0].total : 0;
+
     res.status(200).json({
       success: true,
       dashboard: {
@@ -257,7 +277,9 @@ const getSellerDashboard = async (req, res, next) => {
         productCount: seller.productCount,
         averageRating: seller.averageRating,
         totalReviews: seller.totalReviews,
-        pendingOrders: 0, totalOrders: 0, revenue: 0, // Module 4 placeholders
+        pendingOrders,
+        totalOrders,
+        revenue,
       },
       owner: { fullName: req.user.fullName, email: req.user.email },
     });
