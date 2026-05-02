@@ -13,7 +13,7 @@ const getStatusColor = (status) => {
     case 'shipped': return '#7B1FA2';
     case 'delivered': return '#388E3C';
     case 'cancelled': return '#D32F2F';
-    default: return '#666';
+    default: return '#5C554F';
   }
 };
 
@@ -67,29 +67,23 @@ const SellerOrdersScreen = ({ navigation }) => {
         <Text style={styles.itemsText}>
           {item.items.length} {item.items.length === 1 ? 'item' : 'items'} • LKR {item.totalAmount.toLocaleString()}
         </Text>
-        <Icon name="chevron-right" size={16} color="#8C7A74" />
+        <Icon name="chevron-right" size={16} color="#2E2A26" />
       </View>
     </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#43332E" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Shop Orders</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      
 
       {loading ? (
-        <ActivityIndicator size="large" color="#B4725E" style={{ marginTop: 50 }} />
+        <ActivityIndicator size="large" color="#EEEADDFF" style={{ marginTop: 50 }} />
       ) : orders.length === 0 ? (
         <View style={styles.emptyContainer}>
           <View style={styles.emptyIconCircle}>
-            <Icon name="clipboard" size={40} color="#B4725E" />
+            <Icon name="clipboard" size={40} color="#2E2A26" />
           </View>
           <Text style={styles.emptyTitle}>No Orders Yet</Text>
           <Text style={styles.emptySubtitle}>You don't have any incoming orders.</Text>
@@ -100,7 +94,7 @@ const SellerOrdersScreen = ({ navigation }) => {
           keyExtractor={(item) => item._id}
           renderItem={renderItem}
           contentContainerStyle={styles.listContainer}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#B4725E" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#EEEADDFF" />}
           showsVerticalScrollIndicator={false}
         />
       )}
@@ -109,40 +103,40 @@ const SellerOrdersScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
 
   listContainer: { padding: 16, paddingBottom: 40 },
 
   emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, marginTop: -50 },
   emptyIconCircle: {
-    width: 80, height: 80, borderRadius: 40, backgroundColor: '#F7D9C4',
+    width: 80, height: 80, borderRadius: 40, backgroundColor: '#EEEADDFF',
     alignItems: 'center', justifyContent: 'center', marginBottom: 24,
   },
-  emptyTitle: { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 8 },
-  emptySubtitle: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', textAlign: 'center' },
+  emptyTitle: { fontSize: 22, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 8 },
+  emptySubtitle: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#8A8178', textAlign: 'center' },
 
   card: {
-    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 20,
-    marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 20,
+    marginBottom: 16,  
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  orderNumber: { fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D' },
+  orderNumber: { fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26' },
   statusBadge: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
-  statusText: { fontSize: 12, fontFamily: 'InstrumentSans_600SemiBold' },
+  statusText: { fontSize: 12, fontFamily: 'Montserrat_600SemiBold' },
 
-  customerText: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginBottom: 4 },
-  customerName: { fontFamily: 'InstrumentSans_600SemiBold', color: '#43332E' },
-  dateText: { fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginBottom: 16 },
+  customerText: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#5C554F', marginBottom: 4 },
+  customerName: { fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26' },
+  dateText: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#5C554F', marginBottom: 16 },
 
-  itemsSummary: { backgroundColor: '#FFF5EE', padding: 14, borderRadius: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderWidth: 1, borderColor: '#E6C9B9' },
-  itemsText: { fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#B4725E' },
+  itemsSummary: { backgroundColor: '#EEEADDFF', padding: 14, borderRadius: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',  },
+  itemsText: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
 });
 
 export default SellerOrdersScreen;

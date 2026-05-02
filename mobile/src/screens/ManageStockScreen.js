@@ -69,8 +69,8 @@ const ManageStockScreen = ({ route, navigation }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
-        <ActivityIndicator size="large" color="#B4725E" />
+        <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
+        <ActivityIndicator size="large" color="#EEEADDFF" />
         <Text style={styles.loadingText}>Loading stock data...</Text>
       </View>
     );
@@ -78,11 +78,11 @@ const ManageStockScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
 
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#43332E" />
+          <Icon name="arrow-left" size={24} color="#2E2A26" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Manage Stock</Text>
         <View style={{ width: 24 }} />
@@ -92,7 +92,7 @@ const ManageStockScreen = ({ route, navigation }) => {
         {/* Product Name Banner */}
         <View style={styles.banner}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-            <Icon name="package" size={20} color="#FFFFFF" style={{ marginRight: 8 }} />
+            <Icon name="package" size={20} color="#2E2A26" style={{ marginRight: 8 }} />
             <Text style={styles.bannerTitle}>{productName}</Text>
           </View>
           <Text style={styles.bannerSub}>
@@ -150,7 +150,7 @@ const ManageStockScreen = ({ route, navigation }) => {
           </Text>
           {getTotalStock() === 0 && (
             <View style={styles.warningContainer}>
-              <Icon name="alert-triangle" size={16} color="#B4725E" style={{ marginRight: 6 }} />
+              <Icon name="alert-triangle" size={16} color="#2E2A26" style={{ marginRight: 6 }} />
               <Text style={styles.summaryWarning}>
                 Product will show as "Out of Stock"
               </Text>
@@ -169,7 +169,7 @@ const ManageStockScreen = ({ route, navigation }) => {
             <ActivityIndicator color="#FFFFFF" />
           ) : (
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Icon name="save" size={20} color="#FFFFFF" style={{ marginRight: 8 }} />
+              <Icon name="save" size={20} color="#2E2A26" style={{ marginRight: 8 }} />
               <Text style={styles.saveBtnText}>Save Stock Changes</Text>
             </View>
           )}
@@ -182,79 +182,79 @@ const ManageStockScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
 
   scroll: { flex: 1, padding: 16 },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF1E8' },
-  loadingText: { marginTop: 12, color: '#8C7A74', fontFamily: 'InstrumentSans_400Regular', fontSize: 15 },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF' },
+  loadingText: { marginTop: 12, color: '#5C554F', fontFamily: 'Montserrat_400Regular', fontSize: 15 },
 
   banner: {
-    backgroundColor: '#B4725E', borderRadius: 14, padding: 20, marginBottom: 16,
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 4,
+    backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 20, marginBottom: 16,
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 4,
   },
-  bannerTitle: { color: '#FFFFFF', fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', flex: 1 },
-  bannerSub: { color: 'rgba(255,255,255,0.9)', fontSize: 14, fontFamily: 'InstrumentSans_400Regular' },
+  bannerTitle: { color: '#2E2A26', fontSize: 20, fontFamily: 'Cinzel_700Bold', flex: 1 },
+  bannerSub: { color: 'rgba(255,255,255,0.9)', fontSize: 14, fontFamily: 'Montserrat_400Regular' },
 
   quickActions: {
-    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 20,
-    marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
+    backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 20,
+    marginBottom: 16,  
   },
-  quickLabel: { fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#43332E', marginBottom: 12 },
+  quickLabel: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178', marginBottom: 12 },
   quickBtns: { flexDirection: 'row', justifyContent: 'space-around' },
   quickBtn: {
-    backgroundColor: '#FFF5EE', paddingHorizontal: 18, paddingVertical: 10,
-    borderRadius: 10, borderWidth: 1, borderColor: '#E6C9B9',
+    backgroundColor: '#EEEADDFF', paddingHorizontal: 18, paddingVertical: 10,
+    borderRadius: 10,  
   },
-  quickBtnText: { fontSize: 15, fontFamily: 'InstrumentSans_600SemiBold', color: '#43332E' },
+  quickBtnText: { fontSize: 15, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
 
   card: {
-    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16,
-    marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
+    backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 16,
+    marginBottom: 16,  
   },
   tableHeader: {
     flexDirection: 'row', paddingVertical: 12, paddingHorizontal: 8,
-    backgroundColor: '#F8F8F8', borderRadius: 8, marginBottom: 6,
+    backgroundColor: '#FFFFFF', borderRadius: 8, marginBottom: 6,
   },
-  headerText: { fontSize: 13, fontFamily: 'InstrumentSans_600SemiBold', color: '#8C7A74' },
+  headerText: { fontSize: 13, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26' },
   tableRow: {
     flexDirection: 'row', alignItems: 'center', paddingVertical: 10,
-    paddingHorizontal: 8, borderBottomWidth: 1, borderBottomColor: '#F8F8F8',
+    paddingHorizontal: 8,  
   },
-  outOfStockRow: { backgroundColor: '#FFF5EE', borderRadius: 8 },
-  cellText: { fontSize: 15, color: '#2A201D', fontFamily: 'InstrumentSans_400Regular' },
+  outOfStockRow: { backgroundColor: '#EEEADDFF', borderRadius: 8 },
+  cellText: { fontSize: 15, color: '#5C554F', fontFamily: 'Montserrat_400Regular' },
   stockInput: {
-    flex: 0.8, backgroundColor: '#FFFFFF', borderRadius: 8,
+    flex: 0.8, backgroundColor: '#EEEADDFF', borderRadius: 8,
     paddingHorizontal: 10, paddingVertical: 8, fontSize: 15,
-    borderWidth: 1, borderColor: '#E6C9B9', textAlign: 'center',
-    fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D',
+      textAlign: 'center',
+    fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26',
   },
-  stockInputZero: { borderColor: '#B4725E', backgroundColor: '#FFFFFF', color: '#B4725E' },
+  stockInputZero: {  backgroundColor: '#2E2A26', color: '#2E2A26' },
 
   summaryCard: {
     backgroundColor: '#E8F5E9', borderRadius: 14, padding: 20,
-    alignItems: 'center', marginBottom: 20, borderWidth: 1, borderColor: '#C8E6C9'
+    alignItems: 'center', marginBottom: 20,  
   },
-  summaryCardZero: { backgroundColor: '#FFF5EE', borderColor: '#E6C9B9' },
-  summaryLabel: { fontSize: 14, color: '#2E7D32', fontFamily: 'InstrumentSans_600SemiBold', marginBottom: 8 },
-  summaryLabelZero: { color: '#B4725E' },
-  summaryValue: { fontSize: 40, fontFamily: 'PlayfairDisplay_700Bold', color: '#2E7D32' },
-  summaryZero: { color: '#B4725E' },
+  summaryCardZero: { backgroundColor: '#EEEADDFF', },
+  summaryLabel: { fontSize: 14, color: '#8A8178', fontFamily: 'Montserrat_600SemiBold', marginBottom: 8 },
+  summaryLabelZero: { color: '#8A8178' },
+  summaryValue: { fontSize: 40, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
+  summaryZero: { color: '#2E2A26' },
   warningContainer: { flexDirection: 'row', alignItems: 'center', marginTop: 12, backgroundColor: '#FFFFFF', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
-  summaryWarning: { fontSize: 13, color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold' },
+  summaryWarning: { fontSize: 13, color: '#2E2A26', fontFamily: 'Montserrat_600SemiBold' },
 
   saveBtn: {
-    backgroundColor: '#B4725E', paddingVertical: 16, borderRadius: 14,
-    alignItems: 'center', shadowColor: '#43332E', shadowOffset: { width: 0, height: 4 },
+    backgroundColor: '#EEEADDFF', paddingVertical: 16, borderRadius: 14,
+    alignItems: 'center', shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1, shadowRadius: 8, elevation: 4,
   },
   saveBtnDisabled: { opacity: 0.6 },
-  saveBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
+  saveBtnText: { color: '#5C554F', fontSize: 16, fontFamily: 'Montserrat_600SemiBold' },
 });
 
 export default ManageStockScreen;

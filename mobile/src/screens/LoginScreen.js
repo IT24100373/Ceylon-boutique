@@ -92,23 +92,23 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#FFFFFF' }, // matching the image background (white/very light)
   container: { flexGrow: 1, padding: 30, justifyContent: 'center' },
   brandText: {
-    fontFamily: 'PlayfairDisplay_700Bold',
+    fontFamily: 'Cinzel_700Bold',
     fontSize: 32,
-    color: '#43332E',
+    color: '#2E2A26',
     textAlign: 'center',
     marginBottom: 8,
   },
   title: {
-    fontFamily: 'PlayfairDisplay_700Bold',
+    fontFamily: 'Cinzel_700Bold',
     fontSize: 48,
-    color: '#2A201D',
+    color: '#2E2A26',
     textAlign: 'center',
     marginBottom: 16,
   },
   subtitle: {
-    fontFamily: 'InstrumentSans_400Regular',
+    fontFamily: 'Montserrat_400Regular',
     fontSize: 16,
-    color: '#43332E',
+    color: '#2E2A26',
     textAlign: 'center',
     marginBottom: 40,
     lineHeight: 24,
@@ -122,8 +122,8 @@ const styles = StyleSheet.create({
     borderRadius: 8, // the image login button is slightly rounded, not full pill
   },
   linkRow: { marginTop: 40, alignItems: 'center' },
-  linkText: { fontFamily: 'InstrumentSans_400Regular', color: '#43332E', fontSize: 15 },
-  link: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold' },
+  linkText: { fontFamily: 'Montserrat_400Regular', color: '#5C554F', fontSize: 15 },
+  link: { color: '#2E2A26', fontFamily: 'Montserrat_600SemiBold' },
 });
 
 export default LoginScreen;

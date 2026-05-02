@@ -29,14 +29,14 @@ const InputField = ({
         !editable && styles.inputDisabled,
       ]}>
         {icon && (
-          <Icon name={icon} size={20} color="#43332E" style={styles.icon} />
+          <Icon name={icon} size={20} color="#2E2A26" style={styles.icon} />
         )}
         <TextInput
           style={styles.input}
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor="#8C7A74"
+          placeholderTextColor="#5C554F"
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize}
@@ -57,22 +57,24 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   label: {
-    fontFamily: 'InstrumentSans_600SemiBold',
+    fontFamily: 'Montserrat_600SemiBold',
     fontSize: 14,
-    color: '#43332E',
+    color: '#2E2A26',
   },
   rightLabel: {
-    fontFamily: 'InstrumentSans_400Regular',
+    fontFamily: 'Montserrat_400Regular',
     fontSize: 12,
-    color: '#B4725E',
+    color: '#2E2A26',
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E6C9B9',
+    
+    
     borderRadius: 8,
-    backgroundColor: '#FFF1E8', // very light beige
+    borderWidth: 1,
+    borderColor: '#2E2A26',
+    backgroundColor: '#FFFFFF', // very light beige
     paddingHorizontal: 14,
   },
   icon: {
@@ -82,13 +84,13 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     paddingVertical: 14,
-    fontFamily: 'InstrumentSans_400Regular',
+    fontFamily: 'Montserrat_400Regular',
     fontSize: 15,
-    color: '#43332E',
+    color: '#2E2A26',
   },
-  inputError: { borderColor: '#e53e3e' },
-  inputDisabled: { backgroundColor: '#f5f5f5', opacity: 0.7 },
-  errorText: { color: '#e53e3e', fontSize: 12, marginTop: 4, fontFamily: 'InstrumentSans_400Regular' },
+  inputError: { },
+  inputDisabled: { backgroundColor: '#FFFFFF', opacity: 0.7 },
+  errorText: { color: '#5C554F', fontSize: 12, marginTop: 4, fontFamily: 'Montserrat_400Regular' },
 });
 
 export default InputField;

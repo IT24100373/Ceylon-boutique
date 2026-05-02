@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // After Render deployment: replace with your Render URL.
 // Example: 'https://ceylon-boutique-api.onrender.com'
 // ----------------------------------------------------------
-const BASE_URL = 'http://192.168.8.172:5000'; // ← change to your IP or Render URL
+const BASE_URL = 'https://ceylon-boutique-api.onrender.com'; // ← change to your IP or Render URL
 
 const apiClient = axios.create({
   baseURL: BASE_URL,

@@ -7,10 +7,10 @@ const OrderConfirmationScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
       <View style={styles.content}>
         <View style={styles.iconContainer}>
-          <Icon name="check-circle" size={48} color="#B4725E" />
+          <Icon name="check-circle" size={48} color="#2E2A26" />
         </View>
         <Text style={styles.title}>Order Confirmed!</Text>
         <Text style={styles.subtitle}>Thank you for your purchase.</Text>
@@ -50,20 +50,20 @@ const OrderConfirmationScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   content: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
-  iconContainer: { width: 100, height: 100, borderRadius: 50, backgroundColor: '#F7D9C4', justifyContent: 'center', alignItems: 'center', marginBottom: 24 },
-  title: { fontSize: 28, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 12 },
-  subtitle: { fontSize: 16, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', marginBottom: 40, opacity: 0.8 },
-  card: { width: '100%', backgroundColor: '#FFFFFF', padding: 24, borderRadius: 16, borderWidth: 1, borderColor: '#E6C9B9', shadowColor: '#43332E', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 12, elevation: 5 },
-  label: { fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#8C7A74', marginBottom: 6 },
-  value: { fontSize: 18, fontFamily: 'PlayfairDisplay_600SemiBold', color: '#2A201D' },
-  divider: { height: 1, backgroundColor: '#E6C9B9', marginVertical: 16 },
+  iconContainer: { width: 100, height: 100, borderRadius: 50, backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center', marginBottom: 24 },
+  title: { fontSize: 28, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 12 },
+  subtitle: { fontSize: 16, fontFamily: 'Montserrat_400Regular', color: '#8A8178', marginBottom: 40, opacity: 0.8 },
+  card: { width: '100%', backgroundColor: '#EEEADDFF', padding: 24, borderRadius: 16,   shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 12, elevation: 5 },
+  label: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178', marginBottom: 6 },
+  value: { fontSize: 18, fontFamily: 'Cinzel_600SemiBold', color: '#2E2A26' },
+  divider: { height: 1, backgroundColor: '#EEEADDFF', marginVertical: 16 },
   footer: { padding: 24, paddingBottom: 32 },
-  primaryBtn: { backgroundColor: '#B4725E', padding: 18, borderRadius: 12, alignItems: 'center', marginBottom: 16 },
-  primaryBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
-  secondaryBtn: { backgroundColor: '#F7D9C4', padding: 18, borderRadius: 12, alignItems: 'center' },
-  secondaryBtnText: { color: '#B4725E', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
+  primaryBtn: { backgroundColor: '#EEEADDFF', padding: 18, borderRadius: 12, alignItems: 'center', marginBottom: 16 },
+  primaryBtnText: { color: '#5C554F', fontSize: 16, fontFamily: 'Montserrat_600SemiBold' },
+  secondaryBtn: { backgroundColor: '#EEEADDFF', padding: 18, borderRadius: 12, alignItems: 'center' },
+  secondaryBtnText: { color: '#5C554F', fontSize: 16, fontFamily: 'Montserrat_600SemiBold' },
 });
 
 export default OrderConfirmationScreen;

@@ -4,7 +4,6 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 const { generalLimiter } = require('./middleware/rateLimiter');
-const path = require('path');
 
 // --- Connect to MongoDB ---
 connectDB();
@@ -63,10 +62,6 @@ app.use('/api/admin', require('./routes/adminRoutes'));
 
 // --- File Upload Routes ---
 app.use('/api/upload', require('./routes/uploadRoutes'));
-
-// --- Serve Static Uploads ---
-// Makes the /uploads directory publicly accessible
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // --- 404 Handler (for unknown routes) ---
 app.use((req, res) => {

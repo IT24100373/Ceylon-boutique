@@ -22,7 +22,7 @@ const StarDisplay = ({ rating, size = 14 }) => {
           key={star}
           name="star"
           size={size}
-          color={star <= filled ? "#B4725E" : "#E6C9B9"}
+          color={star <= filled ? "#EEEADDFF" : "#EEEADDFF"}
           solid={star <= filled}
           style={{ marginRight: 2 }}
         />
@@ -35,7 +35,7 @@ const RatingBar = ({ star, count, total }) => {
   const pct = total > 0 ? (count / total) * 100 : 0;
   return (
     <View style={styles.barRow}>
-      <Text style={styles.barLabel}>{star} <Icon name="star" size={10} color="#8C7A74" solid /></Text>
+      <Text style={styles.barLabel}>{star} <Icon name="star" size={10} color="#2E2A26" solid /></Text>
       <View style={styles.barTrack}>
         <View style={[styles.barFill, { width: `${pct}%` }]} />
       </View>
@@ -77,7 +77,7 @@ const ReviewCard = ({ review }) => (
     )}
 
     <TouchableOpacity style={styles.helpfulBtn}>
-      <Icon name="thumbs-up" size={14} color="#8C7A74" style={{ marginRight: 6 }} />
+      <Icon name="thumbs-up" size={14} color="#2E2A26" style={{ marginRight: 6 }} />
       <Text style={styles.helpfulText}>Helpful ({review.helpfulCount})</Text>
     </TouchableOpacity>
   </View>
@@ -150,8 +150,8 @@ const SellerReviewsScreen = ({ route, navigation }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
-        <ActivityIndicator size="large" color="#B4725E" />
+        <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
+        <ActivityIndicator size="large" color="#EEEADDFF" />
       </View>
     );
   }
@@ -161,7 +161,7 @@ const SellerReviewsScreen = ({ route, navigation }) => {
       {/* Shop name header */}
       {shopName && (
         <View style={styles.shopHeader}>
-          <Icon name="home" size={20} color="#B4725E" style={{ marginRight: 10 }} />
+          <Icon name="home" size={20} color="#2E2A26" style={{ marginRight: 10 }} />
           <Text style={styles.shopName}>{shopName}</Text>
         </View>
       )}
@@ -202,7 +202,7 @@ const SellerReviewsScreen = ({ route, navigation }) => {
       {reviews.length === 0 && (
         <View style={styles.emptyState}>
           <View style={styles.emptyIconCircle}>
-            <Icon name="star" size={40} color="#B4725E" />
+            <Icon name="star" size={40} color="#2E2A26" />
           </View>
           <Text style={styles.emptyTitle}>No reviews yet</Text>
           <Text style={styles.emptySubtitle}>This seller hasn't received any reviews yet.</Text>
@@ -213,14 +213,8 @@ const SellerReviewsScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#43332E" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Shop Reviews</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
+      
 
       <FlatList
         data={reviews}
@@ -230,7 +224,7 @@ const SellerReviewsScreen = ({ route, navigation }) => {
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.4}
         ListFooterComponent={loadingMore ? (
-          <ActivityIndicator size="small" color="#B4725E" style={{ marginVertical: 20 }} />
+          <ActivityIndicator size="small" color="#EEEADDFF" style={{ marginVertical: 20 }} />
         ) : null}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
@@ -240,79 +234,79 @@ const SellerReviewsScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF1E8' },
+  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF' },
   list: { paddingBottom: 40 },
 
   shopHeader: {
     flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: 20, paddingVertical: 16, backgroundColor: '#FFF5EE', borderBottomWidth: 1, borderBottomColor: '#E6C9B9',
+    paddingHorizontal: 20, paddingVertical: 16, backgroundcolor: '#2E2A26',  
   },
-  shopName: { fontSize: 18, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  shopName: { fontSize: 18, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
 
   summaryCard: {
-    backgroundColor: '#FFFFFF', flexDirection: 'row', padding: 24,
-    margin: 16, borderRadius: 16, borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#EEEADDFF', flexDirection: 'row', padding: 24,
+    margin: 16, borderRadius: 16,  
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   summaryLeft: { alignItems: 'center', justifyContent: 'center', marginRight: 24, width: 90 },
-  averageNumber: { fontSize: 48, fontFamily: 'PlayfairDisplay_700Bold', color: '#B4725E', lineHeight: 52 },
-  totalCount: { fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginTop: 4 },
+  averageNumber: { fontSize: 48, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', lineHeight: 52 },
+  totalCount: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', marginTop: 4 },
   summaryRight: { flex: 1, justifyContent: 'center' },
 
   barRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
-  barLabel: { fontSize: 13, fontFamily: 'InstrumentSans_600SemiBold', color: '#43332E', width: 24, marginRight: 8, flexDirection: 'row', alignItems: 'center' },
-  barTrack: { flex: 1, height: 8, backgroundColor: '#F8F8F8', borderRadius: 4, overflow: 'hidden', borderWidth: 1, borderColor: '#E6C9B9' },
-  barFill: { height: 8, backgroundColor: '#B4725E', borderRadius: 4 },
-  barCount: { fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', width: 24, textAlign: 'right', marginLeft: 8 },
+  barLabel: { fontSize: 13, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178', width: 24, marginRight: 8, flexDirection: 'row', alignItems: 'center' },
+  barTrack: { flex: 1, height: 8, backgroundColor: '#FFFFFF', borderRadius: 4, overflow: 'hidden',  },
+  barFill: { height: 8, backgroundColor: '#EEEADDFF', borderRadius: 4 },
+  barCount: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#5C554F', width: 24, textAlign: 'right', marginLeft: 8 },
 
   sortRow: { flexDirection: 'row', paddingHorizontal: 16, marginBottom: 16 },
   sortChip: {
     paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20,
-    backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E6C9B9',
+    backgroundColor: '#EEEADDFF',  
     marginRight: 8,
   },
-  sortChipActive: { backgroundColor: '#FFF5EE', borderColor: '#B4725E' },
-  sortChipText: { fontSize: 13, fontFamily: 'InstrumentSans_600SemiBold', color: '#8C7A74' },
-  sortChipTextActive: { color: '#B4725E' },
+  sortChipActive: { backgroundColor: '#EEEADDFF', },
+  sortChipText: { fontSize: 13, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
+  sortChipTextActive: { color: '#5C554F' },
 
   reviewCard: {
-    backgroundColor: '#FFFFFF', marginHorizontal: 16, marginBottom: 16,
-    borderRadius: 14, padding: 20, borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#EEEADDFF', marginHorizontal: 16, marginBottom: 16,
+    borderRadius: 14, padding: 20,  
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   reviewHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   reviewerAvatar: {
-    width: 40, height: 40, borderRadius: 20, backgroundColor: '#FFF5EE',
-    alignItems: 'center', justifyContent: 'center', marginRight: 12, borderWidth: 1, borderColor: '#E6C9B9'
+    width: 40, height: 40, borderRadius: 20, backgroundColor: '#EEEADDFF',
+    alignItems: 'center', justifyContent: 'center', marginRight: 12,  
   },
-  reviewerInitial: { color: '#B4725E', fontFamily: 'PlayfairDisplay_700Bold', fontSize: 18 },
+  reviewerInitial: { color: '#2E2A26', fontFamily: 'Cinzel_700Bold', fontSize: 18 },
   reviewerMeta: { flex: 1 },
-  reviewerName: { fontSize: 15, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D' },
-  reviewDate: { fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginTop: 2 },
-  editedTag: { color: '#8C7A74', fontStyle: 'italic' },
+  reviewerName: { fontSize: 15, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26' },
+  reviewDate: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', marginTop: 2 },
+  editedTag: { color: '#2E2A26', fontStyle: 'italic' },
 
-  reviewText: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', lineHeight: 22, marginBottom: 12 },
+  reviewText: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#5C554F', lineHeight: 22, marginBottom: 12 },
 
   photosRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },
-  reviewPhoto: { width: 80, height: 80, borderRadius: 8, backgroundColor: '#F8F8F8', borderWidth: 1, borderColor: '#E6C9B9' },
+  reviewPhoto: { width: 80, height: 80, borderRadius: 8, backgroundColor: '#FFFFFF',  },
 
-  helpfulBtn: { alignSelf: 'flex-start', paddingVertical: 8, paddingHorizontal: 12, backgroundColor: '#F8F8F8', borderRadius: 8, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#E6C9B9' },
-  helpfulText: { fontSize: 13, fontFamily: 'InstrumentSans_600SemiBold', color: '#8C7A74' },
+  helpfulBtn: { alignSelf: 'flex-start', paddingVertical: 8, paddingHorizontal: 12, backgroundColor: '#EEEADDFF', borderRadius: 8, flexDirection: 'row', alignItems: 'center',  },
+  helpfulText: { fontSize: 13, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
 
   emptyState: { alignItems: 'center', paddingVertical: 60 },
   emptyIconCircle: {
-    width: 80, height: 80, borderRadius: 40, backgroundColor: '#F7D9C4',
+    width: 80, height: 80, borderRadius: 40, backgroundColor: '#EEEADDFF',
     alignItems: 'center', justifyContent: 'center', marginBottom: 24,
   },
-  emptyTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 8 },
-  emptySubtitle: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#43332E' },
+  emptyTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 8 },
+  emptySubtitle: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#8A8178' },
 });
 
 export default SellerReviewsScreen;

@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#F7D9C4"
+      "backgroundColor": "#eeeaddff"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -21,7 +21,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#F7D9C4"
+        "backgroundColor": "#eeeaddff"
       },
       "package": "com.ceylonboutique.app"
     },

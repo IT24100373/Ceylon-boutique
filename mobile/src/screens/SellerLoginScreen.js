@@ -93,23 +93,23 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF' },
   scroll: { flexGrow: 1, justifyContent: 'center', padding: 30 },
   brandText: {
-    fontFamily: 'PlayfairDisplay_700Bold',
+    fontFamily: 'Cinzel_700Bold',
     fontSize: 32,
-    color: '#43332E',
+    color: '#2E2A26',
     textAlign: 'center',
     marginBottom: 8,
   },
   title: {
-    fontFamily: 'PlayfairDisplay_700Bold',
+    fontFamily: 'Cinzel_700Bold',
     fontSize: 40,
-    color: '#2A201D',
+    color: '#2E2A26',
     textAlign: 'center',
     marginBottom: 10,
   },
   subtitle: {
-    fontFamily: 'InstrumentSans_400Regular',
+    fontFamily: 'Montserrat_400Regular',
     fontSize: 16,
-    color: '#43332E',
+    color: '#2E2A26',
     textAlign: 'center',
     marginBottom: 40,
     opacity: 0.8,
@@ -119,10 +119,10 @@ const styles = StyleSheet.create({
   },
   loginBtn: { marginTop: 10, borderRadius: 8 },
   registerLink: { marginTop: 30, alignItems: 'center' },
-  registerLinkText: { fontFamily: 'InstrumentSans_400Regular', fontSize: 14, color: '#43332E' },
-  registerLinkBold: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold' },
+  registerLinkText: { fontFamily: 'Montserrat_400Regular', fontSize: 14, color: '#5C554F' },
+  registerLinkBold: { color: '#2E2A26', fontFamily: 'Montserrat_600SemiBold' },
   backLink: { marginTop: 20, alignItems: 'center' },
-  backLinkText: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
+  backLinkText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold', fontSize: 14 },
 });
 
 export default SellerLoginScreen;

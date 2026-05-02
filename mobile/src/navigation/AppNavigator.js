@@ -76,9 +76,9 @@ const AuthStack = () => (
 const CustomerAppStack = () => (
   <Stack.Navigator
     screenOptions={{
-      headerStyle: { backgroundColor: '#F7D9C4' },
-      headerTintColor: '#43332E',
-      headerTitleStyle: { fontFamily: 'PlayfairDisplay_700Bold' },
+      headerStyle: { backgroundColor: '#EEEADDFF' },
+      headertintColor: '#FFFFFF',
+      headerTitleStyle: { fontFamily: 'Cinzel_700Bold' },
     }}
   >
     {/* Module 3 — Product Browsing (replaces placeholder Home) */}
@@ -127,9 +127,9 @@ const SellerPendingStack = () => (
 const SellerAppStack = () => (
   <Stack.Navigator
     screenOptions={{
-      headerStyle: { backgroundColor: '#F7D9C4' },
-      headerTintColor: '#43332E',
-      headerTitleStyle: { fontFamily: 'PlayfairDisplay_700Bold' },
+      headerStyle: { backgroundColor: '#EEEADDFF' },
+      headertintColor: '#FFFFFF',
+      headerTitleStyle: { fontFamily: 'Cinzel_700Bold' },
     }}
   >
     {/* Module 2 — Shop Management */}
@@ -162,8 +162,8 @@ const AppNavigator = () => {
   // Show spinner while restoring session from AsyncStorage
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F7D9C4' }}>
-        <ActivityIndicator size="large" color="#B4725E" />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#EEEADDFF' }}>
+        <ActivityIndicator size="large" color="#EEEADDFF" />
       </View>
     );
   }

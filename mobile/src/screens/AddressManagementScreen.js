@@ -126,21 +126,15 @@ const AddressManagementScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#43332E" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>My Addresses</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      
 
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         {addresses.length === 0 ? (
           <View style={styles.empty}>
             <View style={styles.emptyIconCircle}>
-              <Icon name="map-pin" size={40} color="#B4725E" />
+              <Icon name="map-pin" size={40} color="#2E2A26" />
             </View>
             <Text style={styles.emptyTitle}>No addresses yet</Text>
             <Text style={styles.emptyText}>Add a delivery address to use at checkout.</Text>
@@ -168,7 +162,7 @@ const AddressManagementScreen = ({ navigation }) => {
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>{editingId ? 'Edit Address' : 'Add New Address'}</Text>
                 <TouchableOpacity onPress={() => setModalVisible(false)}>
-                  <Icon name="x" size={24} color="#8C7A74" style={styles.modalClose} />
+                  <Icon name="x" size={24} color="#2E2A26" style={styles.modalClose} />
                 </TouchableOpacity>
               </View>
 
@@ -191,7 +185,7 @@ const AddressManagementScreen = ({ navigation }) => {
                   onPress={() => setShowProvincePicker(!showProvincePicker)}
                 >
                   <Text style={styles.pickerBtnText}>{form.province || 'Select Province'}</Text>
-                  <Icon name={showProvincePicker ? "chevron-up" : "chevron-down"} size={20} color="#8C7A74" />
+                  <Icon name={showProvincePicker ? "chevron-up" : "chevron-down"} size={20} color="#2E2A26" />
                 </TouchableOpacity>
                 {errors.province ? <Text style={styles.errorText}>{errors.province}</Text> : null}
                 {showProvincePicker && (
@@ -202,7 +196,7 @@ const AddressManagementScreen = ({ navigation }) => {
                         <Text style={[styles.provinceItemText, form.province === p && styles.provinceSelected]}>
                           {p}
                         </Text>
-                        {form.province === p && <Icon name="check" size={16} color="#B4725E" />}
+                        {form.province === p && <Icon name="check" size={16} color="#2E2A26" />}
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -225,51 +219,51 @@ const AddressManagementScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#FFF1E8' },
+  safe: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
 
   container: { padding: 16, paddingBottom: 40 },
   empty: { alignItems: 'center', justifyContent: 'center', paddingVertical: 60, marginTop: 40 },
   emptyIconCircle: {
-    width: 80, height: 80, borderRadius: 40, backgroundColor: '#F7D9C4',
+    width: 80, height: 80, borderRadius: 40, backgroundColor: '#EEEADDFF',
     alignItems: 'center', justifyContent: 'center', marginBottom: 24,
   },
-  emptyTitle: { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 8 },
-  emptyText: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', textAlign: 'center' },
-  addBtn: { marginTop: 12, backgroundColor: '#B4725E', borderRadius: 12 },
+  emptyTitle: { fontSize: 22, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 8 },
+  emptyText: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#5C554F', textAlign: 'center' },
+  addBtn: { marginTop: 12, backgroundColor: '#EEEADDFF', borderRadius: 12 },
 
   // Modal
   modalSafe: { flex: 1, backgroundColor: '#FFFFFF' },
   modalContainer: { padding: 24, paddingBottom: 40 },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
-  modalTitle: { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  modalTitle: { fontSize: 22, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
   modalClose: { padding: 4 },
 
   fieldContainer: { marginBottom: 16 },
-  fieldLabel: { fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#43332E', marginBottom: 8, marginTop: 4 },
+  fieldLabel: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178', marginBottom: 8, marginTop: 4 },
   pickerBtn: {
-    borderWidth: 1, borderColor: '#E6C9B9', borderRadius: 10,
+      borderRadius: 10,
     paddingHorizontal: 14, paddingVertical: 14,
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#EEEADDFF',
   },
-  pickerBtnError: { borderColor: '#E53E3E' },
-  pickerBtnText: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D' },
+  pickerBtnError: { },
+  pickerBtnText: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#5C554F' },
   provinceList: {
-    borderWidth: 1, borderColor: '#E6C9B9', borderRadius: 10,
-    marginTop: 6, backgroundColor: '#FFFFFF', overflow: 'hidden',
+      borderRadius: 10,
+    marginTop: 6, backgroundColor: '#EEEADDFF', overflow: 'hidden',
   },
-  provinceItem: { paddingVertical: 14, paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#F8F8F8' },
-  provinceItemText: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D' },
-  provinceSelected: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold' },
-  errorText: { color: '#E53E3E', fontSize: 12, fontFamily: 'InstrumentSans_400Regular', marginTop: 4 },
+  provinceItem: { paddingVertical: 14, paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',  },
+  provinceItemText: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#5C554F' },
+  provinceSelected: { color: '#2E2A26', fontFamily: 'Montserrat_600SemiBold' },
+  errorText: { color: '#5C554F', fontSize: 12, fontFamily: 'Montserrat_400Regular', marginTop: 4 },
 
-  saveBtn: { marginTop: 16, backgroundColor: '#B4725E', borderRadius: 12 },
+  saveBtn: { marginTop: 16, backgroundColor: '#EEEADDFF', borderRadius: 12 },
   cancelBtn: { marginTop: 12, borderRadius: 12 },
 });
 

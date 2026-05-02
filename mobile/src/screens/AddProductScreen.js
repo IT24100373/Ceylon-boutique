@@ -49,7 +49,7 @@ const AddProductScreen = ({ navigation }) => {
       Alert.alert('Duplicate', 'This color has already been added.');
       return;
     }
-    setColors([...colors, { name: trimmed, hexCode: '#000000' }]);
+    setColors([...colors, { name: trimmed, hexCode: '#2E2A26' }]);
     setColorInput('');
   };
 
@@ -115,7 +115,7 @@ const AddProductScreen = ({ navigation }) => {
     try {
       // Need a separate instance or custom config for multipart/form-data
       const token = await require('@react-native-async-storage/async-storage').default.getItem('ceylon_token');
-      
+
       const response = await fetch(`${apiClient.defaults.baseURL}/api/upload/images`, {
         method: 'POST',
         headers: {
@@ -125,22 +125,22 @@ const AddProductScreen = ({ navigation }) => {
         },
         body: formData,
       });
-      
+
       const responseData = await response.json();
-      
+
       if (!response.ok || !responseData.success) {
         throw new Error(responseData.message || 'Image upload failed');
       }
-      
+
       // Combine existing URLs with newly uploaded URLs
       const finalImages = images.map(img => {
         if (typeof img === 'string') return img;
         // This relies on the order being preserved, which it should be
         return responseData.images.shift() || img.uri; // Fallback to local uri if something goes wrong, though backend will reject
       });
-      
+
       return finalImages;
-      
+
     } catch (error) {
       console.error('Upload error:', error);
       throw error;
@@ -219,20 +219,13 @@ const AddProductScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#43332E" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Add Product</Text>
-        <View style={{ width: 24 }} />
-      </View>
-
+    
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Section 1: Basic Info */}
         <View style={styles.sectionHeader}>
-          <Icon name="info" size={20} color="#B4725E" style={styles.sectionIcon} />
+          <Icon name="info" size={20} color="#2E2A26" style={styles.sectionIcon} />
           <Text style={styles.sectionTitle}>Basic Information</Text>
         </View>
         <View style={styles.card}>
@@ -242,7 +235,7 @@ const AddProductScreen = ({ navigation }) => {
             value={name}
             onChangeText={setName}
             placeholder="e.g. Handloom Cotton Saree"
-            placeholderTextColor="#8C7A74"
+            placeholderTextColor="#5C554F"
             maxLength={200}
           />
 
@@ -252,7 +245,7 @@ const AddProductScreen = ({ navigation }) => {
             value={description}
             onChangeText={setDescription}
             placeholder="Describe your product in detail..."
-            placeholderTextColor="#8C7A74"
+            placeholderTextColor="#5C554F"
             multiline
             numberOfLines={4}
             maxLength={2000}
@@ -266,7 +259,7 @@ const AddProductScreen = ({ navigation }) => {
             <Text style={category ? styles.pickerText : styles.pickerPlaceholder}>
               {category || 'Select a category'}
             </Text>
-            <Icon name={showCategoryPicker ? "chevron-up" : "chevron-down"} size={20} color="#8C7A74" />
+            <Icon name={showCategoryPicker ? "chevron-up" : "chevron-down"} size={20} color="#2E2A26" />
           </TouchableOpacity>
           {showCategoryPicker && (
             <View style={styles.pickerList}>
@@ -279,7 +272,7 @@ const AddProductScreen = ({ navigation }) => {
                   <Text style={[styles.pickerItemText, category === cat && styles.pickerItemTextActive]}>
                     {cat}
                   </Text>
-                  {category === cat && <Icon name="check" size={16} color="#B4725E" />}
+                  {category === cat && <Icon name="check" size={16} color="#2E2A26" />}
                 </TouchableOpacity>
               ))}
             </View>
@@ -291,14 +284,14 @@ const AddProductScreen = ({ navigation }) => {
             value={price}
             onChangeText={setPrice}
             placeholder="e.g. 2500"
-            placeholderTextColor="#8C7A74"
+            placeholderTextColor="#5C554F"
             keyboardType="numeric"
           />
         </View>
 
         {/* Section 2: Sizes */}
         <View style={styles.sectionHeader}>
-          <Icon name="maximize" size={20} color="#B4725E" style={styles.sectionIcon} />
+          <Icon name="maximize" size={20} color="#2E2A26" style={styles.sectionIcon} />
           <Text style={styles.sectionTitle}>Sizes *</Text>
         </View>
         <View style={styles.card}>
@@ -319,7 +312,7 @@ const AddProductScreen = ({ navigation }) => {
 
         {/* Section 3: Colors */}
         <View style={styles.sectionHeader}>
-          <Icon name="aperture" size={20} color="#B4725E" style={styles.sectionIcon} />
+          <Icon name="aperture" size={20} color="#2E2A26" style={styles.sectionIcon} />
           <Text style={styles.sectionTitle}>Colors *</Text>
         </View>
         <View style={styles.card}>
@@ -329,10 +322,10 @@ const AddProductScreen = ({ navigation }) => {
               value={colorInput}
               onChangeText={setColorInput}
               placeholder="e.g. Navy Blue"
-              placeholderTextColor="#8C7A74"
+              placeholderTextColor="#5C554F"
             />
             <TouchableOpacity style={styles.addBtn} onPress={addColor}>
-              <Icon name="plus" size={16} color="#FFFFFF" style={{ marginRight: 4 }} />
+              <Icon name="plus" size={16} color="#2E2A26" style={{ marginRight: 4 }} />
               <Text style={styles.addBtnText}>Add</Text>
             </TouchableOpacity>
           </View>
@@ -340,7 +333,7 @@ const AddProductScreen = ({ navigation }) => {
             {colors.map((color, idx) => (
               <TouchableOpacity key={idx} style={styles.chipRemovable} onPress={() => removeColor(idx)}>
                 <Text style={styles.chipRemovableText}>{color.name}</Text>
-                <Icon name="x" size={14} color="#B4725E" style={{ marginLeft: 6 }} />
+                <Icon name="x" size={14} color="#2E2A26" style={{ marginLeft: 6 }} />
               </TouchableOpacity>
             ))}
           </View>
@@ -348,7 +341,7 @@ const AddProductScreen = ({ navigation }) => {
 
         {/* Section 4: Images */}
         <View style={styles.sectionHeader}>
-          <Icon name="image" size={20} color="#B4725E" style={styles.sectionIcon} />
+          <Icon name="image" size={20} color="#2E2A26" style={styles.sectionIcon} />
           <Text style={styles.sectionTitle}>Images * (1–10)</Text>
         </View>
         <View style={styles.card}>
@@ -358,17 +351,17 @@ const AddProductScreen = ({ navigation }) => {
               value={imageInput}
               onChangeText={setImageInput}
               placeholder="Paste image URL"
-              placeholderTextColor="#8C7A74"
+              placeholderTextColor="#5C554F"
             />
             <TouchableOpacity style={styles.addBtn} onPress={addImage}>
-              <Icon name="link" size={16} color="#FFFFFF" style={{ marginRight: 4 }} />
+              <Icon name="link" size={16} color="#2E2A26" style={{ marginRight: 4 }} />
               <Text style={styles.addBtnText}>URL</Text>
             </TouchableOpacity>
           </View>
-          
+
           <TouchableOpacity style={styles.uploadBtn} onPress={pickImage}>
-             <Icon name="upload" size={18} color="#B4725E" style={{ marginRight: 8 }} />
-             <Text style={styles.uploadBtnText}>Upload from Device</Text>
+            <Icon name="upload" size={18} color="#2E2A26" style={{ marginRight: 8 }} />
+            <Text style={styles.uploadBtnText}>Upload from Device</Text>
           </TouchableOpacity>
 
           {images.map((img, idx) => {
@@ -381,7 +374,7 @@ const AddProductScreen = ({ navigation }) => {
                   {isLocal ? 'Local File' : displayUrl}
                 </Text>
                 <TouchableOpacity onPress={() => removeImage(idx)} style={styles.removeBtn}>
-                  <Icon name="trash-2" size={18} color="#D32F2F" />
+                  <Icon name="trash-2" size={18} color="#2E2A26" />
                 </TouchableOpacity>
               </View>
             );
@@ -390,12 +383,12 @@ const AddProductScreen = ({ navigation }) => {
 
         {/* Section 5: Variants & Stock */}
         <View style={styles.sectionHeader}>
-          <Icon name="package" size={20} color="#B4725E" style={styles.sectionIcon} />
+          <Icon name="package" size={20} color="#2E2A26" style={styles.sectionIcon} />
           <Text style={styles.sectionTitle}>Stock per Variant</Text>
         </View>
         <View style={styles.card}>
           <TouchableOpacity style={styles.generateBtn} onPress={generateVariants}>
-            <Icon name="refresh-cw" size={16} color="#B4725E" style={{ marginRight: 8 }} />
+            <Icon name="refresh-cw" size={16} color="#2E2A26" style={{ marginRight: 8 }} />
             <Text style={styles.generateBtnText}>Generate Variants from Sizes × Colors</Text>
           </TouchableOpacity>
 
@@ -433,7 +426,7 @@ const AddProductScreen = ({ navigation }) => {
             <ActivityIndicator color="#FFFFFF" />
           ) : (
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Icon name="upload-cloud" size={20} color="#FFFFFF" style={{ marginRight: 8 }} />
+              <Icon name="upload-cloud" size={20} color="#2E2A26" style={{ marginRight: 8 }} />
               <Text style={styles.submitBtnText}>Publish Product</Text>
             </View>
           )}
@@ -446,124 +439,124 @@ const AddProductScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
 
   scroll: { flex: 1, padding: 16 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, marginTop: 10 },
   sectionIcon: { marginRight: 8 },
-  sectionTitle: { fontSize: 18, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  sectionTitle: { fontSize: 18, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
 
   card: {
-    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 20,
-    marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 20,
+    marginBottom: 16,  
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   label: {
-    fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#43332E',
+    fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26',
     marginBottom: 8, marginTop: 14,
   },
   input: {
-    backgroundColor: '#FFFFFF', borderRadius: 10, paddingHorizontal: 14,
-    paddingVertical: 12, fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D',
-    borderWidth: 1, borderColor: '#E6C9B9', marginBottom: 4,
+    backgroundColor: '#EEEADDFF', borderRadius: 10, paddingHorizontal: 14,
+    paddingVertical: 12, fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#2E2A26',
+      marginBottom: 4,
   },
   textArea: { minHeight: 100, textAlignVertical: 'top' },
   pickerBtn: {
-    backgroundColor: '#FFFFFF', borderRadius: 10, paddingHorizontal: 14,
-    paddingVertical: 14, borderWidth: 1, borderColor: '#E6C9B9',
+    backgroundColor: '#EEEADDFF', borderRadius: 10, paddingHorizontal: 14,
+    paddingVertical: 14,  
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
   },
-  pickerText: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D' },
-  pickerPlaceholder: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74' },
+  pickerText: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#5C554F' },
+  pickerPlaceholder: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#8A8178' },
   pickerList: {
-    backgroundColor: '#FFFFFF', borderRadius: 10, marginTop: 6,
-    borderWidth: 1, borderColor: '#E6C9B9', overflow: 'hidden',
+    backgroundColor: '#EEEADDFF', borderRadius: 10, marginTop: 6,
+      overflow: 'hidden',
   },
   pickerItem: { paddingVertical: 14, paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  pickerItemActive: { backgroundColor: '#FFF5EE' },
-  pickerItemText: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D' },
-  pickerItemTextActive: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold' },
+  pickerItemActive: { backgroundColor: '#EEEADDFF' },
+  pickerItemText: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#5C554F' },
+  pickerItemTextActive: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold' },
 
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 },
   chip: {
     paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20,
-    backgroundColor: '#FFF5EE', marginRight: 10, marginBottom: 10,
-    borderWidth: 1, borderColor: '#E6C9B9',
+    backgroundColor: '#EEEADDFF', marginRight: 10, marginBottom: 10,
+     
   },
-  chipActive: { backgroundColor: '#B4725E', borderColor: '#B4725E' },
-  chipText: { fontSize: 14, color: '#43332E', fontFamily: 'InstrumentSans_600SemiBold' },
-  chipTextActive: { color: '#FFFFFF' },
+  chipActive: { backgroundColor: '#EEEADDFF', },
+  chipText: { fontSize: 14, color: '#5C554F', fontFamily: 'Montserrat_600SemiBold' },
+  chipTextActive: { color: '#5C554F' },
   chipRemovable: {
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
-    backgroundColor: '#FFF5EE', marginRight: 10, marginBottom: 10,
-    borderWidth: 1, borderColor: '#E6C9B9',
+    backgroundColor: '#EEEADDFF', marginRight: 10, marginBottom: 10,
+     
   },
-  chipRemovableText: { fontSize: 14, color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold' },
+  chipRemovableText: { fontSize: 14, color: '#5C554F', fontFamily: 'Montserrat_600SemiBold' },
 
   addRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
   addBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    backgroundColor: '#B4725E', paddingHorizontal: 16, paddingVertical: 12,
+    backgroundColor: '#EEEADDFF', paddingHorizontal: 16, paddingVertical: 12,
     borderRadius: 10,
   },
-  addBtnText: { color: '#FFFFFF', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
+  addBtnText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold', fontSize: 14 },
 
   imageItem: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#F8F8F8',
+    paddingVertical: 12,  
   },
   imagePreview: {
-    width: 40, height: 40, borderRadius: 6, marginRight: 10, backgroundColor: '#F0F0F0'
+    width: 40, height: 40, borderRadius: 6, marginRight: 10, backgroundColor: '#FFFFFF'
   },
-  imageUrl: { flex: 1, fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginRight: 10 },
+  imageUrl: { flex: 1, fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', marginRight: 10 },
   removeBtn: { padding: 4 },
 
   uploadBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    backgroundColor: '#FFF5EE', paddingVertical: 14, borderRadius: 10,
-    borderWidth: 1, borderColor: '#E6C9B9', marginBottom: 16, borderStyle: 'dashed'
+    backgroundColor: '#EEEADDFF', paddingVertical: 14, borderRadius: 10,
+      marginBottom: 16, borderStyle: 'dashed'
   },
-  uploadBtnText: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
+  uploadBtnText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold', fontSize: 14 },
 
   generateBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    backgroundColor: '#FFF5EE', paddingVertical: 14, borderRadius: 10,
-    borderWidth: 1, borderColor: '#E6C9B9',
+    backgroundColor: '#EEEADDFF', paddingVertical: 14, borderRadius: 10,
+     
   },
-  generateBtnText: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
+  generateBtnText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold', fontSize: 14 },
 
   variantTable: { marginTop: 20 },
   variantHeader: {
     flexDirection: 'row', paddingVertical: 10, paddingHorizontal: 8,
-    backgroundColor: '#F8F8F8', borderRadius: 8, marginBottom: 8,
+    backgroundColor: '#FFFFFF', borderRadius: 8, marginBottom: 8,
   },
-  variantHeaderText: { fontSize: 13, fontFamily: 'InstrumentSans_600SemiBold', color: '#8C7A74' },
+  variantHeaderText: { fontSize: 13, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26' },
   variantRow: {
     flexDirection: 'row', alignItems: 'center',
-    paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#F8F8F8',
+    paddingVertical: 10,  
   },
-  variantCell: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D', paddingHorizontal: 8 },
+  variantCell: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', paddingHorizontal: 8 },
   variantInput: {
-    flex: 0.8, backgroundColor: '#FFFFFF', borderRadius: 8,
-    paddingHorizontal: 10, paddingVertical: 8, fontSize: 14, fontFamily: 'InstrumentSans_400Regular',
-    borderWidth: 1, borderColor: '#E6C9B9', textAlign: 'center', color: '#2A201D'
+    flex: 0.8, backgroundColor: '#EEEADDFF', borderRadius: 8,
+    paddingHorizontal: 10, paddingVertical: 8, fontSize: 14, fontFamily: 'Montserrat_400Regular',
+      textAlign: 'center', color: '#2E2A26'
   },
 
   submitBtn: {
-    backgroundColor: '#B4725E', paddingVertical: 16, borderRadius: 14,
+    backgroundColor: '#EEEADDFF', paddingVertical: 16, borderRadius: 14,
     alignItems: 'center', marginTop: 10,
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1, shadowRadius: 8, elevation: 4,
   },
   submitBtnDisabled: { opacity: 0.6 },
-  submitBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
+  submitBtnText: { color: '#8A8178', fontSize: 16, fontFamily: 'Montserrat_600SemiBold' },
 });
 
 export default AddProductScreen;

@@ -20,7 +20,7 @@ const StarSelector = ({ rating, onSelect }) => (
         <Icon
           name="star"
           size={36}
-          color={rating >= star ? "#B4725E" : "#E6C9B9"}
+          color={rating >= star ? "#2E2A26" : "#8A8178"}
           solid={rating >= star}
         />
       </TouchableOpacity>
@@ -66,11 +66,11 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
 
     try {
       setSubmitting(true);
-      
+
       // Upload any local photos first
       let uploadedUrls = [...photos];
       const localPhotos = photos.filter(p => typeof p === 'object' && p.isLocal);
-      
+
       if (localPhotos.length > 0) {
         const formData = new FormData();
         localPhotos.forEach((img) => {
@@ -80,7 +80,7 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
             name: img.name || `review_${Date.now()}.jpg`,
           });
         });
-        
+
         const token = await require('@react-native-async-storage/async-storage').default.getItem('ceylon_token');
         const response = await fetch(`${apiClient.defaults.baseURL}/api/upload/images`, {
           method: 'POST',
@@ -91,21 +91,21 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
           },
           body: formData,
         });
-        
+
         const responseData = await response.json();
         if (!response.ok || !responseData.success) {
           throw new Error(responseData.message || 'Image upload failed');
         }
-        
+
         // Merge uploaded URLs
         uploadedUrls = photos.map(p => {
           if (typeof p === 'string') return p;
           return responseData.images.shift() || p.uri;
         });
       }
-      
+
       payload.photos = uploadedUrls;
-      
+
       await apiClient.post('/api/reviews', payload);
       Alert.alert(
         'Review Submitted!',
@@ -122,14 +122,8 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#43332E" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Write a Review</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
+      
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
@@ -139,7 +133,7 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
             <Image source={{ uri: orderItem.productImage }} style={styles.productImage} />
           ) : (
             <View style={styles.productImagePlaceholder}>
-              <Icon name="image" size={24} color="#E6C9B9" />
+              <Icon name="image" size={24} color="#2E2A26" />
             </View>
           )}
           <View style={styles.productInfo}>
@@ -158,7 +152,7 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
               style={[styles.toggleBtn, reviewType === 'product' && styles.toggleBtnActive]}
               onPress={() => setReviewType('product')}
             >
-              <Icon name="package" size={18} color={reviewType === 'product' ? '#B4725E' : '#8C7A74'} style={{ marginBottom: 6 }} />
+              <Icon name="package" size={18} color={reviewType === 'product' ? '#EEEADDFF' : '#5C554F'} style={{ marginBottom: 6 }} />
               <Text style={[styles.toggleText, reviewType === 'product' && styles.toggleTextActive]}>
                 Product
               </Text>
@@ -167,7 +161,7 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
               style={[styles.toggleBtn, reviewType === 'seller' && styles.toggleBtnActive]}
               onPress={() => setReviewType('seller')}
             >
-              <Icon name="home" size={18} color={reviewType === 'seller' ? '#B4725E' : '#8C7A74'} style={{ marginBottom: 6 }} />
+              <Icon name="home" size={18} color={reviewType === 'seller' ? '#EEEADDFF' : '#5C554F'} style={{ marginBottom: 6 }} />
               <Text style={[styles.toggleText, reviewType === 'seller' && styles.toggleTextActive]}>
                 Seller
               </Text>
@@ -192,7 +186,7 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
             value={reviewText}
             onChangeText={setReviewText}
             placeholder="Share your experience with this product or seller..."
-            placeholderTextColor="#A0938E"
+            placeholderTextColor="#8A8178"
             multiline
             maxLength={1000}
             textAlignVertical="top"
@@ -203,7 +197,7 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
         {/* Photo URLs */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Photos <Text style={styles.optional}>(optional — max 3)</Text></Text>
-          
+
           <TouchableOpacity style={styles.uploadBtn} onPress={async () => {
             const currentPhotosCount = [photo1, photo2, photo3].filter(p => p !== '').length;
             if (currentPhotosCount >= 3) {
@@ -230,8 +224,8 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
               else if (!photo3) setPhoto3(newPhoto);
             }
           }}>
-             <Icon name="upload" size={18} color="#B4725E" style={{ marginRight: 8 }} />
-             <Text style={styles.uploadBtnText}>Upload from Device</Text>
+            <Icon name="upload" size={18} color="#2E2A26" style={{ marginRight: 8 }} />
+            <Text style={styles.uploadBtnText}>Upload from Device</Text>
           </TouchableOpacity>
 
           {[photo1, photo2, photo3].map((photo, idx) => {
@@ -242,7 +236,7 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
               <View key={`photo-${idx}`} style={styles.imageItem}>
                 <Image source={{ uri: displayUrl }} style={styles.imagePreview} />
                 <TextInput
-                  style={[styles.urlInput, { flex: 1, marginBottom: 0, borderWidth: 0, backgroundColor: 'transparent' }]}
+                  style={[styles.urlInput, { flex: 1, marginBottom: 0,  backgroundColor: 'transparent' }]}
                   value={isLocal ? 'Local File' : photo}
                   onChangeText={val => {
                     if (idx === 0) setPhoto1(val);
@@ -251,7 +245,7 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
                   }}
                   editable={!isLocal}
                   placeholder={`Photo URL ${idx + 1}`}
-                  placeholderTextColor="#A0938E"
+                  placeholderTextColor="#8A8178"
                   autoCapitalize="none"
                   keyboardType="url"
                 />
@@ -260,12 +254,12 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
                   if (idx === 1) setPhoto2('');
                   if (idx === 2) setPhoto3('');
                 }} style={styles.removeBtn}>
-                  <Icon name="trash-2" size={18} color="#D32F2F" />
+                  <Icon name="trash-2" size={18} color="#2E2A26" />
                 </TouchableOpacity>
               </View>
             );
           })}
-          
+
           {/* Keep URL inputs for empty slots if they want to paste a URL */}
           {[photo1, photo2, photo3].map((photo, idx) => {
             if (photo) return null;
@@ -280,7 +274,7 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
                   if (idx === 2) setPhoto3(val);
                 }}
                 placeholder={`Or paste Photo URL ${idx + 1} here`}
-                placeholderTextColor="#A0938E"
+                placeholderTextColor="#8A8178"
                 autoCapitalize="none"
                 keyboardType="url"
               />
@@ -310,86 +304,87 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
   scroll: { padding: 16 },
 
   productCard: {
-    flexDirection: 'row', backgroundColor: '#FFFFFF', borderRadius: 14,
-    padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
-    alignItems: 'center', shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    flexDirection: 'row', backgroundColor: '#EEEADDFF', borderRadius: 14,
+    padding: 16, marginBottom: 16,  
+    alignItems: 'center', shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
-  productImage: { width: 64, height: 64, borderRadius: 10, marginRight: 16, backgroundColor: '#F8F8F8', borderWidth: 1, borderColor: '#E6C9B9' },
+  productImage: { width: 64, height: 64, borderRadius: 10, marginRight: 16, backgroundColor: '#FFFFFF',  },
   productImagePlaceholder: {
     width: 64, height: 64, borderRadius: 10, marginRight: 16,
-    backgroundColor: '#F8F8F8', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#E6C9B9'
+    backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center',  
   },
   productInfo: { flex: 1 },
-  productName: { fontSize: 15, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D', marginBottom: 4 },
-  productVariant: { fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74' },
+  productName: { fontSize: 15, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26', marginBottom: 4 },
+  productVariant: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#2E2A26' },
 
   section: {
-    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 20,
-    marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 20,
+    marginBottom: 16,  
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
-  sectionTitle: { fontSize: 16, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 16 },
-  optional: { fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74' },
+  sectionTitle: { fontSize: 16, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 16 },
+  optional: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#2E2A26' },
 
   toggleRow: { flexDirection: 'row', gap: 12 },
   toggleBtn: {
     flex: 1, paddingVertical: 16, borderRadius: 10, alignItems: 'center', justifyContent: 'center',
-    borderWidth: 2, borderColor: '#E6C9B9', backgroundColor: '#F8F8F8',
+      backgroundColor: '#FFFFFF',
   },
-  toggleBtnActive: { borderColor: '#B4725E', backgroundColor: '#FFF5EE' },
-  toggleText: { fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#8C7A74' },
-  toggleTextActive: { color: '#B4725E' },
+  toggleBtnActive: {  backgroundColor: '#EEEADDFF' },
+  toggleText: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
+  toggleTextActive: { color: '#5C554F' },
 
   starRow: { flexDirection: 'row', justifyContent: 'center', marginBottom: 8 },
   starBtn: { padding: 6 },
-  ratingLabel: { textAlign: 'center', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#B4725E' },
+  ratingLabel: { textAlign: 'center', fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178' },
 
   textArea: {
-    borderWidth: 1, borderColor: '#E6C9B9', borderRadius: 10,
-    padding: 16, height: 120, fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D', backgroundColor: '#F8F8F8',
+      borderRadius: 10,
+    padding: 16, height: 120, fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', backgroundColor: '#FFFFFF',
   },
-  charCount: { textAlign: 'right', fontSize: 12, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginTop: 8 },
+  charCount: { textAlign: 'right', fontSize: 12, fontFamily: 'Montserrat_400Regular', color: '#5C554F', marginTop: 8 },
 
   urlInput: {
-    borderWidth: 1, borderColor: '#E6C9B9', borderRadius: 10,
-    padding: 16, fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D', backgroundColor: '#F8F8F8', marginBottom: 12,
+      borderRadius: 10,
+    padding: 16, fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', backgroundColor: '#FFFFFF', marginBottom: 12,
   },
-  
+
   uploadBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    backgroundColor: '#FFF5EE', paddingVertical: 14, borderRadius: 10,
-    borderWidth: 1, borderColor: '#E6C9B9', marginBottom: 16, borderStyle: 'dashed'
+    backgroundColor: '#EEEADDFF', paddingVertical: 14, borderRadius: 10,
+    marginBottom: 16, borderWidth: 1, borderColor: '#2E2A26',
   },
-  uploadBtnText: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
+  uploadBtnText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold', fontSize: 14 },
   imageItem: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#E6C9B9', borderRadius: 10, backgroundColor: '#F8F8F8', paddingHorizontal: 12, marginBottom: 10
+    paddingVertical: 12,   borderRadius: 10, backgroundColor: '#FFFFFF', paddingHorizontal: 12, marginBottom: 10
   },
   imagePreview: {
-    width: 40, height: 40, borderRadius: 6, marginRight: 10, backgroundColor: '#E0E0E0'
+    width: 40, height: 40, borderRadius: 6, marginRight: 10, backgroundColor: '#8A8178'
   },
   removeBtn: { padding: 4 },
 
   footer: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
-    backgroundColor: '#FFFFFF', padding: 24, paddingBottom: 32, borderTopLeftRadius: 24, borderTopRightRadius: 24,
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 10,
+    backgroundColor: '#EEEADDFF', padding: 24, paddingBottom: 32, borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 10,
   },
   submitBtn: {
-    backgroundColor: '#B4725E', borderRadius: 12, paddingVertical: 18, alignItems: 'center',
+    backgroundColor: '#EEEADDFF', borderRadius: 12, paddingVertical: 18, alignItems: 'center',
+    borderWidth: 1, borderColor: '#2E2A26',
   },
   submitBtnDisabled: { opacity: 0.5 },
-  submitBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
+  submitBtnText: { color: '#8A8178', fontSize: 16, fontFamily: 'Montserrat_600SemiBold' },
 });
 
 export default ReviewSubmitScreen;

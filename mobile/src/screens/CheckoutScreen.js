@@ -135,7 +135,7 @@ const CheckoutScreen = ({ navigation }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#B4725E" />
+        <ActivityIndicator size="large" color="#EEEADDFF" />
       </View>
     );
   }
@@ -144,9 +144,9 @@ const CheckoutScreen = ({ navigation }) => {
   if (processingPayment) {
     return (
       <View style={styles.processingOverlay}>
-        <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+        <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
         <View style={styles.processingCard}>
-          <ActivityIndicator size="large" color="#B4725E" />
+          <ActivityIndicator size="large" color="#EEEADDFF" />
           <Text style={styles.processingTitle}>Processing Payment</Text>
           <Text style={styles.processingSubtitle}>Please do not close this screen…</Text>
         </View>
@@ -158,10 +158,10 @@ const CheckoutScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#43332E" />
+          <Icon name="arrow-left" size={24} color="#2E2A26" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Checkout</Text>
         <View style={{ width: 24 }} />
@@ -197,7 +197,7 @@ const CheckoutScreen = ({ navigation }) => {
               >
                 <View style={styles.addressHeader}>
                   <Text style={styles.addressLabel}>{address.label}</Text>
-                  {selectedAddressId === address._id && <Icon name="check-circle" size={18} color="#B4725E" />}
+                  {selectedAddressId === address._id && <Icon name="check-circle" size={18} color="#2E2A26" />}
                 </View>
                 <Text style={styles.addressText}>{address.addressLine1}</Text>
                 {address.addressLine2 ? <Text style={styles.addressText}>{address.addressLine2}</Text> : null}
@@ -211,7 +211,7 @@ const CheckoutScreen = ({ navigation }) => {
           {/* ── Payment Method ── */}
           <Text style={styles.sectionTitle}>Payment</Text>
           <View style={styles.paymentBadge}>
-            <Icon name="credit-card" size={22} color="#B4725E" style={{ marginRight: 10 }} />
+            <Icon name="credit-card" size={22} color="#2E2A26" style={{ marginRight: 10 }} />
             <Text style={styles.paymentBadgeText}>Credit / Debit Card</Text>
           </View>
 
@@ -222,11 +222,11 @@ const CheckoutScreen = ({ navigation }) => {
             {/* Card Number */}
             <Text style={styles.fieldLabel}>Card Number</Text>
             <View style={styles.inputContainer}>
-              <Icon name="credit-card" size={16} color="#8C7A74" style={styles.inputIcon} />
+              <Icon name="credit-card" size={16} color="#2E2A26" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="1234 5678 9012 3456"
-                placeholderTextColor="#A0938E"
+                placeholderTextColor="#8A8178"
                 keyboardType="numeric"
                 value={cardNumber}
                 onChangeText={(v) => setCardNumber(formatCardNumber(v))}
@@ -237,11 +237,11 @@ const CheckoutScreen = ({ navigation }) => {
             {/* Cardholder Name */}
             <Text style={styles.fieldLabel}>Cardholder Name</Text>
             <View style={styles.inputContainer}>
-              <Icon name="user" size={16} color="#8C7A74" style={styles.inputIcon} />
+              <Icon name="user" size={16} color="#2E2A26" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="Name as on card"
-                placeholderTextColor="#A0938E"
+                placeholderTextColor="#8A8178"
                 autoCapitalize="characters"
                 value={cardName}
                 onChangeText={setCardName}
@@ -253,11 +253,11 @@ const CheckoutScreen = ({ navigation }) => {
               <View style={{ flex: 1, marginRight: 12 }}>
                 <Text style={styles.fieldLabel}>Expiry Date</Text>
                 <View style={styles.inputContainer}>
-                  <Icon name="calendar" size={16} color="#8C7A74" style={styles.inputIcon} />
+                  <Icon name="calendar" size={16} color="#2E2A26" style={styles.inputIcon} />
                   <TextInput
                     style={styles.input}
                     placeholder="MM/YY"
-                    placeholderTextColor="#A0938E"
+                    placeholderTextColor="#8A8178"
                     keyboardType="numeric"
                     value={expiryDate}
                     onChangeText={(v) => setExpiryDate(formatExpiry(v))}
@@ -268,11 +268,11 @@ const CheckoutScreen = ({ navigation }) => {
               <View style={{ flex: 1 }}>
                 <Text style={styles.fieldLabel}>CVV</Text>
                 <View style={styles.inputContainer}>
-                  <Icon name="lock" size={16} color="#8C7A74" style={styles.inputIcon} />
+                  <Icon name="lock" size={16} color="#2E2A26" style={styles.inputIcon} />
                   <TextInput
                     style={styles.input}
                     placeholder="•••"
-                    placeholderTextColor="#A0938E"
+                    placeholderTextColor="#8A8178"
                     keyboardType="numeric"
                     secureTextEntry
                     value={cvv}
@@ -285,7 +285,7 @@ const CheckoutScreen = ({ navigation }) => {
 
             {/* Demo note */}
             <View style={styles.demoNote}>
-              <Icon name="info" size={14} color="#8B4513" style={{ marginRight: 6, marginTop: 2 }} />
+              <Icon name="info" size={14} color="#2E2A26" style={{ marginRight: 6, marginTop: 2 }} />
               <Text style={styles.demoNoteText}>
                 Demo mode — any valid-format card details are accepted. No real charge is made.
               </Text>
@@ -320,7 +320,7 @@ const CheckoutScreen = ({ navigation }) => {
             onPress={handlePlaceOrder}
           >
             {placingOrder ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color="#FFFFFF" />
             ) : (
               <>
                 <Text style={styles.placeOrderBtnText}>Pay & Place Order</Text>
@@ -335,94 +335,94 @@ const CheckoutScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF1E8' },
+  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF' },
   scroll: { flex: 1, paddingHorizontal: 16 },
 
   // Processing overlay
-  processingOverlay: { flex: 1, backgroundColor: '#FFF1E8', justifyContent: 'center', alignItems: 'center' },
+  processingOverlay: { flex: 1, backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center' },
   processingCard: {
-    backgroundColor: '#FFFFFF', padding: 40, borderRadius: 20, alignItems: 'center',
-    shadowColor: '#43332E', shadowOpacity: 0.1, shadowRadius: 20, shadowOffset: { width: 0, height: 10 }, elevation: 10,
+    backgroundColor: '#EEEADDFF', padding: 40, borderRadius: 20, alignItems: 'center',
+    shadowColor: '#2E2A26', shadowOpacity: 0.1, shadowRadius: 20, shadowOffset: { width: 0, height: 10 }, elevation: 10,
   },
-  processingTitle: { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginTop: 24, marginBottom: 8 },
-  processingSubtitle: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', textAlign: 'center' },
+  processingTitle: { fontSize: 22, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginTop: 24, marginBottom: 8 },
+  processingSubtitle: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#8A8178', textAlign: 'center' },
 
   // Section titles
-  sectionTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginTop: 16, marginBottom: 16 },
+  sectionTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginTop: 16, marginBottom: 16 },
 
   // Address
-  noAddressContainer: { padding: 24, backgroundColor: '#FFFFFF', borderRadius: 12, alignItems: 'center', borderWidth: 1, borderColor: '#E6C9B9' },
-  noAddressText: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', marginBottom: 16 },
-  addAddressBtn: { paddingHorizontal: 20, paddingVertical: 12, backgroundColor: '#F7D9C4', borderRadius: 8 },
-  addAddressBtnText: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold' },
+  noAddressContainer: { padding: 24, backgroundColor: '#FFFFFF', borderRadius: 12, alignItems: 'center',  },
+  noAddressText: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#5C554F', marginBottom: 16 },
+  addAddressBtn: { paddingHorizontal: 20, paddingVertical: 12, backgroundColor: '#EEEADDFF', borderRadius: 8 },
+  addAddressBtnText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold' },
   addressCard: {
-    backgroundColor: '#FFFFFF', padding: 16, borderRadius: 12, marginBottom: 12,
-    borderWidth: 2, borderColor: '#E6C9B9',
+    backgroundColor: '#EEEADDFF', padding: 16, borderRadius: 12, marginBottom: 12,
+     
   },
-  addressCardSelected: { borderColor: '#B4725E', backgroundColor: '#FFF5EE' },
+  addressCardSelected: {  backgroundColor: '#EEEADDFF' },
   addressHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  addressLabel: { fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D' },
-  addressText: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', marginBottom: 4, lineHeight: 20 },
+  addressLabel: { fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178' },
+  addressText: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#5C554F', marginBottom: 4, lineHeight: 20 },
 
   // Payment badge
   paymentBadge: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#FFF5EE', borderWidth: 1, borderColor: '#B4725E',
+    backgroundColor: '#EEEADDFF',  
     borderRadius: 12, padding: 16, marginBottom: 16,
   },
-  paymentBadgeText: { fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#B4725E' },
+  paymentBadgeText: { fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
 
   // Card form
   cardForm: {
-    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 20, marginBottom: 16,
-    borderWidth: 1, borderColor: '#E6C9B9',
+    backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 20, marginBottom: 16,
+     
   },
-  cardFormTitle: { fontSize: 18, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 20 },
-  fieldLabel: { fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#43332E', marginBottom: 8 },
+  cardFormTitle: { fontSize: 18, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 20 },
+  fieldLabel: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178', marginBottom: 8 },
   inputContainer: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#F8F8F8', borderRadius: 10, borderWidth: 1, borderColor: '#E6C9B9',
+    backgroundColor: '#FFFFFF', borderRadius: 10,  
     paddingHorizontal: 14, marginBottom: 16,
   },
   inputIcon: { marginRight: 10 },
   input: {
-    flex: 1, paddingVertical: 12, fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D',
+    flex: 1, paddingVertical: 12, fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#2E2A26',
   },
   rowInputs: { flexDirection: 'row' },
   demoNote: {
-    flexDirection: 'row', backgroundColor: '#FFF1E8', borderRadius: 8, padding: 12, marginTop: 4,
-    borderWidth: 1, borderColor: '#E6C9B9'
+    flexDirection: 'row', backgroundColor: '#FFFFFF', borderRadius: 8, padding: 12, marginTop: 4,
+     
   },
-  demoNoteText: { flex: 1, fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8B4513', lineHeight: 20 },
+  demoNoteText: { flex: 1, fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#5C554F', lineHeight: 20 },
 
   // Summary
-  summaryCard: { backgroundColor: '#FFFFFF', padding: 20, borderRadius: 12, borderWidth: 1, borderColor: '#E6C9B9' },
+  summaryCard: { backgroundColor: '#EEEADDFF', padding: 20, borderRadius: 12,  },
   summaryRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 },
-  summaryText: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#43332E' },
-  summaryTotalRow: { borderTopWidth: 1, borderTopColor: '#E6C9B9', paddingTop: 16, marginTop: 8, marginBottom: 0 },
-  summaryTotalText: { fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D' },
-  summaryTotalValue: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#B4725E' },
+  summaryText: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#5C554F' },
+  summaryTotalRow: {   paddingTop: 16, marginTop: 8, marginBottom: 0 },
+  summaryTotalText: { fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
+  summaryTotalValue: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
 
   // Footer
   footer: {
-    backgroundColor: '#FFFFFF', padding: 24, paddingBottom: 32,
+    backgroundColor: '#EEEADDFF', padding: 24, paddingBottom: 32,
     borderTopLeftRadius: 24, borderTopRightRadius: 24,
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 10,
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 10,
   },
   placeOrderBtn: {
-    backgroundColor: '#B4725E', padding: 18, borderRadius: 12,
+    backgroundColor: '#EEEADDFF', padding: 18, borderRadius: 12,
     alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between',
   },
   placeOrderBtnDisabled: { opacity: 0.5 },
-  placeOrderBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
-  placeOrderBtnAmount: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', opacity: 0.9 },
+  placeOrderBtnText: { color: '#5C554F', fontSize: 16, fontFamily: 'Montserrat_600SemiBold' },
+  placeOrderBtnAmount: { color: '#2E2A26', fontSize: 16, fontFamily: 'Montserrat_600SemiBold', opacity: 0.9 },
 });
 
 export default CheckoutScreen;

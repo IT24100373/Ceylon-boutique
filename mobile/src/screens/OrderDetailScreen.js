@@ -13,7 +13,7 @@ const getStatusColor = (status) => {
     case 'shipped': return '#1976D2';
     case 'delivered': return '#388E3C';
     case 'cancelled': return '#D32F2F';
-    default: return '#8C7A74';
+    default: return '#5C554F';
   }
 };
 
@@ -112,8 +112,8 @@ const OrderDetailScreen = ({ route, navigation }) => {
   if (loading || !order) {
     return (
       <View style={styles.loadingContainer}>
-        <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
-        <ActivityIndicator size="large" color="#B4725E" />
+        <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
+        <ActivityIndicator size="large" color="#EEEADDFF" />
       </View>
     );
   }
@@ -122,21 +122,15 @@ const OrderDetailScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#43332E" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Order Details</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
+      
 
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Header / Status */}
         <View style={styles.headerCard}>
           <Text style={styles.orderNumber}>{order.orderNumber}</Text>
           <Text style={styles.dateText}>Placed on {new Date(order.createdAt).toLocaleDateString()}</Text>
-          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(order.status) + '15', borderColor: getStatusColor(order.status) + '40' }]}>
+          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(order.status) + '15', }]}>
             <Text style={[styles.statusText, { color: getStatusColor(order.status) }]}>
               {order.status.toUpperCase()}
             </Text>
@@ -149,7 +143,7 @@ const OrderDetailScreen = ({ route, navigation }) => {
         {/* Shipped — confirm receipt banner */}
         {order.status === 'shipped' && (
           <View style={styles.confirmBanner}>
-            <Icon name="package" size={28} color="#4A148C" style={{ marginRight: 16 }} />
+            <Icon name="package" size={28} color="#2E2A26" style={{ marginRight: 16 }} />
             <View style={styles.confirmBannerText}>
               <Text style={styles.confirmBannerTitle}>Your order is on the way!</Text>
               <Text style={styles.confirmBannerSubtitle}>
@@ -173,12 +167,12 @@ const OrderDetailScreen = ({ route, navigation }) => {
           <Text style={styles.sectionTitle}>Items</Text>
           <View style={styles.card}>
             {order.items.map((item, idx) => (
-              <View key={idx} style={[styles.itemRow, idx === order.items.length - 1 && { borderBottomWidth: 0, paddingBottom: 0, marginBottom: 0 }]}>
+              <View key={idx} style={[styles.itemRow, idx === order.items.length - 1 && {  paddingBottom: 0, marginBottom: 0 }]}>
                 <View style={styles.itemImageContainer}>
                   {item.productImage ? (
                     <Image source={{ uri: item.productImage }} style={styles.itemImage} resizeMode="cover" />
                   ) : (
-                    <Icon name="image" size={24} color="#E6C9B9" />
+                    <Icon name="image" size={24} color="#2E2A26" />
                   )}
                 </View>
                 <View style={styles.itemDetails}>
@@ -225,7 +219,7 @@ const OrderDetailScreen = ({ route, navigation }) => {
             </View>
             <View style={styles.paymentBox}>
               <Text style={styles.paymentText}>
-                Payment: <Text style={{ fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D' }}>{order.paymentMethod === 'COD' ? 'Cash on Delivery' : 'Card'}</Text>
+                Payment: <Text style={{ fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' }}>{order.paymentMethod === 'COD' ? 'Cash on Delivery' : 'Card'}</Text>
               </Text>
               <Text style={styles.paymentStatusText}>
                 Status: {order.paymentStatus.toUpperCase()}
@@ -244,7 +238,7 @@ const OrderDetailScreen = ({ route, navigation }) => {
                   (s) => s.orderItemId === item._id?.toString()
                 );
                 return (
-                  <View key={idx} style={[styles.reviewItemRow, idx === order.items.length - 1 && { borderBottomWidth: 0, paddingBottom: 0 }]}>
+                  <View key={idx} style={[styles.reviewItemRow, idx === order.items.length - 1 && {  paddingBottom: 0 }]}>
                     <View style={styles.reviewItemInfo}>
                       <Text style={styles.reviewItemName} numberOfLines={1}>
                         {item.productName}
@@ -317,7 +311,7 @@ const OrderDetailScreen = ({ route, navigation }) => {
               <ActivityIndicator color="#FFFFFF" />
             ) : (
               <>
-                <Icon name="check-circle" size={20} color="#FFFFFF" style={{ marginRight: 8 }} />
+                <Icon name="check-circle" size={20} color="#2E2A26" style={{ marginRight: 8 }} />
                 <Text style={styles.confirmBtnText}>Confirm Receipt</Text>
               </>
             )}
@@ -345,88 +339,88 @@ const OrderDetailScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF1E8' },
+  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF' },
   scroll: { flex: 1, paddingHorizontal: 16 },
 
   headerCard: {
-    backgroundColor: '#FFFFFF', padding: 24, alignItems: 'center',
-    borderRadius: 12, borderWidth: 1, borderColor: '#E6C9B9', marginTop: 8,
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#EEEADDFF', padding: 24, alignItems: 'center',
+    borderRadius: 12,   marginTop: 8,
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
-  orderNumber: { fontSize: 24, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 6 },
-  dateText: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginBottom: 16 },
-  statusBadge: { paddingHorizontal: 16, paddingVertical: 6, borderRadius: 12, borderWidth: 1 },
-  statusText: { fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold' },
-  cancelReason: { marginTop: 12, fontSize: 14, color: '#D32F2F', fontFamily: 'InstrumentSans_400Regular', textAlign: 'center' },
+  orderNumber: { fontSize: 24, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 6 },
+  dateText: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#5C554F', marginBottom: 16 },
+  statusBadge: { paddingHorizontal: 16, paddingVertical: 6, borderRadius: 12, },
+  statusText: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold' },
+  cancelReason: { marginTop: 12, fontSize: 14, color: '#5C554F', fontFamily: 'Montserrat_400Regular', textAlign: 'center' },
 
   confirmBanner: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: '#EDE7F6',
-    borderWidth: 1, borderColor: '#B39DDB', borderRadius: 12,
+      borderRadius: 12,
     padding: 16, marginTop: 16,
   },
   confirmBannerText: { flex: 1 },
-  confirmBannerTitle: { fontSize: 15, fontFamily: 'InstrumentSans_600SemiBold', color: '#4A148C', marginBottom: 4 },
-  confirmBannerSubtitle: { fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#6A1B9A', lineHeight: 18 },
+  confirmBannerTitle: { fontSize: 15, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26', marginBottom: 4 },
+  confirmBannerSubtitle: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#8A8178', lineHeight: 18 },
 
-  trackingCard: { backgroundColor: '#F3E5F5', padding: 16, marginTop: 16, borderRadius: 12, borderWidth: 1, borderColor: '#E1BEE7' },
-  trackingText: { fontSize: 15, color: '#4A148C', fontFamily: 'InstrumentSans_600SemiBold', marginTop: 4 },
+  trackingCard: { backgroundColor: '#EEEADDFF', padding: 16, marginTop: 16, borderRadius: 12,  },
+  trackingText: { fontSize: 15, color: '#5C554F', fontFamily: 'Montserrat_600SemiBold', marginTop: 4 },
 
   section: { marginTop: 24 },
-  sectionTitle: { fontSize: 18, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 12 },
+  sectionTitle: { fontSize: 18, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 12 },
   card: {
-    backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16,
-    borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#EEEADDFF', borderRadius: 12, padding: 16,
+     
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
 
-  itemRow: { flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E6C9B9', paddingBottom: 16, marginBottom: 16 },
-  itemImageContainer: { width: 70, height: 70, borderRadius: 8, backgroundColor: '#F8F8F8', justifyContent: 'center', alignItems: 'center', marginRight: 16, borderWidth: 1, borderColor: '#E6C9B9', overflow: 'hidden' },
+  itemRow: { flexDirection: 'row', alignItems: 'center',   paddingBottom: 16, marginBottom: 16 },
+  itemImageContainer: { width: 70, height: 70, borderRadius: 8, backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center', marginRight: 16,   overflow: 'hidden' },
   itemImage: { width: '100%', height: '100%' },
   itemDetails: { flex: 1 },
-  itemName: { fontSize: 15, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D', marginBottom: 4 },
-  itemVariant: { fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginBottom: 2 },
-  itemPrice: { fontSize: 15, fontFamily: 'InstrumentSans_600SemiBold', color: '#B4725E', marginTop: 4 },
+  itemName: { fontSize: 15, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26', marginBottom: 4 },
+  itemVariant: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', marginBottom: 2 },
+  itemPrice: { fontSize: 15, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26', marginTop: 4 },
 
-  addressBox: { backgroundColor: '#FFFFFF' },
-  addressLabel: { fontSize: 15, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D', marginBottom: 6 },
-  addressText: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', marginBottom: 4, lineHeight: 20 },
+  addressBox: { backgroundColor: '#EEEADDFF' },
+  addressLabel: { fontSize: 15, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178', marginBottom: 6 },
+  addressText: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#5C554F', marginBottom: 4, lineHeight: 20 },
 
   summaryRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
-  summaryText: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#43332E' },
-  summaryTotalRow: { borderTopWidth: 1, borderTopColor: '#E6C9B9', paddingTop: 16, marginTop: 8, marginBottom: 16 },
-  summaryTotalText: { fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D' },
-  summaryTotalValue: { fontSize: 18, fontFamily: 'PlayfairDisplay_700Bold', color: '#B4725E' },
+  summaryText: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#5C554F' },
+  summaryTotalRow: {   paddingTop: 16, marginTop: 8, marginBottom: 16 },
+  summaryTotalText: { fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
+  summaryTotalValue: { fontSize: 18, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
 
-  paymentBox: { backgroundColor: '#FFF5EE', padding: 16, borderRadius: 8, borderWidth: 1, borderColor: '#E6C9B9' },
-  paymentText: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', marginBottom: 6 },
-  paymentStatusText: { fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#B4725E' },
+  paymentBox: { backgroundColor: '#EEEADDFF', padding: 16, borderRadius: 8,  },
+  paymentText: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#5C554F', marginBottom: 6 },
+  paymentStatusText: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
 
-  footer: { backgroundColor: '#FFFFFF', padding: 24, paddingBottom: 32, borderTopLeftRadius: 24, borderTopRightRadius: 24, shadowColor: '#43332E', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 10 },
+  footer: { backgroundColor: '#FFFFFF', padding: 24, paddingBottom: 32, borderTopLeftRadius: 24, borderTopRightRadius: 24, shadowColor: '#2E2A26', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 10 },
 
-  confirmBtn: { backgroundColor: '#388E3C', padding: 18, borderRadius: 12, alignItems: 'center', flexDirection: 'row', justifyContent: 'center' },
+  confirmBtn: { backgroundColor: '#EEEADDFF', padding: 18, borderRadius: 12, alignItems: 'center', flexDirection: 'row', justifyContent: 'center' },
   confirmBtnDisabled: { opacity: 0.5 },
-  confirmBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
+  confirmBtnText: { color: '#5C554F', fontSize: 16, fontFamily: 'Montserrat_600SemiBold' },
 
-  cancelBtn: { padding: 18, borderRadius: 12, alignItems: 'center', borderWidth: 2, borderColor: '#D32F2F', backgroundColor: '#FFFFFF' },
+  cancelBtn: { padding: 18, borderRadius: 12, alignItems: 'center',   backgroundColor: '#EEEADDFF' },
   cancelBtnDisabled: { opacity: 0.5 },
-  cancelBtnText: { color: '#D32F2F', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
+  cancelBtnText: { color: '#5C554F', fontSize: 16, fontFamily: 'Montserrat_600SemiBold' },
 
-  reviewItemRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#E6C9B9' },
+  reviewItemRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 12,  },
   reviewItemInfo: { flex: 1, marginRight: 12 },
-  reviewItemName: { fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D' },
-  reviewItemVariant: { fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginTop: 4 },
+  reviewItemName: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26' },
+  reviewItemVariant: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', marginTop: 4 },
   reviewBtns: { flexDirection: 'row', gap: 8 },
-  reviewBtn: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, borderWidth: 1, borderColor: '#B4725E', backgroundColor: '#FFFFFF' },
-  reviewBtnDone: { borderColor: '#388E3C', backgroundColor: '#E8F5E9' },
-  reviewBtnText: { fontSize: 12, fontFamily: 'InstrumentSans_600SemiBold', color: '#B4725E' },
-  reviewBtnTextDone: { color: '#388E3C' },
+  reviewBtn: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8,   backgroundColor: '#EEEADDFF' },
+  reviewBtnDone: {  backgroundColor: '#E8F5E9' },
+  reviewBtnText: { fontSize: 12, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
+  reviewBtnTextDone: { color: '#5C554F' },
 });
 
 export default OrderDetailScreen;

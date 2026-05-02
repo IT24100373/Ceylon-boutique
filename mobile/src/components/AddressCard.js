@@ -40,32 +40,32 @@ const AddressCard = ({ address, onEdit, onDelete, onSetDefault }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#EEEADDFF',
     borderRadius: 14,
     padding: 16,
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#E6C9B9',
-    shadowColor: '#43332E',
+    
+    
+    shadowColor: '#2E2A26',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
     elevation: 2,
   },
-  cardDefault: { borderColor: '#B4725E', borderWidth: 2 },
+  cardDefault: {  },
   header: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
-  label: { fontFamily: 'InstrumentSans_600SemiBold', fontSize: 16, color: '#2A201D', flex: 1 },
+  label: { fontFamily: 'Montserrat_600SemiBold', fontSize: 16, color: '#8A8178', flex: 1 },
   defaultBadge: {
-    backgroundColor: '#B4725E',
+    backgroundColor: '#EEEADDFF',
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 2,
   },
-  defaultBadgeText: { color: '#FFFFFF', fontSize: 11, fontFamily: 'InstrumentSans_600SemiBold' },
-  addressText: { color: '#43332E', fontSize: 14, fontFamily: 'InstrumentSans_400Regular', marginBottom: 2 },
+  defaultBadgeText: { color: '#5C554F', fontSize: 11, fontFamily: 'Montserrat_600SemiBold' },
+  addressText: { color: '#5C554F', fontSize: 14, fontFamily: 'Montserrat_400Regular', marginBottom: 2 },
   actions: { flexDirection: 'row', gap: 16, marginTop: 12 },
-  actionLink: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
-  deleteLink: { color: '#D32F2F' },
+  actionLink: { color: '#2E2A26', fontFamily: 'Montserrat_600SemiBold', fontSize: 14 },
+  deleteLink: { color: '#2E2A26' },
 });
 
 export default AddressCard;

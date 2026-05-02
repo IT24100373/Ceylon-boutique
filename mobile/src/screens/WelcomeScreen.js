@@ -17,7 +17,7 @@ const WelcomeScreen = ({ navigation }) => {
             {/* Brand Section */}
             <View style={styles.brandSection}>
               <View style={styles.iconContainer}>
-                <Icon name="shopping-bag" size={64} color="#FFFFFF" />
+                <Icon name="shopping-bag" size={64} color="#faf9f8ff" />
               </View>
               <Text style={styles.brandName}>Ceylon{'\n'}Boutique</Text>
               <Text style={styles.tagline}>Sri Lanka's Authentic Clothing Marketplace</Text>
@@ -42,7 +42,7 @@ const WelcomeScreen = ({ navigation }) => {
               {/* Decorative Divider */}
               <View style={styles.footerDecoration}>
                 <View style={styles.line} />
-                <Icon name="sun" size={14} color="rgba(255, 255, 255, 0.4)" style={styles.sunIcon} />
+                <Icon name="sun" size={14} color="#faf9f8ff" style={styles.sunIcon} />
                 <View style={styles.line} />
               </View>
             </View>
@@ -56,7 +56,7 @@ const WelcomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000', // Black background to avoid white flickering/footer
+    backgroundColor: '#FFFFFF', // Black background to avoid white flickering/footer
   },
   bgImage: {
     flex: 1,
@@ -81,8 +81,8 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
   brandName: {
-    color: '#FFFFFF',
-    fontFamily: 'PlayfairDisplay_700Bold',
+    color: '#faf9f8ff',
+    fontFamily: 'Cinzel_700Bold',
     fontSize: 54,
     textAlign: 'center',
     lineHeight: 60,
@@ -92,8 +92,8 @@ const styles = StyleSheet.create({
     textShadowRadius: 4,
   },
   tagline: {
-    color: '#F7D9C4', // Soft beige for tagline
-    fontFamily: 'PlayfairDisplay_400Regular',
+    color: '#faf9f8ff', // Soft beige for tagline
+    fontFamily: 'Cinzel_400Regular',
     fontSize: 18,
     textAlign: 'center',
     paddingHorizontal: 50,
@@ -107,37 +107,41 @@ const styles = StyleSheet.create({
   },
   getStartedBtn: {
     width: '100%',
-    backgroundColor: '#B4725E', // Brand brown
+    backgroundColor: '#EEEADDFF', // Brand brown
     borderRadius: 40,
     height: 62,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
-    shadowColor: '#000',
+    borderWidth: 1,
+    borderColor: '#2E2A26',
+    shadowColor: '#2E2A26',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
     elevation: 5,
   },
   getStartedBtnText: {
-    color: '#FFFFFF',
-    fontFamily: 'InstrumentSans_600SemiBold',
+    color: '#2E2A26',
+    fontFamily: 'Montserrat_600SemiBold',
     fontSize: 18,
   },
   sellerBtn: {
     width: '100%',
     height: 60,
     borderRadius: 40,
-    borderWidth: 1.5,
-    borderColor: '#FFFFFF',
+    
+    
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: '#EEEADDFF',
     marginBottom: 40,
   },
   sellerBtnText: {
-    color: '#FFFFFF',
-    fontFamily: 'InstrumentSans_600SemiBold',
+    color: '#faf9f8ff',
+    fontFamily: 'Montserrat_600SemiBold',
     fontSize: 16,
   },
   footerDecoration: {
@@ -149,7 +153,7 @@ const styles = StyleSheet.create({
   },
   line: {
     height: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#EEEADDFF',
     width: 40,
   },
   sunIcon: {

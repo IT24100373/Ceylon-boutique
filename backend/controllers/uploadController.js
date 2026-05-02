@@ -1,17 +1,16 @@
-const path = require('path');
-const fs = require('fs');
+const { cloudinary } = require('../middleware/upload');
 
 // -------------------------------------------------------
-// Image Upload Controller
+// Image Upload Controller (Cloudinary)
 // -------------------------------------------------------
-// Handles uploaded image files and returns their accessible URLs.
-// Supports both single and multiple image uploads.
+// Handles uploaded image files and returns their Cloudinary URLs.
+// Images are stored on Cloudinary's cloud CDN — no local disk needed.
 // -------------------------------------------------------
 
 // -------------------------------------------------------
 // POST /api/upload/images
 // Upload multiple product images (up to 10)
-// Returns array of image URLs
+// Returns array of Cloudinary image URLs
 // -------------------------------------------------------
 const uploadImages = async (req, res, next) => {
   try {
@@ -22,11 +21,8 @@ const uploadImages = async (req, res, next) => {
       });
     }
 
-    // Build accessible URLs for each uploaded file
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
-    const imageUrls = req.files.map((file) => {
-      return `${baseUrl}/uploads/products/${file.filename}`;
-    });
+    // Cloudinary URLs are already available in req.files[].path
+    const imageUrls = req.files.map((file) => file.path);
 
     res.status(200).json({
       success: true,
@@ -42,7 +38,7 @@ const uploadImages = async (req, res, next) => {
 // -------------------------------------------------------
 // POST /api/upload/image
 // Upload a single image (for shop logos, profile pics, etc.)
-// Returns single image URL
+// Returns single Cloudinary image URL
 // -------------------------------------------------------
 const uploadImage = async (req, res, next) => {
   try {
@@ -53,13 +49,11 @@ const uploadImage = async (req, res, next) => {
       });
     }
 
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
-    const imageUrl = `${baseUrl}/uploads/products/${req.file.filename}`;
-
+    // Cloudinary URL is available in req.file.path
     res.status(200).json({
       success: true,
       message: 'Image uploaded successfully.',
-      image: imageUrl,
+      image: req.file.path,
     });
   } catch (error) {
     next(error);
@@ -68,7 +62,7 @@ const uploadImage = async (req, res, next) => {
 
 // -------------------------------------------------------
 // DELETE /api/upload/image
-// Delete an uploaded image by filename
+// Delete an uploaded image from Cloudinary by URL or public ID
 // -------------------------------------------------------
 const deleteImage = async (req, res, next) => {
   try {
@@ -77,27 +71,36 @@ const deleteImage = async (req, res, next) => {
     if (!filename) {
       return res.status(400).json({
         success: false,
-        message: 'Filename is required.',
+        message: 'Filename (Cloudinary URL or public ID) is required.',
       });
     }
 
-    // Sanitize filename to prevent path traversal
-    const sanitizedFilename = path.basename(filename);
-    const filePath = path.join(__dirname, '..', 'uploads', 'products', sanitizedFilename);
+    // Extract public_id from Cloudinary URL
+    // URL format: https://res.cloudinary.com/<cloud>/image/upload/v123/ceylon-boutique/abc123.jpg
+    let publicId = filename;
+    if (filename.includes('cloudinary.com')) {
+      const urlParts = filename.split('/');
+      const uploadIndex = urlParts.indexOf('upload');
+      if (uploadIndex !== -1) {
+        // Everything after "upload/v12345/" is the public ID (without extension)
+        const pathAfterUpload = urlParts.slice(uploadIndex + 2).join('/');
+        publicId = pathAfterUpload.replace(/\.[^/.]+$/, ''); // Remove file extension
+      }
+    }
 
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({
+    const result = await cloudinary.uploader.destroy(publicId);
+
+    if (result.result === 'ok' || result.result === 'not found') {
+      res.status(200).json({
+        success: true,
+        message: 'Image deleted successfully.',
+      });
+    } else {
+      res.status(400).json({
         success: false,
-        message: 'Image not found.',
+        message: 'Failed to delete image from cloud storage.',
       });
     }
-
-    fs.unlinkSync(filePath);
-
-    res.status(200).json({
-      success: true,
-      message: 'Image deleted successfully.',
-    });
   } catch (error) {
     next(error);
   }

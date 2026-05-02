@@ -22,7 +22,7 @@ const StarDisplay = ({ rating }) => {
           key={star}
           name="star"
           size={16}
-          color={star <= filled ? "#B4725E" : "#E6C9B9"}
+          color={star <= filled ? "#2E2A26" : "#8A8178"}
           style={styles.starIcon}
           solid={star <= filled}
         />
@@ -118,13 +118,13 @@ const MyReviewsScreen = ({ navigation }) => {
         {/* Header: type badge + target name */}
         <View style={styles.cardHeader}>
           <View style={[styles.typeBadge, isProduct ? styles.typeBadgeProduct : styles.typeBadgeSeller]}>
-            <Icon name={isProduct ? "package" : "home"} size={12} color={isProduct ? "#2A201D" : "#4A148C"} style={{ marginRight: 6 }} />
-            <Text style={[styles.typeBadgeText, { color: isProduct ? '#2A201D' : '#4A148C' }]}>
+            <Icon name={isProduct ? "package" : "home"} size={12} color={isProduct ? "#2E2A26" : "#4A148C"} style={{ marginRight: 6 }} />
+            <Text style={[styles.typeBadgeText, { color: isProduct ? '#2E2A26' : '#4A148C' }]}>
               {isProduct ? 'Product' : 'Seller'}
             </Text>
           </View>
           <View style={styles.editWindowBadge}>
-            <Icon name={item.canEdit ? "edit-2" : "lock"} size={12} color="#8C7A74" style={{ marginRight: 4 }} />
+            <Icon name={item.canEdit ? "edit-2" : "lock"} size={12} color="#2E2A26" style={{ marginRight: 4 }} />
             <Text style={styles.editWindow}>
               {item.canEdit
                 ? `${item.hoursUntilLock}h left to edit`
@@ -184,22 +184,16 @@ const MyReviewsScreen = ({ navigation }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
-        <ActivityIndicator size="large" color="#B4725E" />
+        <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
+        <ActivityIndicator size="large" color="#EEEADDFF" />
       </View>
     );
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#43332E" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>My Reviews</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
+      
 
       <FlatList
         data={reviews}
@@ -208,12 +202,12 @@ const MyReviewsScreen = ({ navigation }) => {
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.4}
         ListFooterComponent={loadingMore ? (
-          <ActivityIndicator size="small" color="#B4725E" style={{ marginVertical: 20 }} />
+          <ActivityIndicator size="small" color="#EEEADDFF" style={{ marginVertical: 20 }} />
         ) : null}
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <View style={styles.emptyIconCircle}>
-              <Icon name="star" size={40} color="#B4725E" />
+              <Icon name="star" size={40} color="#2E2A26" />
             </View>
             <Text style={styles.emptyTitle}>No reviews yet</Text>
             <Text style={styles.emptySubtitle}>
@@ -229,64 +223,66 @@ const MyReviewsScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF1E8' },
+  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF' },
 
   list: { padding: 16, paddingBottom: 40 },
   emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40, paddingBottom: 80 },
 
   card: {
-    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16,
-    marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 16,
+    marginBottom: 16,  
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
   typeBadge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
-  typeBadgeProduct: { backgroundColor: '#F8F8F8', borderWidth: 1, borderColor: '#E6C9B9' },
-  typeBadgeSeller: { backgroundColor: '#F3E5F5', borderWidth: 1, borderColor: '#E1BEE7' },
-  typeBadgeText: { fontSize: 12, fontFamily: 'InstrumentSans_600SemiBold' },
+  typeBadgeProduct: { backgroundColor: '#FFFFFF',  },
+  typeBadgeSeller: { backgroundColor: '#F3E5F5',  },
+  typeBadgeText: { fontSize: 12, fontFamily: 'Montserrat_600SemiBold' },
 
   editWindowBadge: { flexDirection: 'row', alignItems: 'center' },
-  editWindow: { fontSize: 12, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74' },
+  editWindow: { fontSize: 12, fontFamily: 'Montserrat_400Regular', color: '#2E2A26' },
 
-  targetName: { fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D', marginBottom: 8, lineHeight: 22 },
+  targetName: { fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26', marginBottom: 8, lineHeight: 22 },
 
   ratingRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   starRow: { flexDirection: 'row', marginRight: 8 },
   starIcon: { marginRight: 2 },
-  ratingNum: { fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#43332E' },
-  editedTag: { fontSize: 12, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', fontStyle: 'italic', marginLeft: 4 },
+  ratingNum: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26' },
+  editedTag: { fontSize: 12, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', fontStyle: 'italic', marginLeft: 4 },
 
-  reviewText: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', lineHeight: 22, marginBottom: 12 },
-  noText: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', fontStyle: 'italic', marginBottom: 12 },
-  dateText: { fontSize: 12, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginBottom: 16 },
+  reviewText: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#5C554F', lineHeight: 22, marginBottom: 12 },
+  noText: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#5C554F', fontStyle: 'italic', marginBottom: 12 },
+  dateText: { fontSize: 12, fontFamily: 'Montserrat_400Regular', color: '#5C554F', marginBottom: 16 },
 
-  actionRow: { flexDirection: 'row', gap: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#F0F0F0' },
+  actionRow: { flexDirection: 'row', gap: 12, paddingTop: 12,  },
   editBtn: {
     flex: 1, paddingVertical: 12, borderRadius: 10, alignItems: 'center',
-    backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#B4725E',
+    backgroundColor: '#EEEADDFF',
+    borderWidth: 1, borderColor: '#2E2A26',
   },
-  editBtnText: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
+  editBtnText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold', fontSize: 14 },
   deleteBtn: {
     flex: 1, paddingVertical: 12, borderRadius: 10, alignItems: 'center',
-    backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#D32F2F',
+    backgroundColor: '#EEEADDFF',
+    borderWidth: 1, borderColor: '#2E2A26',
   },
   deleteBtnDisabled: { opacity: 0.5 },
-  deleteBtnText: { color: '#D32F2F', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
+  deleteBtnText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold', fontSize: 14 },
 
   emptyState: { alignItems: 'center' },
   emptyIconCircle: {
-    width: 80, height: 80, borderRadius: 40, backgroundColor: '#F7D9C4',
+    width: 80, height: 80, borderRadius: 40, backgroundColor: '#EEEADDFF',
     alignItems: 'center', justifyContent: 'center', marginBottom: 24,
   },
-  emptyTitle: { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 12 },
-  emptySubtitle: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', textAlign: 'center', lineHeight: 22, opacity: 0.8 },
+  emptyTitle: { fontSize: 22, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 12 },
+  emptySubtitle: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#8A8178', textAlign: 'center', lineHeight: 22, opacity: 0.8 },
 });
 
 export default MyReviewsScreen;

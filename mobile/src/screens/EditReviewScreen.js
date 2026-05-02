@@ -21,7 +21,7 @@ const StarSelector = ({ rating, onSelect }) => (
         <Icon
           name="star"
           size={36}
-          color={rating >= star ? "#B4725E" : "#E6C9B9"}
+          color={rating >= star ? "#2E2A26" : "#8A8178"}
           solid={rating >= star}
         />
       </TouchableOpacity>
@@ -80,26 +80,20 @@ const EditReviewScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#43332E" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Edit Review</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
+      
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
         {/* Review context card */}
         <View style={styles.contextCard}>
           <View style={styles.typeRow}>
-            <Icon name={typeIcon} size={14} color="#B4725E" style={{ marginRight: 6 }} />
+            <Icon name={typeIcon} size={14} color="#2E2A26" style={{ marginRight: 6 }} />
             <Text style={styles.typeLabel}>{typeLabel}</Text>
           </View>
           <Text style={styles.targetName} numberOfLines={2}>{targetName}</Text>
           <View style={styles.windowBadge}>
-            <Icon name="clock" size={12} color="#D4A853" style={{ marginRight: 6 }} />
+            <Icon name="clock" size={12} color="#2E2A26" style={{ marginRight: 6 }} />
             <Text style={styles.windowText}>
               {review.hoursUntilLock}h remaining to edit
             </Text>
@@ -123,7 +117,7 @@ const EditReviewScreen = ({ route, navigation }) => {
             value={reviewText}
             onChangeText={setReviewText}
             placeholder="Share your experience..."
-            placeholderTextColor="#A0938E"
+            placeholderTextColor="#8A8178"
             multiline
             maxLength={1000}
             textAlignVertical="top"
@@ -139,7 +133,7 @@ const EditReviewScreen = ({ route, navigation }) => {
             value={photo1}
             onChangeText={setPhoto1}
             placeholder="Photo URL 1"
-            placeholderTextColor="#A0938E"
+            placeholderTextColor="#8A8178"
             autoCapitalize="none"
             keyboardType="url"
           />
@@ -148,7 +142,7 @@ const EditReviewScreen = ({ route, navigation }) => {
             value={photo2}
             onChangeText={setPhoto2}
             placeholder="Photo URL 2"
-            placeholderTextColor="#A0938E"
+            placeholderTextColor="#8A8178"
             autoCapitalize="none"
             keyboardType="url"
           />
@@ -157,7 +151,7 @@ const EditReviewScreen = ({ route, navigation }) => {
             value={photo3}
             onChangeText={setPhoto3}
             placeholder="Photo URL 3"
-            placeholderTextColor="#A0938E"
+            placeholderTextColor="#8A8178"
             autoCapitalize="none"
             keyboardType="url"
           />
@@ -185,64 +179,65 @@ const EditReviewScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
   scroll: { padding: 16 },
 
   contextCard: {
-    backgroundColor: '#FFF5EE', borderRadius: 14, padding: 20,
-    marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 20,
+    marginBottom: 16,
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   typeRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
-  typeLabel: { fontSize: 13, fontFamily: 'InstrumentSans_600SemiBold', color: '#B4725E' },
-  targetName: { fontSize: 16, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 16, lineHeight: 22 },
+  typeLabel: { fontSize: 13, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178' },
+  targetName: { fontSize: 16, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 16, lineHeight: 22 },
 
   windowBadge: {
-    alignSelf: 'flex-start', backgroundColor: '#FFFFFF',
+    alignSelf: 'flex-start', backgroundColor: '#EEEADDFF',
     paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
-    flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#E6C9B9',
+    flexDirection: 'row', alignItems: 'center',
   },
-  windowText: { fontSize: 12, color: '#D4A853', fontFamily: 'InstrumentSans_600SemiBold' },
+  windowText: { fontSize: 12, color: '#5C554F', fontFamily: 'Montserrat_600SemiBold' },
 
   section: {
-    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 20,
-    marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 20,
+    marginBottom: 16,
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
-  sectionTitle: { fontSize: 16, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 16 },
-  optional: { fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74' },
+  sectionTitle: { fontSize: 16, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 16 },
+  optional: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#2E2A26' },
 
   starRow: { flexDirection: 'row', justifyContent: 'center', marginBottom: 8 },
   starBtn: { padding: 6 },
-  ratingLabel: { textAlign: 'center', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#B4725E' },
+  ratingLabel: { textAlign: 'center', fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#6c5f52ff' },
 
   textArea: {
-    borderWidth: 1, borderColor: '#E6C9B9', borderRadius: 10,
-    padding: 16, height: 120, fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D', backgroundColor: '#F8F8F8',
+    borderRadius: 10,
+    padding: 16, height: 120, fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', backgroundColor: '#FFFFFF',
   },
-  charCount: { textAlign: 'right', fontSize: 12, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginTop: 8 },
+  charCount: { textAlign: 'right', fontSize: 12, fontFamily: 'Montserrat_400Regular', color: '#5C554F', marginTop: 8 },
 
   urlInput: {
-    borderWidth: 1, borderColor: '#E6C9B9', borderRadius: 10,
-    padding: 16, fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D', backgroundColor: '#F8F8F8', marginBottom: 12,
+    borderRadius: 10,
+    padding: 16, fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', backgroundColor: '#FFFFFF', marginBottom: 12,
   },
 
   footer: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
-    backgroundColor: '#FFFFFF', padding: 24, paddingBottom: 32, borderTopLeftRadius: 24, borderTopRightRadius: 24,
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 10,
+    backgroundColor: '#EEEADDFF', padding: 24, paddingBottom: 32, borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 10,
   },
   saveBtn: {
-    backgroundColor: '#B4725E', borderRadius: 12, paddingVertical: 18, alignItems: 'center',
+    backgroundColor: '#EEEADDFF', borderRadius: 12, paddingVertical: 18, alignItems: 'center',
+    borderWidth: 1, borderColor: '#2E2A26',
   },
   saveBtnDisabled: { opacity: 0.5 },
-  saveBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
+  saveBtnText: { color: '#5C554F', fontSize: 16, fontFamily: 'Montserrat_600SemiBold' },
 });
 
 export default EditReviewScreen;

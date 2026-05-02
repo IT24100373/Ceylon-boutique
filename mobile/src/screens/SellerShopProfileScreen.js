@@ -57,38 +57,32 @@ const SellerShopProfileScreen = ({ navigation }) => {
   );
 
   const statusColors = {
-    pending: { bg: '#FFF5EE', text: '#D4A853', border: '#E6C9B9' },
+    pending: { bg: '#EEEADDFF', text: '#D4A853', border: '#EEEADDFF' },
     approved: { bg: '#E8F5E9', text: '#2E7D32', border: '#C8E6C9' },
     rejected: { bg: '#FFEBEE', text: '#C62828', border: '#FFCDD2' },
-    suspended: { bg: '#FFF5EE', text: '#D4A853', border: '#E6C9B9' },
+    suspended: { bg: '#EEEADDFF', text: '#D4A853', border: '#EEEADDFF' },
     removed: { bg: '#FFEBEE', text: '#C62828', border: '#FFCDD2' },
   };
   const sc = statusColors[seller?.verificationStatus] || statusColors.pending;
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#B4725E" />
+      <StatusBar barStyle="light-content" backgroundColor="#EEEADDFF" />
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Shop Profile</Text>
-        <View style={{ width: 24 }} />
-      </View>
+    
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#B4725E" />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#EEEADDFF" />}
       >
         {/* Shop Header Card */}
         <View style={styles.shopHeader}>
           <View style={styles.shopIconCircle}>
-            <Icon name="home" size={32} color="#FFFFFF" />
+            <Icon name="home" size={32} color="#2E2A26" />
           </View>
           <Text style={styles.shopName}>{seller?.shopName}</Text>
           <Text style={styles.shopCategory}>{seller?.categoryFocus || 'General Clothing'}</Text>
-          <View style={[styles.statusBadge, { backgroundColor: sc.bg, borderColor: sc.border }]}>
+          <View style={[styles.statusBadge, { backgroundColor: sc.bg, }]}>
             <Text style={[styles.statusText, { color: sc.text }]}>
               {seller?.verificationStatus?.toUpperCase()}
             </Text>
@@ -187,60 +181,59 @@ const SellerShopProfileScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#B4725E'
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#EEEADDFF'
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#FFFFFF' },
+  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
 
   shopHeader: {
-    backgroundColor: '#B4725E', paddingVertical: 30, alignItems: 'center',
+    backgroundColor: '#EEEADDFF', paddingVertical: 30, alignItems: 'center',
     borderBottomLeftRadius: 24, borderBottomRightRadius: 24,
   },
   shopIconCircle: {
     width: 76, height: 76, borderRadius: 38,
     backgroundColor: 'rgba(255,255,255,0.15)',
     alignItems: 'center', justifyContent: 'center', marginBottom: 16,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)'
   },
-  shopName: { color: '#FFFFFF', fontSize: 24, fontFamily: 'PlayfairDisplay_700Bold', marginBottom: 4 },
-  shopCategory: { color: '#F7D9C4', fontSize: 14, fontFamily: 'InstrumentSans_400Regular', marginBottom: 12 },
+  shopName: { color: '#2E2A26', fontSize: 24, fontFamily: 'Cinzel_700Bold', marginBottom: 4 },
+  shopCategory: { color: '#2E2A26', fontSize: 14, fontFamily: 'Montserrat_400Regular', marginBottom: 12 },
   statusBadge: {
-    paddingHorizontal: 16, paddingVertical: 6, borderRadius: 20, borderWidth: 1
+    paddingHorizontal: 16, paddingVertical: 6, borderRadius: 20, 
   },
-  statusText: { fontFamily: 'InstrumentSans_600SemiBold', fontSize: 12 },
+  statusText: { fontFamily: 'Montserrat_600SemiBold', fontSize: 12 },
 
   statsRow: {
-    flexDirection: 'row', backgroundColor: '#FFFFFF', marginHorizontal: 16,
+    flexDirection: 'row', backgroundColor: '#EEEADDFF', marginHorizontal: 16,
     marginTop: -20, borderRadius: 14, padding: 16,
-    borderWidth: 1, borderColor: '#E6C9B9', justifyContent: 'space-around',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 4,
+      justifyContent: 'space-around',
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 4,
   },
   statItem: { alignItems: 'center', flex: 1 },
-  statValue: { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#B4725E' },
-  statLabel: { fontSize: 12, color: '#8C7A74', marginTop: 4, fontFamily: 'InstrumentSans_600SemiBold' },
-  statDivider: { width: 1, backgroundColor: '#E6C9B9' },
+  statValue: { fontSize: 22, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
+  statLabel: { fontSize: 12, color: '#8A8178', marginTop: 4, fontFamily: 'Montserrat_600SemiBold' },
+  statDivider: { width: 1, backgroundColor: '#EEEADDFF' },
 
   section: {
-    backgroundColor: '#FFFFFF', marginHorizontal: 16, marginTop: 16,
-    borderRadius: 14, padding: 20, borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#EEEADDFF', marginHorizontal: 16, marginTop: 16,
+    borderRadius: 14, padding: 20,  
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   sectionTitle: {
-    fontSize: 16, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 16,
-    borderBottomWidth: 1, borderBottomColor: '#F8F8F8', paddingBottom: 10,
+    fontSize: 16, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 16,
+      paddingBottom: 10,
   },
   infoRow: {
     flexDirection: 'row', justifyContent: 'space-between',
-    paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#F8F8F8',
+    paddingVertical: 10,  
   },
-  infoLabel: { fontSize: 13, color: '#8C7A74', fontFamily: 'InstrumentSans_600SemiBold', flex: 1 },
-  infoValue: { fontSize: 13, color: '#2A201D', fontFamily: 'InstrumentSans_400Regular', flex: 1.5, textAlign: 'right' },
+  infoLabel: { fontSize: 13, color: '#8A8178', fontFamily: 'Montserrat_600SemiBold', flex: 1 },
+  infoValue: { fontSize: 13, color: '#5C554F', fontFamily: 'Montserrat_400Regular', flex: 1.5, textAlign: 'right' },
 
   editSection: { padding: 16, marginTop: 8 },
-  editBtn: { backgroundColor: '#B4725E', borderRadius: 12, paddingVertical: 16 },
+  editBtn: { backgroundColor: '#EEEADDFF', borderRadius: 12, paddingVertical: 16 },
 });
 
 export default SellerShopProfileScreen;

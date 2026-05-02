@@ -87,9 +87,9 @@ const MyProductsScreen = ({ navigation }) => {
   ];
 
   const getStatusBadge = (product) => {
-    if (!product.isPublished) return { text: 'Unpublished', color: '#B4725E', bg: '#FFF5EE' };
-    if (product.totalStock === 0) return { text: 'Out of Stock', color: '#D32F2F', bg: '#FFEBEE' };
-    return { text: 'Published', color: '#2E7D32', bg: '#E8F5E9' };
+    if (!product.isPublished) return { text: 'Unpublished', color: '#5C554F', bg: '#EEEADDFF' };
+    if (product.totalStock === 0) return { text: 'Out of Stock', color: '#5C554F', bg: '#FFEBEE' };
+    return { text: 'Published', color: '#5C554F', bg: '#E8F5E9' };
   };
 
   const renderProduct = ({ item }) => {
@@ -102,7 +102,7 @@ const MyProductsScreen = ({ navigation }) => {
             <Image source={{ uri: item.images[0] }} style={styles.productImage} />
           ) : (
             <View style={[styles.productImage, styles.noImage]}>
-              <Icon name="package" size={24} color="#8C7A74" />
+              <Icon name="package" size={24} color="#2E2A26" />
             </View>
           )}
           <View style={styles.productInfo}>
@@ -124,21 +124,21 @@ const MyProductsScreen = ({ navigation }) => {
             style={[styles.actionBtn, styles.editBtn]}
             onPress={() => navigation.navigate('EditProduct', { productId: item._id })}
           >
-            <Icon name="edit-2" size={14} color="#43332E" style={{ marginRight: 4 }} />
+            <Icon name="edit-2" size={14} color="#2E2A26" style={{ marginRight: 4 }} />
             <Text style={styles.actionBtnText}>Edit</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.actionBtn, styles.stockBtn]}
             onPress={() => navigation.navigate('ManageStock', { productId: item._id, productName: item.name })}
           >
-            <Icon name="bar-chart-2" size={14} color="#43332E" style={{ marginRight: 4 }} />
+            <Icon name="bar-chart-2" size={14} color="#2E2A26" style={{ marginRight: 4 }} />
             <Text style={styles.actionBtnText}>Stock</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.actionBtn, item.isPublished ? styles.unpublishBtn : styles.publishBtn]}
             onPress={() => handleTogglePublish(item._id, item.isPublished)}
           >
-            <Icon name={item.isPublished ? "eye-off" : "eye"} size={14} color="#43332E" style={{ marginRight: 4 }} />
+            <Icon name={item.isPublished ? "eye-off" : "eye"} size={14} color="#2E2A26" style={{ marginRight: 4 }} />
             <Text style={styles.actionBtnText}>
               {item.isPublished ? 'Hide' : 'Show'}
             </Text>
@@ -147,7 +147,7 @@ const MyProductsScreen = ({ navigation }) => {
             style={[styles.actionBtn, styles.deleteBtn]}
             onPress={() => handleDelete(item._id, item.name)}
           >
-            <Icon name="trash-2" size={16} color="#D32F2F" />
+            <Icon name="trash-2" size={16} color="#2E2A26" />
           </TouchableOpacity>
         </View>
       </View>
@@ -156,15 +156,9 @@ const MyProductsScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#43332E" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>My Products</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      
 
       {/* Tab Bar */}
       <View style={styles.tabBar}>
@@ -186,13 +180,13 @@ const MyProductsScreen = ({ navigation }) => {
         data={products}
         keyExtractor={(item) => item._id}
         renderItem={renderProduct}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#B4725E" />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#EEEADDFF" />}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           !loading && (
             <View style={styles.emptyState}>
               <View style={styles.emptyIconCircle}>
-                <Icon name="package" size={40} color="#B4725E" />
+                <Icon name="package" size={40} color="#2E2A26" />
               </View>
               <Text style={styles.emptyTitle}>No products found</Text>
               <Text style={styles.emptyText}>
@@ -211,7 +205,7 @@ const MyProductsScreen = ({ navigation }) => {
         onPress={() => navigation.navigate('AddProduct')}
         activeOpacity={0.8}
       >
-        <Icon name="plus" size={20} color="#FFFFFF" style={{ marginRight: 8 }} />
+        <Icon name="plus" size={20} color="#2E2A26" style={{ marginRight: 8 }} />
         <Text style={styles.fabText}>Add Product</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -219,77 +213,79 @@ const MyProductsScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
 
   tabBar: {
-    flexDirection: 'row', backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1, borderBottomColor: '#E6C9B9',
+    flexDirection: 'row', backgroundColor: '#EEEADDFF',
+     
   },
   tab: {
     flex: 1, paddingVertical: 14, alignItems: 'center',
   },
   activeTab: {
-    borderBottomWidth: 3, borderBottomColor: '#B4725E',
+     
   },
-  tabText: { fontSize: 13, color: '#8C7A74', fontFamily: 'InstrumentSans_600SemiBold' },
-  activeTabText: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold' },
+  tabText: { fontSize: 13, color: '#5C554F', fontFamily: 'Montserrat_600SemiBold' },
+  activeTabText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold' },
 
   listContent: { padding: 16, paddingBottom: 100 },
   productCard: {
-    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16,
-    marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 16,
+    marginBottom: 16,  
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   productRow: { flexDirection: 'row', marginBottom: 16 },
   productImage: {
     width: 80, height: 80, borderRadius: 10,
-    backgroundColor: '#F8F8F8',
+    backgroundColor: '#FFFFFF',
   },
   noImage: { alignItems: 'center', justifyContent: 'center' },
   productInfo: { flex: 1, marginLeft: 14 },
-  productName: { fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D', marginBottom: 4 },
-  productCategory: { fontSize: 13, color: '#8C7A74', fontFamily: 'InstrumentSans_400Regular', marginBottom: 6 },
-  productPrice: { fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#B4725E', marginBottom: 8 },
+  productName: { fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26', marginBottom: 4 },
+  productCategory: { fontSize: 13, color: '#2E2A26', fontFamily: 'Montserrat_400Regular', marginBottom: 6 },
+  productPrice: { fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26', marginBottom: 8 },
   metaRow: { flexDirection: 'row', alignItems: 'center' },
   badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, marginRight: 8 },
-  badgeText: { fontSize: 11, fontFamily: 'InstrumentSans_600SemiBold' },
-  stockText: { fontSize: 13, color: '#8C7A74', fontFamily: 'InstrumentSans_600SemiBold' },
+  badgeText: { fontSize: 11, fontFamily: 'Montserrat_600SemiBold' },
+  stockText: { fontSize: 13, color: '#5C554F', fontFamily: 'Montserrat_600SemiBold' },
 
-  actionRow: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: '#F8F8F8', paddingTop: 14 },
+  actionRow: { flexDirection: 'row',   paddingTop: 14 },
   actionBtn: {
     flex: 1, paddingVertical: 10, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',
     borderRadius: 8, marginHorizontal: 4,
-    backgroundColor: '#F8F8F8',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1, borderColor: '#2E2A26',
   },
-  editBtn: { backgroundColor: '#F8F8F8', borderWidth: 1, borderColor: '#E6C9B9' },
-  stockBtn: { backgroundColor: '#FFF5EE' },
-  unpublishBtn: { backgroundColor: '#F8F8F8' },
-  publishBtn: { backgroundColor: '#E8F5E9' },
-  deleteBtn: { backgroundColor: '#FFEBEE', flex: 0.5 },
-  actionBtnText: { fontSize: 13, fontFamily: 'InstrumentSans_600SemiBold', color: '#43332E' },
+  editBtn: { backgroundColor: '#EEEADDFF',  },
+  stockBtn: { backgroundColor: '#EEEADDFF' },
+  unpublishBtn: { backgroundColor: '#EEEADDFF' },
+  publishBtn: { backgroundColor: '#EEEADDFF' },
+  deleteBtn: { backgroundColor: '#EEEADDFF', flex: 0.5 },
+  actionBtnText: { fontSize: 13, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
 
   emptyState: { alignItems: 'center', justifyContent: 'center', paddingTop: 60 },
   emptyIconCircle: {
-    width: 80, height: 80, borderRadius: 40, backgroundColor: '#F7D9C4',
+    width: 80, height: 80, borderRadius: 40, backgroundColor: '#EEEADDFF',
     alignItems: 'center', justifyContent: 'center', marginBottom: 24,
   },
-  emptyTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 8 },
-  emptyText: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', textAlign: 'center', paddingHorizontal: 40, lineHeight: 22 },
+  emptyTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 8 },
+  emptyText: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#5C554F', textAlign: 'center', paddingHorizontal: 40, lineHeight: 22 },
 
   fab: {
     position: 'absolute', bottom: 20, left: 20, right: 20,
-    backgroundColor: '#B4725E', paddingVertical: 16,
+    backgroundColor: '#EEEADDFF', paddingVertical: 16,
     borderRadius: 14, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 4 },
+    borderWidth: 1, borderColor: '#2E2A26',
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15, shadowRadius: 8, elevation: 6,
   },
-  fabText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
+  fabText: { color: '#5C554F', fontSize: 16, fontFamily: 'Montserrat_600SemiBold' },
 });
 
 export default MyProductsScreen;

@@ -12,18 +12,12 @@ const CartScreen = ({ navigation }) => {
   if (cartItems.length === 0) {
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-            <Icon name="arrow-left" size={24} color="#43332E" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Shopping Bag</Text>
-          <View style={{ width: 24 }} />
-        </View>
+        <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
+        
 
         <View style={styles.emptyContainer}>
           <View style={styles.emptyIconCircle}>
-            <Icon name="shopping-bag" size={40} color="#B4725E" />
+            <Icon name="shopping-bag" size={40} color="#2E2A26" />
           </View>
           <Text style={styles.emptyTitle}>Your bag is empty</Text>
           <Text style={styles.emptySubtitle}>Looks like you haven't added any items to your bag yet.</Text>
@@ -40,14 +34,8 @@ const CartScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#43332E" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Shopping Bag</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
+      
 
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
         {cartItems.map((item, index) => (
@@ -56,7 +44,7 @@ const CartScreen = ({ navigation }) => {
               {item.productImage ? (
                 <Image source={{ uri: item.productImage }} style={styles.itemImage} resizeMode="cover" />
               ) : (
-                <Icon name="image" size={24} color="#E6C9B9" />
+                <Icon name="image" size={24} color="#2E2A26" />
               )}
             </View>
 
@@ -78,7 +66,7 @@ const CartScreen = ({ navigation }) => {
                     ]);
                   }}
                 >
-                  <Icon name="x" size={20} color="#8C7A74" />
+                  <Icon name="x" size={20} color="#2E2A26" />
                 </TouchableOpacity>
               </View>
 
@@ -100,14 +88,14 @@ const CartScreen = ({ navigation }) => {
                       }
                     }}
                   >
-                    <Icon name="minus" size={16} color="#43332E" />
+                    <Icon name="minus" size={16} color="#2E2A26" />
                   </TouchableOpacity>
                   <Text style={styles.qtyValue}>{item.quantity}</Text>
                   <TouchableOpacity
                     style={styles.qtyBtn}
                     onPress={() => updateQuantity(item.product, item.size, item.color, item.quantity + 1)}
                   >
-                    <Icon name="plus" size={16} color="#43332E" />
+                    <Icon name="plus" size={16} color="#2E2A26" />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -127,7 +115,7 @@ const CartScreen = ({ navigation }) => {
           onPress={() => navigation.navigate('Checkout')}
         >
           <Text style={styles.checkoutBtnText}>Proceed to Checkout</Text>
-          <Icon name="arrow-right" size={20} color="#FFFFFF" style={{ marginLeft: 8 }} />
+          <Icon name="arrow-right" size={20} color="#2E2A26" style={{ marginLeft: 8 }} />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -135,60 +123,64 @@ const CartScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
   scroll: { flex: 1, paddingHorizontal: 16 },
   emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, paddingBottom: 60 },
   emptyIconCircle: {
-    width: 80, height: 80, borderRadius: 40, backgroundColor: '#F7D9C4',
+    width: 80, height: 80, borderRadius: 40, backgroundColor: '#EEEADDFF',
     alignItems: 'center', justifyContent: 'center', marginBottom: 24,
   },
-  emptyTitle: { fontSize: 24, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 12 },
-  emptySubtitle: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', textAlign: 'center', marginBottom: 32, opacity: 0.8 },
-  shopBtn: { backgroundColor: '#B4725E', paddingHorizontal: 32, paddingVertical: 16, borderRadius: 8 },
-  shopBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
+  emptyTitle: { fontSize: 24, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 12 },
+  emptySubtitle: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#8A8178', textAlign: 'center', marginBottom: 32, opacity: 0.8 },
+  shopBtn: {
+    backgroundColor: '#EEEADDFF', paddingHorizontal: 32, paddingVertical: 16, borderRadius: 8,
+    borderWidth: 1, borderColor: '#2E2A26',
+  },
+  shopBtnText: { color: '#5C554F', fontSize: 16, fontFamily: 'Montserrat_600SemiBold' },
 
   cartItem: {
-    flexDirection: 'row', backgroundColor: '#FFFFFF', padding: 12,
+    flexDirection: 'row', backgroundColor: '#EEEADDFF', padding: 12,
     borderRadius: 12, marginBottom: 16,
-    borderWidth: 1, borderColor: '#E6C9B9',
+     
   },
   imageContainer: {
-    width: 90, height: 110, borderRadius: 8, backgroundColor: '#F8F8F8',
+    width: 90, height: 110, borderRadius: 8, backgroundColor: '#FFFFFF',
     marginRight: 16, alignItems: 'center', justifyContent: 'center', overflow: 'hidden'
   },
   itemImage: { width: '100%', height: '100%' },
   itemDetails: { flex: 1, justifyContent: 'space-between', paddingVertical: 4 },
   itemHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  itemName: { fontSize: 16, fontFamily: 'PlayfairDisplay_600SemiBold', color: '#2A201D', flex: 1, marginRight: 10 },
-  itemVariant: { fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginTop: 4 },
+  itemName: { fontSize: 16, fontFamily: 'Cinzel_600SemiBold', color: '#2E2A26', flex: 1, marginRight: 10 },
+  itemVariant: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', marginTop: 4 },
   priceRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 },
-  itemPrice: { fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#B4725E' },
+  itemPrice: { fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26' },
 
-  qtyBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF5EE', borderRadius: 8, borderWidth: 1, borderColor: '#E6C9B9' },
+  qtyBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EEEADDFF', borderRadius: 8,  },
   qtyBtn: { width: 32, height: 32, justifyContent: 'center', alignItems: 'center' },
-  qtyValue: { width: 30, textAlign: 'center', fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D' },
+  qtyValue: { width: 30, textAlign: 'center', fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
   removeBtn: { padding: 4, marginRight: -4, marginTop: -4 },
 
   footer: {
-    backgroundColor: '#FFFFFF', padding: 24, paddingBottom: 32,
+    backgroundColor: '#EEEADDFF', padding: 24, paddingBottom: 32,
     borderTopLeftRadius: 24, borderTopRightRadius: 24,
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: -4 },
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.05, shadowRadius: 10, elevation: 10,
   },
   totalRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20, alignItems: 'center' },
-  totalLabel: { fontSize: 16, fontFamily: 'InstrumentSans_400Regular', color: '#43332E' },
-  totalValue: { fontSize: 24, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  totalLabel: { fontSize: 16, fontFamily: 'Montserrat_400Regular', color: '#8A8178' },
+  totalValue: { fontSize: 24, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
   checkoutBtn: {
-    backgroundColor: '#B4725E', padding: 18, borderRadius: 12,
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center'
+    backgroundColor: '#EEEADDFF', padding: 18, borderRadius: 12,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1, borderColor: '#2E2A26',
   },
-  checkoutBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
+  checkoutBtnText: { color: '#5C554F', fontSize: 16, fontFamily: 'Montserrat_600SemiBold' },
 });
 
 export default CartScreen;

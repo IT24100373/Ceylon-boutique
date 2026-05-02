@@ -1,31 +1,30 @@
 const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 const path = require('path');
-const fs = require('fs');
 
 // -------------------------------------------------------
-// Image Upload Middleware (Multer)
+// Image Upload Middleware (Multer + Cloudinary)
 // -------------------------------------------------------
-// Handles multipart/form-data file uploads for product images.
-// Stores files in /uploads/products/ with unique filenames.
+// Handles multipart/form-data file uploads.
+// Images are uploaded directly to Cloudinary cloud storage.
 // Validates file type (JPG, PNG, WEBP) and size (max 5MB).
 // -------------------------------------------------------
 
-// Ensure uploads directory exists
-const uploadDir = path.join(__dirname, '..', 'uploads', 'products');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+// --- Configure Cloudinary ---
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-// Storage configuration
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    // Generate unique filename: timestamp-random-originalname
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `${uniqueSuffix}${ext}`);
+// --- Cloudinary Storage ---
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'ceylon-boutique',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    transformation: [{ width: 1200, height: 1200, crop: 'limit', quality: 'auto' }],
   },
 });
 
@@ -113,4 +112,5 @@ const handleUploadErrors = (uploadFn) => (req, res, next) => {
 module.exports = {
   uploadSingleImage: handleUploadErrors(uploadSingle),
   uploadMultipleImages: handleUploadErrors(uploadMultiple),
+  cloudinary, // Export configured instance for use in controller (e.g., delete)
 };

@@ -37,10 +37,10 @@ const SellerDashboardScreen = ({ navigation }) => {
   };
 
   const stats = [
-    { label: 'Products', value: dashboard?.productCount ?? 0, icon: 'package', color: '#FFFFFF' },
-    { label: 'Rating', value: dashboard?.averageRating?.toFixed(1) ?? '0.0', icon: 'star', color: '#FFFFFF' },
-    { label: 'Orders', value: dashboard?.totalOrders ?? 0, icon: 'shopping-cart', color: '#FFFFFF' },
-    { label: 'Reviews', value: dashboard?.totalReviews ?? 0, icon: 'message-square', color: '#FFFFFF' },
+    { label: 'Products', value: dashboard?.productCount ?? 0, icon: 'package', color: '#8A8178' },
+    { label: 'Rating', value: dashboard?.averageRating?.toFixed(1) ?? '0.0', icon: 'star', color: '#8A8178' },
+    { label: 'Orders', value: dashboard?.totalOrders ?? 0, icon: 'shopping-cart', color: '#8A8178' },
+    { label: 'Reviews', value: dashboard?.totalReviews ?? 0, icon: 'message-square', color: '#8A8178' },
   ];
 
   const menuItems = [
@@ -53,7 +53,7 @@ const SellerDashboardScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#B4725E" />
+      <StatusBar barStyle="light-content" backgroundColor="#EEEADDFF" />
 
       {/* Header */}
       <View style={styles.header}>
@@ -69,12 +69,12 @@ const SellerDashboardScreen = ({ navigation }) => {
       <ScrollView
         style={styles.body}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#B4725E" />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#EEEADDFF" />}
       >
         {/* Status Badge */}
         <View style={styles.statusRow}>
           <View style={styles.activeBadge}>
-            <Icon name="check-circle" size={14} color="#388E3C" style={{ marginRight: 6 }} />
+            <Icon name="check-circle" size={14} color="#2E2A26" style={{ marginRight: 6 }} />
             <Text style={styles.activeBadgeText}>Verified Seller</Text>
           </View>
         </View>
@@ -84,7 +84,7 @@ const SellerDashboardScreen = ({ navigation }) => {
           {stats.map((stat, idx) => (
             <View key={idx} style={[styles.statCard, { backgroundColor: stat.color }]}>
               <View style={styles.statIconContainer}>
-                <Icon name={stat.icon} size={24} color="#B4725E" />
+                <Icon name={stat.icon} size={24} color="#2E2A26" />
               </View>
               <Text style={styles.statValue}>{stat.value}</Text>
               <Text style={styles.statLabel}>{stat.label}</Text>
@@ -107,14 +107,14 @@ const SellerDashboardScreen = ({ navigation }) => {
           >
             <View style={styles.menuCardLeft}>
               <View style={styles.menuIconContainer}>
-                <Icon name={item.icon} size={20} color="#B4725E" />
+                <Icon name={item.icon} size={20} color="#2E2A26" />
               </View>
               <View style={styles.menuTextContainer}>
                 <Text style={styles.menuTitle}>{item.title}</Text>
                 <Text style={styles.menuDesc}>{item.desc}</Text>
               </View>
             </View>
-            <Icon name="chevron-right" size={20} color="#8C7A74" />
+            <Icon name="chevron-right" size={20} color="#2E2A26" />
           </TouchableOpacity>
         ))}
 
@@ -125,63 +125,64 @@ const SellerDashboardScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
-    backgroundColor: '#B4725E', paddingHorizontal: 20, paddingVertical: 24,
+    backgroundColor: '#EEEADDFF', paddingHorizontal: 20, paddingVertical: 24,
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     borderBottomLeftRadius: 24, borderBottomRightRadius: 24,
   },
   headerTextContainer: { flex: 1 },
-  greet: { color: '#FFFFFF', fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', marginBottom: 4 },
-  shopLabel: { color: '#F7D9C4', fontSize: 14, fontFamily: 'InstrumentSans_400Regular' },
+  greet: { color: '#2E2A26', fontSize: 22, fontFamily: 'Cinzel_700Bold', marginBottom: 4 },
+  shopLabel: { color: '#8A8178', fontSize: 14, fontFamily: 'Montserrat_400Regular' },
   logoutBtn: {
     backgroundColor: 'rgba(255,255,255,0.15)', paddingHorizontal: 16,
-    paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)',
+    paddingVertical: 8, borderRadius: 20,
+    borderWidth: 1, borderColor: '#2E2A26',
   },
-  logoutText: { color: '#FFFFFF', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 13 },
+  logoutText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold', fontSize: 13 },
 
   body: { flex: 1, padding: 16 },
 
   statusRow: { alignItems: 'flex-start', marginBottom: 20, marginTop: 4 },
   activeBadge: {
     backgroundColor: '#E8F5E9', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
-    flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#C8E6C9'
+    flexDirection: 'row', alignItems: 'center',
   },
-  activeBadgeText: { color: '#2E7D32', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 13 },
+  activeBadgeText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold', fontSize: 13 },
 
   statsGrid: {
     flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: 24,
   },
   statCard: {
     width: '48%', borderRadius: 14, padding: 16,
-    alignItems: 'center', marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    alignItems: 'center', marginBottom: 16,
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   statIconContainer: {
-    width: 48, height: 48, borderRadius: 24, backgroundColor: '#FFF5EE',
+    width: 48, height: 48, borderRadius: 24, backgroundColor: '#EEEADDFF',
     alignItems: 'center', justifyContent: 'center', marginBottom: 12,
   },
-  statValue: { fontSize: 24, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
-  statLabel: { fontSize: 13, color: '#8C7A74', marginTop: 4, fontFamily: 'InstrumentSans_600SemiBold' },
+  statValue: { fontSize: 24, fontFamily: 'Cinzel_700Bold', color: '#f7f5f3ff' },
+  statLabel: { fontSize: 13, color: '#f8f2ecff', marginTop: 4, fontFamily: 'Montserrat_600SemiBold' },
 
   sectionTitle: {
-    fontSize: 18, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 16,
+    fontSize: 18, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 16,
   },
 
   menuCard: {
-    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16,
+    backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 16,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    marginBottom: 12, borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    marginBottom: 12,
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   menuCardLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   menuIconContainer: {
-    width: 44, height: 44, borderRadius: 12, backgroundColor: '#FFF5EE',
-    alignItems: 'center', justifyContent: 'center', marginRight: 16, borderWidth: 1, borderColor: '#E6C9B9'
+    width: 44, height: 44, borderRadius: 12, backgroundColor: '#EEEADDFF',
+    alignItems: 'center', justifyContent: 'center', marginRight: 16,
   },
   menuTextContainer: { flex: 1, paddingRight: 16 },
-  menuTitle: { fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D', marginBottom: 4 },
-  menuDesc: { fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', lineHeight: 18 },
+  menuTitle: { fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26', marginBottom: 4 },
+  menuDesc: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#5C554F', lineHeight: 18 },
 });
 
 export default SellerDashboardScreen;

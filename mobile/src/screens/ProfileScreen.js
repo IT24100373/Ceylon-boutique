@@ -44,7 +44,7 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
       </View>
@@ -73,52 +73,52 @@ const ProfileScreen = ({ navigation }) => {
         <View style={styles.actionsCard}>
           <TouchableOpacity style={styles.actionItem} onPress={() => navigation.navigate('MyOrders')}>
             <View style={styles.actionLeft}>
-              <Icon name="package" size={20} color="#B4725E" style={styles.actionIcon} />
+              <Icon name="package" size={18} color="#2E2A26" style={styles.actionIcon} />
               <Text style={styles.actionText}>My Orders</Text>
             </View>
-            <Icon name="chevron-right" size={20} color="#8C7A74" />
+            <Icon name="chevron-right" size={18} color="#2E2A26" />
           </TouchableOpacity>
           <View style={styles.divider} />
 
           <TouchableOpacity style={styles.actionItem} onPress={() => navigation.navigate('MyReviews')}>
             <View style={styles.actionLeft}>
-              <Icon name="star" size={20} color="#B4725E" style={styles.actionIcon} />
+              <Icon name="star" size={18} color="#2E2A26" style={styles.actionIcon} />
               <Text style={styles.actionText}>My Reviews</Text>
             </View>
-            <Icon name="chevron-right" size={20} color="#8C7A74" />
+            <Icon name="chevron-right" size={18} color="#2E2A26" />
           </TouchableOpacity>
           <View style={styles.divider} />
 
           <TouchableOpacity style={styles.actionItem} onPress={() => navigation.navigate('EditProfile')}>
             <View style={styles.actionLeft}>
-              <Icon name="edit-2" size={20} color="#B4725E" style={styles.actionIcon} />
+              <Icon name="edit-2" size={18} color="#2E2A26" style={styles.actionIcon} />
               <Text style={styles.actionText}>Edit Profile</Text>
             </View>
-            <Icon name="chevron-right" size={20} color="#8C7A74" />
+            <Icon name="chevron-right" size={18} color="#2E2A26" />
           </TouchableOpacity>
           <View style={styles.divider} />
 
           <TouchableOpacity style={styles.actionItem} onPress={() => navigation.navigate('ChangePassword')}>
             <View style={styles.actionLeft}>
-              <Icon name="lock" size={20} color="#B4725E" style={styles.actionIcon} />
+              <Icon name="lock" size={18} color="#2E2A26" style={styles.actionIcon} />
               <Text style={styles.actionText}>Change Password</Text>
             </View>
-            <Icon name="chevron-right" size={20} color="#8C7A74" />
+            <Icon name="chevron-right" size={18} color="#2E2A26" />
           </TouchableOpacity>
           <View style={styles.divider} />
 
           <TouchableOpacity style={styles.actionItem} onPress={() => navigation.navigate('Addresses')}>
             <View style={styles.actionLeft}>
-              <Icon name="map-pin" size={20} color="#B4725E" style={styles.actionIcon} />
+              <Icon name="map-pin" size={18} color="#2E2A26" style={styles.actionIcon} />
               <Text style={styles.actionText}>My Addresses</Text>
             </View>
-            <Icon name="chevron-right" size={20} color="#8C7A74" />
+            <Icon name="chevron-right" size={18} color="#2E2A26" />
           </TouchableOpacity>
         </View>
 
         {/* Danger Zone */}
         <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-          <Icon name="log-out" size={18} color="#B4725E" style={{ marginRight: 8 }} />
+          <Icon name="log-out" size={18} color="#2E2A26" style={{ marginRight: 8 }} />
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
 
@@ -131,59 +131,57 @@ const ProfileScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#FFF1E8' },
-  header: { paddingHorizontal: 20, paddingVertical: 14, backgroundColor: '#FFF1E8' },
-  headerTitle: { fontSize: 24, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  safe: { flex: 1, backgroundColor: '#FFFFFF' },
+  header: { paddingHorizontal: 20, paddingVertical: 14, backgroundColor: '#FFFFFF' },
+  headerTitle: { fontSize: 24, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
   container: { padding: 20, paddingBottom: 40 },
-  avatarSection: { alignItems: 'center', marginBottom: 28 },
+  avatarSection: { alignItems: 'center', marginBottom: 20 },
   avatar: {
     width: 80, height: 80, borderRadius: 40,
-    backgroundColor: '#F7D9C4',
+    backgroundColor: '#EEEADDFF',
     alignItems: 'center', justifyContent: 'center',
     marginBottom: 12,
   },
-  avatarText: { color: '#B4725E', fontSize: 32, fontFamily: 'PlayfairDisplay_700Bold' },
-  name: { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
-  role: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginTop: 4 },
+  avatarText: { color: '#5C554F', fontSize: 32, fontFamily: 'Cinzel_700Bold' },
+  name: { fontSize: 22, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
+  role: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', marginTop: 4 },
 
   card: {
-    backgroundColor: '#FFFFFF', borderRadius: 14,
+    backgroundColor: '#EEEADDFF', borderRadius: 14,
     paddingHorizontal: 16, marginBottom: 20,
-    borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   row: {
     flexDirection: 'row', justifyContent: 'space-between',
     alignItems: 'center', paddingVertical: 16,
   },
-  rowLabel: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74' },
-  rowValue: { fontSize: 15, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D', flexShrink: 1, textAlign: 'right' },
-  divider: { height: 1, backgroundColor: '#E6C9B9' },
+  rowLabel: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#8A8178' },
+  rowValue: { fontSize: 15, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F', flexShrink: 1, textAlign: 'right' },
+  divider: { height: 1, backgroundColor: '#EEEADDFF' },
 
   actionsCard: {
-    backgroundColor: '#FFFFFF', borderRadius: 14,
-    paddingHorizontal: 16, marginBottom: 24,
-    borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#EEEADDFF', borderRadius: 14,
+    paddingHorizontal: 16, marginBottom: 16,
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   actionItem: {
     flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'center', paddingVertical: 16,
+    alignItems: 'center', paddingVertical: 12,
   },
   actionLeft: { flexDirection: 'row', alignItems: 'center' },
   actionIcon: { marginRight: 12 },
-  actionText: { fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D' },
+  actionText: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
 
   logoutBtn: {
-    backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16,
+    backgroundColor: '#EEEADDFF', borderRadius: 12, padding: 16,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    borderWidth: 1, borderColor: '#B4725E',
+    borderWidth: 1, borderColor: '#2E2A26',
     marginBottom: 16,
   },
-  logoutText: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 16 },
+  logoutText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold', fontSize: 16 },
 
   deactivateBtn: { alignItems: 'center', padding: 12 },
-  deactivateText: { color: '#D32F2F', fontSize: 14, fontFamily: 'InstrumentSans_400Regular', textDecorationLine: 'underline' },
+  deactivateText: { color: '#5C554F', fontSize: 14, fontFamily: 'Montserrat_400Regular', textDecorationLine: 'underline' },
 });
 
 export default ProfileScreen;

@@ -180,7 +180,7 @@ const SellerRegisterScreen = ({ navigation }) => {
             <InputField label="Business Registration Number *" icon="file-text" value={businessRegNumber} onChangeText={setBusinessRegNumber} placeholder="e.g. PV00123456" />
             <InputField label="NIC Number *" icon="credit-card" value={nicNumber} onChangeText={setNicNumber} placeholder="e.g. 200012345678 or 901234567V" />
             <View style={styles.infoBox}>
-              <Icon name="info" size={16} color="#B4725E" style={{ marginRight: 8, marginTop: 2 }} />
+              <Icon name="info" size={16} color="#2E2A26" style={{ marginRight: 8, marginTop: 2 }} />
               <Text style={styles.infoText}>Document upload will be available in a future update. For now, our admin team will contact you to collect documents.</Text>
             </View>
           </View>
@@ -223,13 +223,13 @@ const SellerRegisterScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F7D9C4" />
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
 
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <Icon name="arrow-left" size={24} color="#43332E" />
+            <Icon name="arrow-left" size={24} color="#2E2A26" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Seller Registration</Text>
           <Text style={styles.stepIndicator}>{step}/{totalSteps}</Text>
@@ -260,47 +260,49 @@ const SellerRegisterScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
-    backgroundColor: '#F7D9C4',
+    backgroundColor: '#EEEADDFF',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingTop: 60,
+    paddingBottom: 14,
   },
   backButton: {
     padding: 4,
   },
-  headerTitle: { color: '#43332E', fontFamily: 'PlayfairDisplay_700Bold', fontSize: 20 },
-  stepIndicator: { color: '#43332E', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14, opacity: 0.8 },
+  headerTitle: { color: '#2E2A26', fontFamily: 'Cinzel_700Bold', fontSize: 22 },
+  stepIndicator: { color: '#2E2A26', fontFamily: 'Montserrat_600SemiBold', fontSize: 14, opacity: 0.8 },
   progressBar: {
-    height: 4, backgroundColor: '#FFF1E8',
+    height: 6, backgroundColor: '#EEEADDFF', opacity: 0.3,
   },
   progressFill: {
-    height: 4, backgroundColor: '#B4725E',
+    height: 6, backgroundColor: '#2E2A26',
   },
   formArea: { flex: 1, padding: 24 },
-  stepTitle: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 24, color: '#2A201D', marginBottom: 8 },
-  stepDesc: { fontFamily: 'InstrumentSans_400Regular', fontSize: 15, color: '#43332E', marginBottom: 24, opacity: 0.8 },
+  stepTitle: { fontFamily: 'Cinzel_700Bold', fontSize: 24, color: '#2E2A26', marginBottom: 8 },
+  stepDesc: { fontFamily: 'Montserrat_400Regular', fontSize: 15, color: '#5C554F', marginBottom: 24, opacity: 0.8 },
   btnRow: { marginTop: 24 },
   nextBtn: { borderRadius: 8 },
   infoBox: {
-    flexDirection: 'row', backgroundColor: '#FFF1E8', padding: 16, borderRadius: 10,
-    borderWidth: 1, borderColor: '#E6C9B9', marginTop: 10,
+    flexDirection: 'row', backgroundColor: '#EEEADDFF', padding: 16, borderRadius: 12,
+    marginTop: 10,
   },
-  infoText: { flex: 1, fontFamily: 'InstrumentSans_400Regular', fontSize: 14, color: '#43332E', lineHeight: 22 },
-  inputLabel: { fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14, color: '#43332E', marginBottom: 8, marginTop: 10 },
+  infoText: { flex: 1, fontFamily: 'Montserrat_400Regular', fontSize: 14, color: '#5C554F', lineHeight: 22 },
+  inputLabel: { fontFamily: 'Montserrat_600SemiBold', fontSize: 14, color: '#8A8178', marginBottom: 8, marginTop: 10 },
   provinceGrid: {
     flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20,
   },
   provinceChip: {
-    paddingHorizontal: 14, paddingVertical: 10, borderRadius: 20,
-    borderWidth: 1, borderColor: '#E6C9B9', backgroundColor: '#FFF1E8',
+    paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1, borderColor: '#2E2A26',
   },
   provinceChipActive: {
-    backgroundColor: '#B4725E', borderColor: '#B4725E',
+    backgroundColor: '#2E2A26', 
   },
-  provinceChipText: { fontFamily: 'InstrumentSans_400Regular', fontSize: 14, color: '#43332E' },
-  provinceChipTextActive: { color: '#FFFFFF', fontFamily: 'InstrumentSans_600SemiBold' },
+  provinceChipText: { fontFamily: 'Montserrat_400Regular', fontSize: 13, color: '#2E2A26' },
+  provinceChipTextActive: { color: '#FFFFFF', fontFamily: 'Montserrat_600SemiBold' },
 });
 
 export default SellerRegisterScreen;

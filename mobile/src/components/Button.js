@@ -25,7 +25,7 @@ const Button = ({
       activeOpacity={0.8}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'secondary' ? '#B4725E' : '#fff'} />
+        <ActivityIndicator color={variant === 'secondary' ? '#EEEADDFF' : '#FFFFFF'} />
       ) : (
         <Text style={[styles.text, variant === 'secondary' && styles.textSecondary, textStyle]}>
           {title}
@@ -44,22 +44,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 52,
     flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: '#2E2A26',
   },
-  primary: { backgroundColor: '#B4725E' },
+  primary: { backgroundColor: '#EEEADDFF' },
   secondary: {
     backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: '#43332E',
   },
   danger: { backgroundColor: '#c53030' },
   disabled: { opacity: 0.5 },
   text: {
-    color: '#fff',
-    fontFamily: 'InstrumentSans_600SemiBold',
+    color: '#2E2A26',
+    fontFamily: 'Montserrat_600SemiBold',
     fontSize: 16,
     letterSpacing: 0.5,
   },
-  textSecondary: { color: '#43332E' },
+  textSecondary: { color: '#5C554F' },
 });
 
 export default Button;

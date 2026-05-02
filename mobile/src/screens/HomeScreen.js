@@ -8,7 +8,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F7D9C4" />
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
       <View style={styles.container}>
         {/* Welcome banner */}
         <View style={styles.banner}>
@@ -18,7 +18,7 @@ const HomeScreen = ({ navigation }) => {
 
         {/* Placeholder for Module 3 - Product Browse */}
         <View style={styles.placeholder}>
-          <Icon name="shopping-bag" size={48} color="#B4725E" style={styles.placeholderIcon} />
+          <Icon name="shopping-bag" size={48} color="#2E2A26" style={styles.placeholderIcon} />
           <Text style={styles.placeholderTitle}>Products Coming Soon</Text>
           <Text style={styles.placeholderText}>
             Product browsing will be built in Module 3. For now, explore your profile and account settings.
@@ -28,10 +28,10 @@ const HomeScreen = ({ navigation }) => {
         {/* Quick link to profile */}
         <TouchableOpacity style={styles.profileCard} onPress={() => navigation.navigate('Profile')}>
           <View style={styles.profileContent}>
-            <Icon name="user" size={20} color="#43332E" />
+            <Icon name="user" size={20} color="#2E2A26" />
             <Text style={styles.profileCardText}>View My Profile</Text>
           </View>
-          <Icon name="chevron-right" size={20} color="#B4725E" />
+          <Icon name="chevron-right" size={20} color="#2E2A26" />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -39,24 +39,24 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F7D9C4' },
+  safe: { flex: 1, backgroundColor: '#FFFFFF' },
   container: { flex: 1, padding: 24 },
   banner: {
-    backgroundColor: '#B4725E',
+    backgroundColor: '#EEEADDFF',
     borderRadius: 16,
     padding: 24,
     marginBottom: 20,
-    shadowColor: '#43332E',
+    shadowColor: '#2E2A26',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 3,
   },
-  greet: { color: '#FFFFFF', fontFamily: 'PlayfairDisplay_700Bold', fontSize: 26, marginBottom: 6 },
-  bannerSub: { color: '#FFFFFF', fontFamily: 'InstrumentSans_400Regular', fontSize: 15, opacity: 0.9 },
+  greet: { color: '#2E2A26', fontFamily: 'Cinzel_700Bold', fontSize: 26, marginBottom: 6 },
+  bannerSub: { color: '#8A8178', fontFamily: 'Montserrat_400Regular', fontSize: 15, opacity: 0.9 },
   placeholder: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#EEEADDFF',
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
@@ -64,10 +64,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   placeholderIcon: { marginBottom: 16 },
-  placeholderTitle: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 20, color: '#2A201D', marginBottom: 10 },
-  placeholderText: { fontFamily: 'InstrumentSans_400Regular', fontSize: 15, color: '#43332E', textAlign: 'center', lineHeight: 22, opacity: 0.8 },
+  placeholderTitle: { fontFamily: 'Cinzel_700Bold', fontSize: 20, color: '#8A8178', marginBottom: 10 },
+  placeholderText: { fontFamily: 'Montserrat_400Regular', fontSize: 15, color: '#8A8178', textAlign: 'center', lineHeight: 22, opacity: 0.8 },
   profileCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#EEEADDFF',
     borderRadius: 12,
     padding: 20,
     flexDirection: 'row',
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  profileCardText: { fontFamily: 'InstrumentSans_600SemiBold', fontSize: 16, color: '#43332E', marginLeft: 12 },
+  profileCardText: { fontFamily: 'Montserrat_600SemiBold', fontSize: 16, color: '#5C554F', marginLeft: 12 },
 });
 
 export default HomeScreen;

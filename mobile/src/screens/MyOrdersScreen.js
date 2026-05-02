@@ -13,7 +13,7 @@ const getStatusColor = (status) => {
     case 'shipped': return '#1976D2';
     case 'delivered': return '#388E3C';
     case 'cancelled': return '#D32F2F';
-    default: return '#8C7A74';
+    default: return '#5C554F';
   }
 };
 
@@ -54,10 +54,10 @@ const MyOrdersScreen = ({ navigation }) => {
     >
       <View style={styles.headerRow}>
         <View style={styles.orderNumberRow}>
-          <Icon name="package" size={16} color="#B4725E" style={{ marginRight: 6 }} />
+          <Icon name="package" size={16} color="#2E2A26" style={{ marginRight: 6 }} />
           <Text style={styles.orderNumber}>{item.orderNumber}</Text>
         </View>
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) + '15', borderColor: getStatusColor(item.status) + '40' }]}>
+        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) + '15', }]}>
           <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
             {item.status.toUpperCase()}
           </Text>
@@ -81,7 +81,7 @@ const MyOrdersScreen = ({ navigation }) => {
             {cartItem.productImage ? (
               <Image source={{ uri: cartItem.productImage }} style={styles.previewImage} resizeMode="cover" />
             ) : (
-              <Icon name="image" size={18} color="#E6C9B9" />
+              <Icon name="image" size={18} color="#2E2A26" />
             )}
           </View>
         ))}
@@ -96,21 +96,15 @@ const MyOrdersScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#43332E" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>My Orders</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
+      
 
       {loading ? (
-        <ActivityIndicator size="large" color="#B4725E" style={{ marginTop: 50 }} />
+        <ActivityIndicator size="large" color="#EEEADDFF" style={{ marginTop: 50 }} />
       ) : orders.length === 0 ? (
         <View style={styles.emptyContainer}>
           <View style={styles.emptyIconCircle}>
-            <Icon name="package" size={40} color="#B4725E" />
+            <Icon name="package" size={40} color="#2E2A26" />
           </View>
           <Text style={styles.emptyTitle}>No Orders Yet</Text>
           <Text style={styles.emptySubtitle}>You haven't placed any orders.</Text>
@@ -127,7 +121,7 @@ const MyOrdersScreen = ({ navigation }) => {
           keyExtractor={(item) => item._id}
           renderItem={renderItem}
           contentContainerStyle={styles.listContainer}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#B4725E" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#EEEADDFF" />}
           showsVerticalScrollIndicator={false}
         />
       )}
@@ -136,57 +130,57 @@ const MyOrdersScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
   listContainer: { padding: 16 },
 
   emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, paddingBottom: 60 },
   emptyIconCircle: {
-    width: 80, height: 80, borderRadius: 40, backgroundColor: '#F7D9C4',
+    width: 80, height: 80, borderRadius: 40, backgroundColor: '#EEEADDFF',
     alignItems: 'center', justifyContent: 'center', marginBottom: 24,
   },
-  emptyTitle: { fontSize: 24, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 12 },
-  emptySubtitle: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', textAlign: 'center', marginBottom: 32, opacity: 0.8 },
-  shopBtn: { backgroundColor: '#B4725E', paddingHorizontal: 32, paddingVertical: 16, borderRadius: 8 },
-  shopBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
+  emptyTitle: { fontSize: 24, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 12 },
+  emptySubtitle: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#8A8178', textAlign: 'center', marginBottom: 32, opacity: 0.8 },
+  shopBtn: { backgroundColor: '#EEEADDFF', paddingHorizontal: 32, paddingVertical: 16, borderRadius: 8 },
+  shopBtnText: { color: '#5C554F', fontSize: 16, fontFamily: 'Montserrat_600SemiBold' },
 
   card: {
-    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16,
-    marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 16,
+    marginBottom: 16,  
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   orderNumberRow: { flexDirection: 'row', alignItems: 'center' },
-  orderNumber: { fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D' },
-  statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, borderWidth: 1 },
-  statusText: { fontSize: 12, fontFamily: 'InstrumentSans_600SemiBold' },
-  dateText: { fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginBottom: 16 },
+  orderNumber: { fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26' },
+  statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, },
+  statusText: { fontSize: 12, fontFamily: 'Montserrat_600SemiBold' },
+  dateText: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#5C554F', marginBottom: 16 },
 
   itemsSummary: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    backgroundColor: '#FFF5EE', padding: 12, borderRadius: 8, marginBottom: 16,
-    borderWidth: 1, borderColor: '#E6C9B9',
+    backgroundColor: '#EEEADDFF', padding: 12, borderRadius: 8, marginBottom: 16,
+     
   },
-  itemsText: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#43332E' },
-  itemsTotal: { fontSize: 15, fontFamily: 'InstrumentSans_600SemiBold', color: '#B4725E' },
+  itemsText: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#5C554F' },
+  itemsTotal: { fontSize: 15, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26' },
 
   previewImages: { flexDirection: 'row', alignItems: 'center' },
   previewImageContainer: {
-    width: 44, height: 44, borderRadius: 8, backgroundColor: '#F8F8F8',
+    width: 44, height: 44, borderRadius: 8, backgroundColor: '#FFFFFF',
     justifyContent: 'center', alignItems: 'center', marginRight: 10,
-    borderWidth: 1, borderColor: '#E6C9B9', overflow: 'hidden',
+      overflow: 'hidden',
   },
   previewImage: { width: '100%', height: '100%' },
   moreItemsBadge: {
-    width: 44, height: 44, borderRadius: 22, backgroundColor: '#F7D9C4',
+    width: 44, height: 44, borderRadius: 22, backgroundColor: '#EEEADDFF',
     justifyContent: 'center', alignItems: 'center',
   },
-  moreItemsText: { fontSize: 13, fontFamily: 'InstrumentSans_600SemiBold', color: '#B4725E' },
+  moreItemsText: { fontSize: 13, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
 });
 
 export default MyOrdersScreen;

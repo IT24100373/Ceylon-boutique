@@ -45,10 +45,10 @@ const EditProfileScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#43332E" />
+          <Icon name="arrow-left" size={24} color="#2E2A26" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Edit Profile</Text>
         <View style={{ width: 24 }} />
@@ -59,7 +59,7 @@ const EditProfileScreen = ({ navigation }) => {
 
           <View style={styles.card}>
             <View style={styles.hintBox}>
-              <Icon name="info" size={18} color="#B4725E" style={{ marginRight: 8, marginTop: 2 }} />
+              <Icon name="info" size={18} color="#2E2A26" style={{ marginRight: 8, marginTop: 2 }} />
               <Text style={styles.hint}>Email cannot be changed as it is your account identifier.</Text>
             </View>
 
@@ -98,38 +98,38 @@ const EditProfileScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#FFF1E8' },
+  safe: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
 
   container: { flexGrow: 1, padding: 20 },
 
   card: {
-    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 20,
-    borderWidth: 1, borderColor: '#E6C9B9', marginBottom: 24,
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 20,
+      marginBottom: 24,
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
 
   hintBox: {
-    flexDirection: 'row', backgroundColor: '#FFF5EE', borderRadius: 10, padding: 14,
-    marginBottom: 24, borderWidth: 1, borderColor: '#E6C9B9',
+    flexDirection: 'row', backgroundColor: '#EEEADDFF', borderRadius: 10, padding: 14,
+    marginBottom: 24,  
   },
   hint: {
-    flex: 1, color: '#8C7A74', fontSize: 13, fontFamily: 'InstrumentSans_400Regular', lineHeight: 20,
+    flex: 1, color: '#2E2A26', fontSize: 13, fontFamily: 'Montserrat_400Regular', lineHeight: 20,
   },
 
   actionContainer: {
     marginTop: 'auto',
   },
   btn: {
-    backgroundColor: '#B4725E', borderRadius: 12, paddingVertical: 16, marginBottom: 12
+    backgroundColor: '#EEEADDFF', borderRadius: 12, paddingVertical: 16, marginBottom: 12
   },
   cancelBtn: {
-    backgroundColor: 'transparent', borderWidth: 1, borderColor: '#B4725E', borderRadius: 12, paddingVertical: 16
+    backgroundColor: 'transparent',   borderRadius: 12, paddingVertical: 16
   },
 });
 

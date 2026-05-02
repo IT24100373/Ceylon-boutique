@@ -110,15 +110,9 @@ const EditShopScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+      <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#43332E" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Edit Shop Profile</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView style={styles.formArea} keyboardShouldPersistTaps="handled">
@@ -159,13 +153,13 @@ const EditShopScreen = ({ navigation, route }) => {
                 <View style={styles.imageItem}>
                   <Image source={{ uri: typeof shopLogo === 'object' ? shopLogo.uri : shopLogo }} style={styles.imagePreview} />
                   <TouchableOpacity onPress={() => setShopLogo('')} style={styles.removeBtn}>
-                    <Icon name="trash-2" size={18} color="#D32F2F" />
+                    <Icon name="trash-2" size={18} color="#2E2A26" />
                   </TouchableOpacity>
                 </View>
               ) : (
                 <>
                   <TouchableOpacity style={styles.uploadBtn} onPress={() => pickImage('logo')}>
-                    <Icon name="upload" size={18} color="#B4725E" style={{ marginRight: 8 }} />
+                    <Icon name="upload" size={18} color="#2E2A26" style={{ marginRight: 8 }} />
                     <Text style={styles.uploadBtnText}>Upload Image</Text>
                   </TouchableOpacity>
                   <InputField
@@ -185,13 +179,13 @@ const EditShopScreen = ({ navigation, route }) => {
                 <View style={styles.imageItem}>
                   <Image source={{ uri: typeof shopBanner === 'object' ? shopBanner.uri : shopBanner }} style={styles.imagePreviewBanner} />
                   <TouchableOpacity onPress={() => setShopBanner('')} style={styles.removeBtn}>
-                    <Icon name="trash-2" size={18} color="#D32F2F" />
+                    <Icon name="trash-2" size={18} color="#2E2A26" />
                   </TouchableOpacity>
                 </View>
               ) : (
                 <>
                   <TouchableOpacity style={styles.uploadBtn} onPress={() => pickImage('banner')}>
-                    <Icon name="upload" size={18} color="#B4725E" style={{ marginRight: 8 }} />
+                    <Icon name="upload" size={18} color="#2E2A26" style={{ marginRight: 8 }} />
                     <Text style={styles.uploadBtnText}>Upload Banner</Text>
                   </TouchableOpacity>
                   <InputField
@@ -206,7 +200,7 @@ const EditShopScreen = ({ navigation, route }) => {
             </View>
 
             <View style={styles.infoBox}>
-              <Icon name="info" size={16} color="#B4725E" style={{ marginRight: 8, marginTop: 2 }} />
+              <Icon name="info" size={16} color="#2E2A26" style={{ marginRight: 8, marginTop: 2 }} />
               <Text style={styles.infoText}>
                 You can now upload your logo/banner directly from your device, or paste a link.
               </Text>
@@ -234,45 +228,45 @@ const EditShopScreen = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
 
   formArea: { flex: 1, padding: 16 },
   card: {
-    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 20,
-    borderWidth: 1, borderColor: '#E6C9B9',
-    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 20,
+     
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
-  subheading: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginBottom: 24, lineHeight: 22 },
+  subheading: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#8A8178', marginBottom: 24, lineHeight: 22 },
   infoBox: {
-    flexDirection: 'row', backgroundColor: '#FFF5EE', padding: 16, borderRadius: 10,
-    borderWidth: 1, borderColor: '#E6C9B9', marginTop: 10,
+    flexDirection: 'row', backgroundColor: '#EEEADDFF', padding: 16, borderRadius: 10,
+      marginTop: 10,
   },
-  infoText: { flex: 1, fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', lineHeight: 22 },
-  saveBtn: { marginTop: 24, backgroundColor: '#B4725E', borderRadius: 12 },
+  infoText: { flex: 1, fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#5C554F', lineHeight: 22 },
+  saveBtn: { marginTop: 24, backgroundColor: '#EEEADDFF', borderRadius: 12 },
   cancelBtn: { marginTop: 12, borderRadius: 12 },
-  inputLabel: { fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#43332E', marginBottom: 8, marginTop: 10 },
+  inputLabel: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178', marginBottom: 8, marginTop: 10 },
   imageInputRow: { marginBottom: 16 },
   uploadBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    backgroundColor: '#FFF5EE', paddingVertical: 14, borderRadius: 10,
-    borderWidth: 1, borderColor: '#E6C9B9', marginBottom: 10, borderStyle: 'dashed'
+    backgroundColor: '#EEEADDFF', paddingVertical: 14, borderRadius: 10,
+      marginBottom: 10, borderStyle: 'dashed'
   },
-  uploadBtnText: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
+  uploadBtnText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold', fontSize: 14 },
   imageItem: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#E6C9B9', borderRadius: 10, backgroundColor: '#F8F8F8', paddingHorizontal: 12
+    paddingVertical: 12,   borderRadius: 10, backgroundColor: '#FFFFFF', paddingHorizontal: 12
   },
   imagePreview: {
-    width: 60, height: 60, borderRadius: 30, marginRight: 10, backgroundColor: '#E0E0E0'
+    width: 60, height: 60, borderRadius: 30, marginRight: 10, backgroundColor: '#8A8178'
   },
   imagePreviewBanner: {
-    width: 100, height: 50, borderRadius: 6, marginRight: 10, backgroundColor: '#E0E0E0'
+    width: 100, height: 50, borderRadius: 6, marginRight: 10, backgroundColor: '#8A8178'
   },
   removeBtn: { padding: 4 },
 });
