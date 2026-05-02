@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
-  TextInput, TouchableOpacity, Alert, ActivityIndicator, StatusBar
+  TextInput, TouchableOpacity, Alert, ActivityIndicator, StatusBar, Image
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import apiClient from '../api/client';
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -89,6 +90,76 @@ const EditProductScreen = ({ route, navigation }) => {
 
   const removeImage = (index) => setImages(images.filter((_, i) => i !== index));
 
+  // --- Pick Image from Device ---
+  const pickImage = async () => {
+    if (images.length >= 10) {
+      Alert.alert('Limit', 'Maximum 10 images allowed.');
+      return;
+    }
+
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setImages([...images, { uri: result.assets[0].uri, isLocal: true, type: result.assets[0].type || 'image/jpeg', name: result.assets[0].uri.split('/').pop() }]);
+    }
+  };
+
+  // --- Upload Local Images to Server ---
+  const uploadLocalImages = async () => {
+    const localImages = images.filter(img => typeof img === 'object' && img.isLocal);
+    if (localImages.length === 0) return images;
+
+    const formData = new FormData();
+    localImages.forEach((img) => {
+      formData.append('images', {
+        uri: img.uri,
+        type: img.type,
+        name: img.name || `image_${Date.now()}.jpg`,
+      });
+    });
+
+    try {
+      const token = await require('@react-native-async-storage/async-storage').default.getItem('ceylon_token');
+      
+      const response = await fetch(`${apiClient.defaults.baseURL}/api/upload/images`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+      });
+      
+      const responseData = await response.json();
+      
+      if (!response.ok || !responseData.success) {
+        throw new Error(responseData.message || 'Image upload failed');
+      }
+      
+      const finalImages = images.map(img => {
+        if (typeof img === 'string') return img;
+        return responseData.images.shift() || img.uri;
+      });
+      
+      return finalImages;
+      
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw error;
+    }
+  };
+
   // --- Submit updates ---
   const handleSubmit = async () => {
     if (!name.trim()) return Alert.alert('Required', 'Product name is required.');
@@ -100,6 +171,9 @@ const EditProductScreen = ({ route, navigation }) => {
 
     setLoading(true);
     try {
+      // First upload any local images
+      const finalImageUrls = await uploadLocalImages();
+
       await apiClient.put(`/api/products/${productId}`, {
         name: name.trim(),
         description: description.trim(),
@@ -107,7 +181,7 @@ const EditProductScreen = ({ route, navigation }) => {
         price: parseFloat(price),
         sizes: selectedSizes,
         colors,
-        images,
+        images: finalImageUrls,
       });
       Alert.alert('Success!', 'Product updated successfully.', [
         { text: 'OK', onPress: () => navigation.goBack() },
@@ -248,18 +322,31 @@ const EditProductScreen = ({ route, navigation }) => {
               value={imageInput} onChangeText={setImageInput} placeholder="Paste image URL" placeholderTextColor="#8C7A74"
             />
             <TouchableOpacity style={styles.addBtn} onPress={addImage}>
-              <Icon name="plus" size={16} color="#FFFFFF" style={{ marginRight: 4 }} />
-              <Text style={styles.addBtnText}>Add</Text>
+              <Icon name="link" size={16} color="#FFFFFF" style={{ marginRight: 4 }} />
+              <Text style={styles.addBtnText}>URL</Text>
             </TouchableOpacity>
           </View>
-          {images.map((img, idx) => (
-            <View key={idx} style={styles.imageItem}>
-              <Text style={styles.imageUrl} numberOfLines={1}>{img}</Text>
-              <TouchableOpacity onPress={() => removeImage(idx)} style={styles.removeBtn}>
-                <Icon name="trash-2" size={18} color="#D32F2F" />
-              </TouchableOpacity>
-            </View>
-          ))}
+
+          <TouchableOpacity style={styles.uploadBtn} onPress={pickImage}>
+             <Icon name="upload" size={18} color="#B4725E" style={{ marginRight: 8 }} />
+             <Text style={styles.uploadBtnText}>Upload from Device</Text>
+          </TouchableOpacity>
+
+          {images.map((img, idx) => {
+            const isLocal = typeof img === 'object' && img.isLocal;
+            const displayUrl = isLocal ? img.uri : img;
+            return (
+              <View key={idx} style={styles.imageItem}>
+                <Image source={{ uri: displayUrl }} style={styles.imagePreview} />
+                <Text style={styles.imageUrl} numberOfLines={1}>
+                  {isLocal ? 'Local File' : displayUrl}
+                </Text>
+                <TouchableOpacity onPress={() => removeImage(idx)} style={styles.removeBtn}>
+                  <Icon name="trash-2" size={18} color="#D32F2F" />
+                </TouchableOpacity>
+              </View>
+            );
+          })}
         </View>
 
         <View style={styles.hintContainer}>
@@ -365,8 +452,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#F8F8F8',
   },
+  imagePreview: {
+    width: 40, height: 40, borderRadius: 6, marginRight: 10, backgroundColor: '#F0F0F0'
+  },
   imageUrl: { flex: 1, fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginRight: 10 },
   removeBtn: { padding: 4 },
+
+  uploadBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: '#FFF5EE', paddingVertical: 14, borderRadius: 10,
+    borderWidth: 1, borderColor: '#E6C9B9', marginBottom: 16, borderStyle: 'dashed'
+  },
+  uploadBtnText: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
 
   hintContainer: { flexDirection: 'row', backgroundColor: '#FFF5EE', padding: 16, borderRadius: 10, borderWidth: 1, borderColor: '#E6C9B9', marginVertical: 10 },
   hint: { flex: 1, fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', lineHeight: 22 },

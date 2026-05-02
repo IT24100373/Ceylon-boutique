@@ -365,7 +365,7 @@ const addProductValidation = [
 
   body('images.*')
     .trim()
-    .notEmpty().withMessage('Image URL cannot be empty'),
+    .notEmpty().withMessage('Image URL/Path cannot be empty'),
 
   body('variants')
     .isArray({ min: 1 }).withMessage('At least one variant (size/color/stock) is required'),

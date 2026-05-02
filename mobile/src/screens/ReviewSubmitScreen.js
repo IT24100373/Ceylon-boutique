@@ -3,6 +3,7 @@ import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
   TouchableOpacity, TextInput, ActivityIndicator, Alert, Image, StatusBar
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import apiClient from '../api/client';
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -65,6 +66,46 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
 
     try {
       setSubmitting(true);
+      
+      // Upload any local photos first
+      let uploadedUrls = [...photos];
+      const localPhotos = photos.filter(p => typeof p === 'object' && p.isLocal);
+      
+      if (localPhotos.length > 0) {
+        const formData = new FormData();
+        localPhotos.forEach((img) => {
+          formData.append('images', {
+            uri: img.uri,
+            type: img.type,
+            name: img.name || `review_${Date.now()}.jpg`,
+          });
+        });
+        
+        const token = await require('@react-native-async-storage/async-storage').default.getItem('ceylon_token');
+        const response = await fetch(`${apiClient.defaults.baseURL}/api/upload/images`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
+          body: formData,
+        });
+        
+        const responseData = await response.json();
+        if (!response.ok || !responseData.success) {
+          throw new Error(responseData.message || 'Image upload failed');
+        }
+        
+        // Merge uploaded URLs
+        uploadedUrls = photos.map(p => {
+          if (typeof p === 'string') return p;
+          return responseData.images.shift() || p.uri;
+        });
+      }
+      
+      payload.photos = uploadedUrls;
+      
       await apiClient.post('/api/reviews', payload);
       Alert.alert(
         'Review Submitted!',
@@ -161,34 +202,90 @@ const ReviewSubmitScreen = ({ route, navigation }) => {
 
         {/* Photo URLs */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Photos <Text style={styles.optional}>(optional — max 3 URLs)</Text></Text>
-          <TextInput
-            style={styles.urlInput}
-            value={photo1}
-            onChangeText={setPhoto1}
-            placeholder="Photo URL 1"
-            placeholderTextColor="#A0938E"
-            autoCapitalize="none"
-            keyboardType="url"
-          />
-          <TextInput
-            style={styles.urlInput}
-            value={photo2}
-            onChangeText={setPhoto2}
-            placeholder="Photo URL 2"
-            placeholderTextColor="#A0938E"
-            autoCapitalize="none"
-            keyboardType="url"
-          />
-          <TextInput
-            style={styles.urlInput}
-            value={photo3}
-            onChangeText={setPhoto3}
-            placeholder="Photo URL 3"
-            placeholderTextColor="#A0938E"
-            autoCapitalize="none"
-            keyboardType="url"
-          />
+          <Text style={styles.sectionTitle}>Photos <Text style={styles.optional}>(optional — max 3)</Text></Text>
+          
+          <TouchableOpacity style={styles.uploadBtn} onPress={async () => {
+            const currentPhotosCount = [photo1, photo2, photo3].filter(p => p !== '').length;
+            if (currentPhotosCount >= 3) {
+              Alert.alert('Limit', 'Maximum 3 photos allowed.');
+              return;
+            }
+
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+              Alert.alert('Permission needed', 'Sorry, we need camera roll permissions to make this work!');
+              return;
+            }
+
+            let result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              allowsEditing: true,
+              quality: 0.8,
+            });
+
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+              const newPhoto = { uri: result.assets[0].uri, isLocal: true, type: result.assets[0].type || 'image/jpeg', name: result.assets[0].uri.split('/').pop() };
+              if (!photo1) setPhoto1(newPhoto);
+              else if (!photo2) setPhoto2(newPhoto);
+              else if (!photo3) setPhoto3(newPhoto);
+            }
+          }}>
+             <Icon name="upload" size={18} color="#B4725E" style={{ marginRight: 8 }} />
+             <Text style={styles.uploadBtnText}>Upload from Device</Text>
+          </TouchableOpacity>
+
+          {[photo1, photo2, photo3].map((photo, idx) => {
+            if (!photo) return null;
+            const isLocal = typeof photo === 'object' && photo.isLocal;
+            const displayUrl = isLocal ? photo.uri : photo;
+            return (
+              <View key={`photo-${idx}`} style={styles.imageItem}>
+                <Image source={{ uri: displayUrl }} style={styles.imagePreview} />
+                <TextInput
+                  style={[styles.urlInput, { flex: 1, marginBottom: 0, borderWidth: 0, backgroundColor: 'transparent' }]}
+                  value={isLocal ? 'Local File' : photo}
+                  onChangeText={val => {
+                    if (idx === 0) setPhoto1(val);
+                    if (idx === 1) setPhoto2(val);
+                    if (idx === 2) setPhoto3(val);
+                  }}
+                  editable={!isLocal}
+                  placeholder={`Photo URL ${idx + 1}`}
+                  placeholderTextColor="#A0938E"
+                  autoCapitalize="none"
+                  keyboardType="url"
+                />
+                <TouchableOpacity onPress={() => {
+                  if (idx === 0) setPhoto1('');
+                  if (idx === 1) setPhoto2('');
+                  if (idx === 2) setPhoto3('');
+                }} style={styles.removeBtn}>
+                  <Icon name="trash-2" size={18} color="#D32F2F" />
+                </TouchableOpacity>
+              </View>
+            );
+          })}
+          
+          {/* Keep URL inputs for empty slots if they want to paste a URL */}
+          {[photo1, photo2, photo3].map((photo, idx) => {
+            if (photo) return null;
+            return (
+              <TextInput
+                key={`empty-${idx}`}
+                style={[styles.urlInput, { marginTop: 10 }]}
+                value=""
+                onChangeText={val => {
+                  if (idx === 0) setPhoto1(val);
+                  if (idx === 1) setPhoto2(val);
+                  if (idx === 2) setPhoto3(val);
+                }}
+                placeholder={`Or paste Photo URL ${idx + 1} here`}
+                placeholderTextColor="#A0938E"
+                autoCapitalize="none"
+                keyboardType="url"
+              />
+            );
+          })}
         </View>
 
         <View style={{ height: 120 }} />
@@ -267,6 +364,21 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: '#E6C9B9', borderRadius: 10,
     padding: 16, fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D', backgroundColor: '#F8F8F8', marginBottom: 12,
   },
+  
+  uploadBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: '#FFF5EE', paddingVertical: 14, borderRadius: 10,
+    borderWidth: 1, borderColor: '#E6C9B9', marginBottom: 16, borderStyle: 'dashed'
+  },
+  uploadBtnText: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
+  imageItem: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#E6C9B9', borderRadius: 10, backgroundColor: '#F8F8F8', paddingHorizontal: 12, marginBottom: 10
+  },
+  imagePreview: {
+    width: 40, height: 40, borderRadius: 6, marginRight: 10, backgroundColor: '#E0E0E0'
+  },
+  removeBtn: { padding: 4 },
 
   footer: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
