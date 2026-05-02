@@ -49,6 +49,7 @@ import SellerOrderDetailScreen from '../screens/SellerOrderDetailScreen';
 import ReviewSubmitScreen from '../screens/ReviewSubmitScreen';
 import ProductReviewsScreen from '../screens/ProductReviewsScreen';
 import SellerReviewsScreen from '../screens/SellerReviewsScreen';
+import SellerProductReviewsScreen from '../screens/SellerProductReviewsScreen';
 import MyReviewsScreen from '../screens/MyReviewsScreen';
 import EditReviewScreen from '../screens/EditReviewScreen';
 
@@ -75,13 +76,13 @@ const AuthStack = () => (
 const CustomerAppStack = () => (
   <Stack.Navigator
     screenOptions={{
-      headerStyle: { backgroundColor: '#8B2635' },
-      headerTintColor: '#fff',
-      headerTitleStyle: { fontWeight: 'bold' },
+      headerStyle: { backgroundColor: '#F7D9C4' },
+      headerTintColor: '#43332E',
+      headerTitleStyle: { fontFamily: 'PlayfairDisplay_700Bold' },
     }}
   >
     {/* Module 3 — Product Browsing (replaces placeholder Home) */}
-    <Stack.Screen name="Home" component={ProductBrowseScreen} options={{ title: 'Ceylon Boutique' }} />
+    <Stack.Screen name="Home" component={ProductBrowseScreen} options={{ headerShown: false }} />
     <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ title: 'Product Details' }} />
     <Stack.Screen name="SearchFilter" component={SearchFilterScreen} options={{ title: 'Search & Filter' }} />
 
@@ -97,6 +98,9 @@ const CustomerAppStack = () => (
     <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} options={{ headerShown: false }} />
     <Stack.Screen name="MyOrders" component={MyOrdersScreen} options={{ title: 'My Orders' }} />
     <Stack.Screen name="OrderDetail" component={OrderDetailScreen} options={{ title: 'Order Details' }} />
+
+    {/* Seller Shop Profile — viewable by customers from ProductDetailScreen */}
+    <Stack.Screen name="SellerShopProfile" component={SellerShopProfileScreen} options={{ title: 'Shop Profile' }} />
 
     {/* Module 5 — Reviews & Ratings */}
     <Stack.Screen name="ReviewSubmit" component={ReviewSubmitScreen} options={{ title: 'Write a Review' }} />
@@ -123,9 +127,9 @@ const SellerPendingStack = () => (
 const SellerAppStack = () => (
   <Stack.Navigator
     screenOptions={{
-      headerStyle: { backgroundColor: '#8B2635' },
-      headerTintColor: '#fff',
-      headerTitleStyle: { fontWeight: 'bold' },
+      headerStyle: { backgroundColor: '#F7D9C4' },
+      headerTintColor: '#43332E',
+      headerTitleStyle: { fontFamily: 'PlayfairDisplay_700Bold' },
     }}
   >
     {/* Module 2 — Shop Management */}
@@ -143,8 +147,9 @@ const SellerAppStack = () => (
     <Stack.Screen name="SellerOrders" component={SellerOrdersScreen} options={{ title: 'Manage Orders' }} />
     <Stack.Screen name="SellerOrderDetail" component={SellerOrderDetailScreen} options={{ title: 'Order Details' }} />
 
-    {/* Module 5 — Seller can view their own shop reviews */}
+    {/* Module 5 — Seller can view their own shop reviews and product reviews */}
     <Stack.Screen name="SellerReviews" component={SellerReviewsScreen} options={{ title: 'Shop Reviews' }} />
+    <Stack.Screen name="SellerProductReviews" component={SellerProductReviewsScreen} options={{ title: 'Product Reviews' }} />
   </Stack.Navigator>
 );
 
@@ -157,8 +162,8 @@ const AppNavigator = () => {
   // Show spinner while restoring session from AsyncStorage
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#8B2635' }}>
-        <ActivityIndicator size="large" color="#fff" />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F7D9C4' }}>
+        <ActivityIndicator size="large" color="#B4725E" />
       </View>
     );
   }

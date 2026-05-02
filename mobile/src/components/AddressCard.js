@@ -40,27 +40,32 @@ const AddressCard = ({ address, onEdit, onDelete, onSetDefault }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
     padding: 16,
     marginBottom: 12,
-    borderWidth: 1.5,
-    borderColor: '#e2e8f0',
+    borderWidth: 1,
+    borderColor: '#E6C9B9',
+    shadowColor: '#43332E',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  cardDefault: { borderColor: '#8B2635' },
+  cardDefault: { borderColor: '#B4725E', borderWidth: 2 },
   header: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
-  label: { fontWeight: '700', fontSize: 15, color: '#222', flex: 1 },
+  label: { fontFamily: 'InstrumentSans_600SemiBold', fontSize: 16, color: '#2A201D', flex: 1 },
   defaultBadge: {
-    backgroundColor: '#8B2635',
+    backgroundColor: '#B4725E',
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 2,
   },
-  defaultBadgeText: { color: '#fff', fontSize: 11, fontWeight: '700' },
-  addressText: { color: '#555', fontSize: 14, marginBottom: 2 },
+  defaultBadgeText: { color: '#FFFFFF', fontSize: 11, fontFamily: 'InstrumentSans_600SemiBold' },
+  addressText: { color: '#43332E', fontSize: 14, fontFamily: 'InstrumentSans_400Regular', marginBottom: 2 },
   actions: { flexDirection: 'row', gap: 16, marginTop: 12 },
-  actionLink: { color: '#8B2635', fontWeight: '600', fontSize: 14 },
-  deleteLink: { color: '#c53030' },
+  actionLink: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
+  deleteLink: { color: '#D32F2F' },
 });
 
 export default AddressCard;

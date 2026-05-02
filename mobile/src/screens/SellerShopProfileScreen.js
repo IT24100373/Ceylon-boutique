@@ -6,6 +6,7 @@ import {
 import Button from '../components/Button';
 import apiClient from '../api/client';
 import LoadingSpinner from '../components/LoadingSpinner';
+import Icon from 'react-native-vector-icons/Feather';
 
 // -------------------------------------------------------
 // FR2.3 — View Seller's Own Shop Profile
@@ -56,41 +57,42 @@ const SellerShopProfileScreen = ({ navigation }) => {
   );
 
   const statusColors = {
-    pending: { bg: '#FFF3E0', text: '#E65100' },
-    approved: { bg: '#E8F5E9', text: '#2E7D32' },
-    rejected: { bg: '#FFEBEE', text: '#C62828' },
-    suspended: { bg: '#FFF3E0', text: '#E65100' },
-    removed: { bg: '#FFEBEE', text: '#C62828' },
+    pending: { bg: '#FFF5EE', text: '#D4A853', border: '#E6C9B9' },
+    approved: { bg: '#E8F5E9', text: '#2E7D32', border: '#C8E6C9' },
+    rejected: { bg: '#FFEBEE', text: '#C62828', border: '#FFCDD2' },
+    suspended: { bg: '#FFF5EE', text: '#D4A853', border: '#E6C9B9' },
+    removed: { bg: '#FFEBEE', text: '#C62828', border: '#FFCDD2' },
   };
   const sc = statusColors[seller?.verificationStatus] || statusColors.pending;
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#8B2635" />
+      <StatusBar barStyle="light-content" backgroundColor="#B4725E" />
+
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Icon name="arrow-left" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Shop Profile</Text>
+        <View style={{ width: 24 }} />
+      </View>
+
       <ScrollView
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#8B2635" />}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#B4725E" />}
       >
         {/* Shop Header Card */}
         <View style={styles.shopHeader}>
           <View style={styles.shopIconCircle}>
-            <Text style={styles.shopIcon}>🏪</Text>
+            <Icon name="home" size={32} color="#FFFFFF" />
           </View>
           <Text style={styles.shopName}>{seller?.shopName}</Text>
           <Text style={styles.shopCategory}>{seller?.categoryFocus || 'General Clothing'}</Text>
-          <View style={[styles.statusBadge, { backgroundColor: sc.bg }]}>
+          <View style={[styles.statusBadge, { backgroundColor: sc.bg, borderColor: sc.border }]}>
             <Text style={[styles.statusText, { color: sc.text }]}>
               {seller?.verificationStatus?.toUpperCase()}
             </Text>
           </View>
-        </View>
-
-        {/* Shop Info Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Shop Information</Text>
-          <InfoRow label="Shop Name" value={seller?.shopName} />
-          <InfoRow label="Description" value={seller?.shopDescription} />
-          <InfoRow label="Category Focus" value={seller?.categoryFocus} />
-          <InfoRow label="Member Since" value={seller?.createdAt ? new Date(seller.createdAt).toLocaleDateString() : '—'} />
         </View>
 
         {/* Stats Section — Rating is tappable to view all reviews */}
@@ -109,7 +111,7 @@ const SellerShopProfileScreen = ({ navigation }) => {
             activeOpacity={0.7}
           >
             <Text style={styles.statValue}>{seller?.averageRating?.toFixed(1) ?? '0.0'}</Text>
-            <Text style={styles.statLabel}>Rating ›</Text>
+            <Text style={styles.statLabel}>Rating <Icon name="chevron-right" size={12} /></Text>
           </TouchableOpacity>
           <View style={styles.statDivider} />
           <TouchableOpacity
@@ -121,8 +123,17 @@ const SellerShopProfileScreen = ({ navigation }) => {
             activeOpacity={0.7}
           >
             <Text style={styles.statValue}>{seller?.totalReviews ?? 0}</Text>
-            <Text style={styles.statLabel}>Reviews ›</Text>
+            <Text style={styles.statLabel}>Reviews <Icon name="chevron-right" size={12} /></Text>
           </TouchableOpacity>
+        </View>
+
+        {/* Shop Info Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Shop Information</Text>
+          <InfoRow label="Shop Name" value={seller?.shopName} />
+          <InfoRow label="Description" value={seller?.shopDescription} />
+          <InfoRow label="Category Focus" value={seller?.categoryFocus} />
+          <InfoRow label="Member Since" value={seller?.createdAt ? new Date(seller.createdAt).toLocaleDateString() : '—'} />
         </View>
 
         {/* Owner Info */}
@@ -169,55 +180,67 @@ const SellerShopProfileScreen = ({ navigation }) => {
           </View>
         )}
 
-        <View style={{ height: 30 }} />
+        <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8f8f8' },
+  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#B4725E'
+  },
+  backBtn: { padding: 4 },
+  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#FFFFFF' },
+
   shopHeader: {
-    backgroundColor: '#8B2635', paddingVertical: 30, alignItems: 'center',
+    backgroundColor: '#B4725E', paddingVertical: 30, alignItems: 'center',
     borderBottomLeftRadius: 24, borderBottomRightRadius: 24,
   },
   shopIconCircle: {
-    width: 70, height: 70, borderRadius: 35,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center', justifyContent: 'center', marginBottom: 12,
+    width: 76, height: 76, borderRadius: 38,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    alignItems: 'center', justifyContent: 'center', marginBottom: 16,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)'
   },
-  shopIcon: { fontSize: 32 },
-  shopName: { color: '#fff', fontSize: 22, fontWeight: '800', marginBottom: 4 },
-  shopCategory: { color: 'rgba(255,255,255,0.75)', fontSize: 14, marginBottom: 10 },
+  shopName: { color: '#FFFFFF', fontSize: 24, fontFamily: 'PlayfairDisplay_700Bold', marginBottom: 4 },
+  shopCategory: { color: '#F7D9C4', fontSize: 14, fontFamily: 'InstrumentSans_400Regular', marginBottom: 12 },
   statusBadge: {
-    paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20,
+    paddingHorizontal: 16, paddingVertical: 6, borderRadius: 20, borderWidth: 1
   },
-  statusText: { fontWeight: '700', fontSize: 12 },
+  statusText: { fontFamily: 'InstrumentSans_600SemiBold', fontSize: 12 },
+
+  statsRow: {
+    flexDirection: 'row', backgroundColor: '#FFFFFF', marginHorizontal: 16,
+    marginTop: -20, borderRadius: 14, padding: 16,
+    borderWidth: 1, borderColor: '#E6C9B9', justifyContent: 'space-around',
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 4,
+  },
+  statItem: { alignItems: 'center', flex: 1 },
+  statValue: { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#B4725E' },
+  statLabel: { fontSize: 12, color: '#8C7A74', marginTop: 4, fontFamily: 'InstrumentSans_600SemiBold' },
+  statDivider: { width: 1, backgroundColor: '#E6C9B9' },
+
   section: {
-    backgroundColor: '#fff', marginHorizontal: 16, marginTop: 14,
-    borderRadius: 14, padding: 16, borderWidth: 1, borderColor: '#e2e8f0',
+    backgroundColor: '#FFFFFF', marginHorizontal: 16, marginTop: 16,
+    borderRadius: 14, padding: 20, borderWidth: 1, borderColor: '#E6C9B9',
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   sectionTitle: {
-    fontSize: 15, fontWeight: '800', color: '#333', marginBottom: 12,
-    borderBottomWidth: 1, borderBottomColor: '#f0f0f0', paddingBottom: 8,
+    fontSize: 16, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 16,
+    borderBottomWidth: 1, borderBottomColor: '#F8F8F8', paddingBottom: 10,
   },
   infoRow: {
     flexDirection: 'row', justifyContent: 'space-between',
-    paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#f5f5f5',
+    paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#F8F8F8',
   },
-  infoLabel: { fontSize: 13, color: '#888', fontWeight: '600', flex: 1 },
-  infoValue: { fontSize: 13, color: '#333', fontWeight: '500', flex: 1.5, textAlign: 'right' },
-  statsRow: {
-    flexDirection: 'row', backgroundColor: '#fff', marginHorizontal: 16,
-    marginTop: 14, borderRadius: 14, padding: 16,
-    borderWidth: 1, borderColor: '#e2e8f0', justifyContent: 'space-around',
-  },
-  statItem: { alignItems: 'center' },
-  statValue: { fontSize: 22, fontWeight: '800', color: '#8B2635' },
-  statLabel: { fontSize: 12, color: '#888', marginTop: 2, fontWeight: '600' },
-  statDivider: { width: 1, backgroundColor: '#e2e8f0' },
-  editSection: { padding: 16 },
-  editBtn: {},
+  infoLabel: { fontSize: 13, color: '#8C7A74', fontFamily: 'InstrumentSans_600SemiBold', flex: 1 },
+  infoValue: { fontSize: 13, color: '#2A201D', fontFamily: 'InstrumentSans_400Regular', flex: 1.5, textAlign: 'right' },
+
+  editSection: { padding: 16, marginTop: 8 },
+  editBtn: { backgroundColor: '#B4725E', borderRadius: 12, paddingVertical: 16 },
 });
 
 export default SellerShopProfileScreen;

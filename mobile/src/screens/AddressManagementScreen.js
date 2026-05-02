@@ -2,13 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, FlatList,
   Alert, Modal, SafeAreaView, KeyboardAvoidingView,
-  Platform, TouchableOpacity,
+  Platform, TouchableOpacity, StatusBar
 } from 'react-native';
 import apiClient from '../api/client';
 import AddressCard from '../components/AddressCard';
 import InputField from '../components/InputField';
 import Button from '../components/Button';
 import LoadingSpinner from '../components/LoadingSpinner';
+import Icon from 'react-native-vector-icons/Feather';
 
 const PROVINCES = [
   'Western', 'Central', 'Southern', 'Northern', 'Eastern',
@@ -20,7 +21,7 @@ const emptyForm = {
   city: '', province: 'Western', postalCode: '',
 };
 
-const AddressManagementScreen = () => {
+const AddressManagementScreen = ({ navigation }) => {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -125,10 +126,22 @@ const AddressManagementScreen = () => {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Icon name="arrow-left" size={24} color="#43332E" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>My Addresses</Text>
+        <View style={{ width: 24 }} />
+      </View>
+
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         {addresses.length === 0 ? (
           <View style={styles.empty}>
-            <Text style={styles.emptyIcon}>📍</Text>
+            <View style={styles.emptyIconCircle}>
+              <Icon name="map-pin" size={40} color="#B4725E" />
+            </View>
             <Text style={styles.emptyTitle}>No addresses yet</Text>
             <Text style={styles.emptyText}>Add a delivery address to use at checkout.</Text>
           </View>
@@ -148,14 +161,14 @@ const AddressManagementScreen = () => {
       </ScrollView>
 
       {/* Add / Edit Address Modal */}
-      <Modal visible={modalVisible} animationType="slide" presentationStyle="pageSheet">
+      <Modal visible={modalVisible} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setModalVisible(false)}>
         <SafeAreaView style={styles.modalSafe}>
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-            <ScrollView contentContainerStyle={styles.modalContainer} keyboardShouldPersistTaps="handled">
+            <ScrollView contentContainerStyle={styles.modalContainer} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>{editingId ? 'Edit Address' : 'Add New Address'}</Text>
                 <TouchableOpacity onPress={() => setModalVisible(false)}>
-                  <Text style={styles.modalClose}>✕</Text>
+                  <Icon name="x" size={24} color="#8C7A74" style={styles.modalClose} />
                 </TouchableOpacity>
               </View>
 
@@ -178,7 +191,7 @@ const AddressManagementScreen = () => {
                   onPress={() => setShowProvincePicker(!showProvincePicker)}
                 >
                   <Text style={styles.pickerBtnText}>{form.province || 'Select Province'}</Text>
-                  <Text style={styles.pickerChevron}>{showProvincePicker ? '▲' : '▼'}</Text>
+                  <Icon name={showProvincePicker ? "chevron-up" : "chevron-down"} size={20} color="#8C7A74" />
                 </TouchableOpacity>
                 {errors.province ? <Text style={styles.errorText}>{errors.province}</Text> : null}
                 {showProvincePicker && (
@@ -189,6 +202,7 @@ const AddressManagementScreen = () => {
                         <Text style={[styles.provinceItemText, form.province === p && styles.provinceSelected]}>
                           {p}
                         </Text>
+                        {form.province === p && <Icon name="check" size={16} color="#B4725E" />}
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -199,8 +213,9 @@ const AddressManagementScreen = () => {
                 onChangeText={set('postalCode')} placeholder="e.g. 10100"
                 keyboardType="numeric" error={errors.postalCode} />
 
-              <Button title={editingId ? 'Save Changes' : 'Add Address'} onPress={handleSave} loading={saving} style={styles.saveBtn} />
+              <Button title={editingId ? 'Save Changes' : 'Add Address'} onPress={handleSave} disabled={saving} style={styles.saveBtn} />
               <Button title="Cancel" onPress={() => setModalVisible(false)} variant="secondary" style={styles.cancelBtn} />
+              <View style={{ height: 20 }} />
             </ScrollView>
           </KeyboardAvoidingView>
         </SafeAreaView>
@@ -210,40 +225,52 @@ const AddressManagementScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#f8f8f8' },
-  container: { padding: 16, paddingBottom: 30 },
-  empty: { alignItems: 'center', paddingVertical: 60 },
-  emptyIcon: { fontSize: 48, marginBottom: 14 },
-  emptyTitle: { fontSize: 18, fontWeight: '700', color: '#333', marginBottom: 8 },
-  emptyText: { fontSize: 14, color: '#777', textAlign: 'center' },
-  addBtn: { marginTop: 8 },
+  safe: { flex: 1, backgroundColor: '#FFF1E8' },
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+  },
+  backBtn: { padding: 4 },
+  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+
+  container: { padding: 16, paddingBottom: 40 },
+  empty: { alignItems: 'center', justifyContent: 'center', paddingVertical: 60, marginTop: 40 },
+  emptyIconCircle: {
+    width: 80, height: 80, borderRadius: 40, backgroundColor: '#F7D9C4',
+    alignItems: 'center', justifyContent: 'center', marginBottom: 24,
+  },
+  emptyTitle: { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 8 },
+  emptyText: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', textAlign: 'center' },
+  addBtn: { marginTop: 12, backgroundColor: '#B4725E', borderRadius: 12 },
+
   // Modal
-  modalSafe: { flex: 1, backgroundColor: '#fff' },
+  modalSafe: { flex: 1, backgroundColor: '#FFFFFF' },
   modalContainer: { padding: 24, paddingBottom: 40 },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
-  modalTitle: { fontSize: 20, fontWeight: '800', color: '#222' },
-  modalClose: { fontSize: 18, color: '#888', padding: 4 },
+  modalTitle: { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  modalClose: { padding: 4 },
+
   fieldContainer: { marginBottom: 16 },
-  fieldLabel: { fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 6 },
+  fieldLabel: { fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#43332E', marginBottom: 8, marginTop: 4 },
   pickerBtn: {
-    borderWidth: 1.5, borderColor: '#ddd', borderRadius: 10,
-    paddingHorizontal: 14, paddingVertical: 12,
+    borderWidth: 1, borderColor: '#E6C9B9', borderRadius: 10,
+    paddingHorizontal: 14, paddingVertical: 14,
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
   },
-  pickerBtnError: { borderColor: '#e53e3e' },
-  pickerBtnText: { fontSize: 15, color: '#222' },
-  pickerChevron: { fontSize: 12, color: '#888' },
+  pickerBtnError: { borderColor: '#E53E3E' },
+  pickerBtnText: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D' },
   provinceList: {
-    borderWidth: 1, borderColor: '#ddd', borderRadius: 10,
-    marginTop: 4, backgroundColor: '#fff', overflow: 'hidden',
+    borderWidth: 1, borderColor: '#E6C9B9', borderRadius: 10,
+    marginTop: 6, backgroundColor: '#FFFFFF', overflow: 'hidden',
   },
-  provinceItem: { paddingVertical: 12, paddingHorizontal: 14, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
-  provinceItemText: { fontSize: 14, color: '#333' },
-  provinceSelected: { color: '#8B2635', fontWeight: '700' },
-  errorText: { color: '#e53e3e', fontSize: 12, marginTop: 4 },
-  saveBtn: { marginTop: 8 },
-  cancelBtn: { marginTop: 12 },
+  provinceItem: { paddingVertical: 14, paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#F8F8F8' },
+  provinceItemText: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D' },
+  provinceSelected: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold' },
+  errorText: { color: '#E53E3E', fontSize: 12, fontFamily: 'InstrumentSans_400Regular', marginTop: 4 },
+
+  saveBtn: { marginTop: 16, backgroundColor: '#B4725E', borderRadius: 12 },
+  cancelBtn: { marginTop: 12, borderRadius: 12 },
 });
 
 export default AddressManagementScreen;

@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import apiClient from '../api/client';
+import Icon from 'react-native-vector-icons/Feather';
 
 // -------------------------------------------------------
 // Seller Active Dashboard — Home screen for verified sellers
@@ -36,26 +37,27 @@ const SellerDashboardScreen = ({ navigation }) => {
   };
 
   const stats = [
-    { label: 'Products', value: dashboard?.productCount ?? 0, icon: '📦', color: '#E3F2FD' },
-    { label: 'Rating', value: dashboard?.averageRating?.toFixed(1) ?? '0.0', icon: '⭐', color: '#FFF8E1' },
-    { label: 'Orders', value: dashboard?.totalOrders ?? 0, icon: '🛒', color: '#E8F5E9' },
-    { label: 'Reviews', value: dashboard?.totalReviews ?? 0, icon: '💬', color: '#F3E5F5' },
+    { label: 'Products', value: dashboard?.productCount ?? 0, icon: 'package', color: '#FFFFFF' },
+    { label: 'Rating', value: dashboard?.averageRating?.toFixed(1) ?? '0.0', icon: 'star', color: '#FFFFFF' },
+    { label: 'Orders', value: dashboard?.totalOrders ?? 0, icon: 'shopping-cart', color: '#FFFFFF' },
+    { label: 'Reviews', value: dashboard?.totalReviews ?? 0, icon: 'message-square', color: '#FFFFFF' },
   ];
 
   const menuItems = [
-    { title: 'My Shop Profile', desc: 'View and edit your shop details', icon: '🏪', screen: 'SellerShopProfile' },
-    { title: 'My Products', desc: 'Manage your product listings', icon: '📦', screen: 'MyProducts' },
-    { title: 'Orders', desc: 'View and manage customer orders', icon: '🛒', screen: 'SellerOrders' },
-    { title: 'Reviews', desc: 'See what customers are saying', icon: '⭐', screen: null, placeholder: 'Module 5' },
+    { title: 'My Shop Profile', desc: 'View and edit your shop details', icon: 'home', screen: 'SellerShopProfile' },
+    { title: 'My Products', desc: 'Manage your product listings', icon: 'package', screen: 'MyProducts' },
+    { title: 'Orders', desc: 'View and manage customer orders', icon: 'shopping-cart', screen: 'SellerOrders' },
+    { title: 'Product Reviews', desc: 'See feedback on your items', icon: 'message-circle', screen: 'SellerProductReviews', params: { sellerId: user?.sellerId, shopName: dashboard?.shopName || user?.shopName } },
+    { title: 'Shop Reviews', desc: 'See what customers are saying about you', icon: 'star', screen: 'SellerReviews', params: { sellerId: user?.sellerId, shopName: dashboard?.shopName || user?.shopName } },
   ];
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#8B2635" />
+      <StatusBar barStyle="light-content" backgroundColor="#B4725E" />
 
       {/* Header */}
       <View style={styles.header}>
-        <View>
+        <View style={styles.headerTextContainer}>
           <Text style={styles.greet}>Hello, {user?.fullName?.split(' ')[0]} 👋</Text>
           <Text style={styles.shopLabel}>{dashboard?.shopName || user?.shopName || 'My Shop'}</Text>
         </View>
@@ -66,12 +68,14 @@ const SellerDashboardScreen = ({ navigation }) => {
 
       <ScrollView
         style={styles.body}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#8B2635" />}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#B4725E" />}
       >
         {/* Status Badge */}
         <View style={styles.statusRow}>
           <View style={styles.activeBadge}>
-            <Text style={styles.activeBadgeText}>✅ Verified Seller</Text>
+            <Icon name="check-circle" size={14} color="#388E3C" style={{ marginRight: 6 }} />
+            <Text style={styles.activeBadgeText}>Verified Seller</Text>
           </View>
         </View>
 
@@ -79,7 +83,9 @@ const SellerDashboardScreen = ({ navigation }) => {
         <View style={styles.statsGrid}>
           {stats.map((stat, idx) => (
             <View key={idx} style={[styles.statCard, { backgroundColor: stat.color }]}>
-              <Text style={styles.statIcon}>{stat.icon}</Text>
+              <View style={styles.statIconContainer}>
+                <Icon name={stat.icon} size={24} color="#B4725E" />
+              </View>
               <Text style={styles.statValue}>{stat.value}</Text>
               <Text style={styles.statLabel}>{stat.label}</Text>
             </View>
@@ -94,74 +100,88 @@ const SellerDashboardScreen = ({ navigation }) => {
             style={styles.menuCard}
             onPress={() => {
               if (item.screen) {
-                navigation.navigate(item.screen);
-              } else {
-                // Placeholder for future modules
+                navigation.navigate(item.screen, item.params);
               }
             }}
             activeOpacity={0.7}
           >
             <View style={styles.menuCardLeft}>
-              <Text style={styles.menuIcon}>{item.icon}</Text>
-              <View>
+              <View style={styles.menuIconContainer}>
+                <Icon name={item.icon} size={20} color="#B4725E" />
+              </View>
+              <View style={styles.menuTextContainer}>
                 <Text style={styles.menuTitle}>{item.title}</Text>
-                <Text style={styles.menuDesc}>
-                  {item.placeholder ? `Coming soon (${item.placeholder})` : item.desc}
-                </Text>
+                <Text style={styles.menuDesc}>{item.desc}</Text>
               </View>
             </View>
-            <Text style={styles.menuArrow}>→</Text>
+            <Icon name="chevron-right" size={20} color="#8C7A74" />
           </TouchableOpacity>
         ))}
 
-        <View style={{ height: 30 }} />
+        <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8f8f8' },
+  container: { flex: 1, backgroundColor: '#FFF1E8' },
   header: {
-    backgroundColor: '#8B2635', paddingHorizontal: 20, paddingVertical: 18,
+    backgroundColor: '#B4725E', paddingHorizontal: 20, paddingVertical: 24,
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    borderBottomLeftRadius: 24, borderBottomRightRadius: 24,
   },
-  greet: { color: '#fff', fontSize: 20, fontWeight: '800', marginBottom: 2 },
-  shopLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 14 },
+  headerTextContainer: { flex: 1 },
+  greet: { color: '#FFFFFF', fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', marginBottom: 4 },
+  shopLabel: { color: '#F7D9C4', fontSize: 14, fontFamily: 'InstrumentSans_400Regular' },
   logoutBtn: {
-    backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: 14,
-    paddingVertical: 8, borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.15)', paddingHorizontal: 16,
+    paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)',
   },
-  logoutText: { color: '#fff', fontWeight: '600', fontSize: 13 },
+  logoutText: { color: '#FFFFFF', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 13 },
+
   body: { flex: 1, padding: 16 },
-  statusRow: { alignItems: 'flex-start', marginBottom: 16 },
+
+  statusRow: { alignItems: 'flex-start', marginBottom: 20, marginTop: 4 },
   activeBadge: {
-    backgroundColor: '#E8F5E9', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20,
+    backgroundColor: '#E8F5E9', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
+    flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#C8E6C9'
   },
-  activeBadgeText: { color: '#2E7D32', fontWeight: '700', fontSize: 13 },
+  activeBadgeText: { color: '#2E7D32', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 13 },
+
   statsGrid: {
-    flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: 20,
+    flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: 24,
   },
   statCard: {
     width: '48%', borderRadius: 14, padding: 16,
-    alignItems: 'center', marginBottom: 10,
+    alignItems: 'center', marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
-  statIcon: { fontSize: 28, marginBottom: 6 },
-  statValue: { fontSize: 22, fontWeight: '800', color: '#333' },
-  statLabel: { fontSize: 12, color: '#666', marginTop: 2, fontWeight: '600' },
+  statIconContainer: {
+    width: 48, height: 48, borderRadius: 24, backgroundColor: '#FFF5EE',
+    alignItems: 'center', justifyContent: 'center', marginBottom: 12,
+  },
+  statValue: { fontSize: 24, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  statLabel: { fontSize: 13, color: '#8C7A74', marginTop: 4, fontFamily: 'InstrumentSans_600SemiBold' },
+
   sectionTitle: {
-    fontSize: 17, fontWeight: '800', color: '#333', marginBottom: 12,
+    fontSize: 18, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 16,
   },
+
   menuCard: {
-    backgroundColor: '#fff', borderRadius: 14, padding: 16,
+    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    marginBottom: 10, borderWidth: 1, borderColor: '#e2e8f0',
+    marginBottom: 12, borderWidth: 1, borderColor: '#E6C9B9',
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   menuCardLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  menuIcon: { fontSize: 28, marginRight: 14 },
-  menuTitle: { fontSize: 15, fontWeight: '700', color: '#333' },
-  menuDesc: { fontSize: 12, color: '#888', marginTop: 2 },
-  menuArrow: { fontSize: 18, color: '#ccc', fontWeight: '700' },
+  menuIconContainer: {
+    width: 44, height: 44, borderRadius: 12, backgroundColor: '#FFF5EE',
+    alignItems: 'center', justifyContent: 'center', marginRight: 16, borderWidth: 1, borderColor: '#E6C9B9'
+  },
+  menuTextContainer: { flex: 1, paddingRight: 16 },
+  menuTitle: { fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D', marginBottom: 4 },
+  menuDesc: { fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', lineHeight: 18 },
 });
 
 export default SellerDashboardScreen;

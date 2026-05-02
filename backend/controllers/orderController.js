@@ -687,12 +687,16 @@ const adminCancelOrder = async (req, res, next) => {
 };
 
 // -------------------------------------------------------
-// FR4.5 — PUT /api/orders/admin/:id/deliver
-// Admin marks an order as delivered
+// FR4.5 — PUT /api/orders/:id/confirm-delivery
+// Customer confirms receipt of a shipped order
+// This replaces the old admin-driven delivery confirmation.
 // -------------------------------------------------------
-const adminMarkDelivered = async (req, res, next) => {
+const confirmDelivery = async (req, res, next) => {
   try {
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findOne({
+      _id: req.params.id,
+      customer: req.user._id,
+    });
 
     if (!order) {
       return res.status(404).json({
@@ -704,7 +708,7 @@ const adminMarkDelivered = async (req, res, next) => {
     if (order.status !== 'shipped') {
       return res.status(400).json({
         success: false,
-        message: `Cannot mark as delivered. Current status: ${order.status}. Only shipped orders can be marked as delivered.`,
+        message: `Cannot confirm delivery. Current status: ${order.status}. Only shipped orders can be confirmed as delivered.`,
       });
     }
 
@@ -712,20 +716,15 @@ const adminMarkDelivered = async (req, res, next) => {
     order.statusHistory.push({
       status: 'delivered',
       timestamp: new Date(),
-      note: 'Order delivered to customer.',
-      updatedBy: 'admin',
+      note: 'Delivery confirmed by customer.',
+      updatedBy: 'customer',
     });
-
-    // If COD, mark payment as collected
-    if (order.paymentMethod === 'COD') {
-      order.paymentStatus = 'paid';
-    }
 
     await order.save();
 
     res.status(200).json({
       success: true,
-      message: 'Order marked as delivered. Review window is now open for the customer.',
+      message: 'Thank you! Your delivery has been confirmed. You can now leave a review.',
       order: {
         id: order._id,
         orderNumber: order.orderNumber,
@@ -739,12 +738,26 @@ const adminMarkDelivered = async (req, res, next) => {
   }
 };
 
+// -------------------------------------------------------
+// FR4.5 — PUT /api/orders/admin/:id/deliver  [DEPRECATED]
+// Delivery is now confirmed by the customer, not the admin.
+// This endpoint is kept as a stub to avoid breaking routes
+// but returns a 403 directing to the correct flow.
+// -------------------------------------------------------
+const adminMarkDelivered = async (req, res) => {
+  return res.status(403).json({
+    success: false,
+    message: 'Delivery confirmation has been moved to the customer. Customers confirm receipt from their Order Details screen.',
+  });
+};
+
 module.exports = {
   // Customer
   placeOrder,
   getMyOrders,
   getOrderDetail,
   cancelOrder,
+  confirmDelivery,
   // Seller
   getSellerOrders,
   getSellerOrderDetail,
@@ -754,5 +767,5 @@ module.exports = {
   getAllOrders,
   getAdminOrderDetail,
   adminCancelOrder,
-  adminMarkDelivered,
+  adminMarkDelivered, // deprecated stub
 };

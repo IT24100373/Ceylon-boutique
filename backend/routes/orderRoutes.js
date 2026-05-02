@@ -6,6 +6,7 @@ const {
   getMyOrders,
   getOrderDetail,
   cancelOrder,
+  confirmDelivery,
   getSellerOrders,
   getSellerOrderDetail,
   confirmOrder,
@@ -38,6 +39,9 @@ router.post('/', protect, placeOrderValidation, placeOrder);
 
 // FR4.7 — Cancel a pending order
 router.put('/:id/cancel', protect, orderIdValidation, cancelOrderValidation, cancelOrder);
+
+// FR4.5 — Customer confirms receipt of a shipped order
+router.put('/:id/confirm-delivery', protect, orderIdValidation, confirmDelivery);
 
 // -------------------------------------------------------
 // Seller routes (JWT + verified seller)

@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
-  Image, TouchableOpacity, ActivityIndicator, Dimensions, Alert
+  Image, TouchableOpacity, ActivityIndicator, Dimensions, Alert, StatusBar
 } from 'react-native';
 import apiClient from '../api/client';
 import { useCart } from '../context/CartContext';
+import Icon from 'react-native-vector-icons/Feather';
 
-// -------------------------------------------------------
-// Customer — Product Detail Screen
-// Full product view with image gallery, size/color selectors,
-// stock status, description, and seller info
-// -------------------------------------------------------
 const { width } = Dimensions.get('window');
+
+const colorMap = {
+  'Red': '#D32F2F', 'Blue': '#1976D2', 'Green': '#388E3C', 'Black': '#000000',
+  'White': '#FFFFFF', 'Yellow': '#FBC02D', 'Pink': '#E91E63', 'Purple': '#7B1FA2',
+  'Terracotta': '#B65A46', 'Beige': '#EFE2D1', 'Olive': '#5B6939', 'Brown': '#795548'
+};
 
 const ProductDetailScreen = ({ route, navigation }) => {
   const { productId } = route.params;
@@ -29,7 +31,6 @@ const ProductDetailScreen = ({ route, navigation }) => {
         const response = await apiClient.get(`/api/products/${productId}`);
         const p = response.data.product;
         setProduct(p);
-        // Auto-select first size and color
         if (p.sizes && p.sizes.length > 0) setSelectedSize(p.sizes[0]);
         if (p.colors && p.colors.length > 0) setSelectedColor(p.colors[0].name);
       } catch (error) {
@@ -41,7 +42,6 @@ const ProductDetailScreen = ({ route, navigation }) => {
     fetchProduct();
   }, [productId]);
 
-  // Get stock for the selected variant
   const getVariantStock = () => {
     if (!product || !selectedSize || !selectedColor) return 0;
     const variant = product.variants?.find(
@@ -56,23 +56,30 @@ const ProductDetailScreen = ({ route, navigation }) => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#8B2635" />
-      </View>
+      <SafeAreaView style={styles.loadingContainer}>
+        <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+        <ActivityIndicator size="large" color="#B4725E" />
+      </SafeAreaView>
     );
   }
 
   if (!product) {
     return (
-      <View style={styles.loadingContainer}>
+      <SafeAreaView style={styles.loadingContainer}>
+        <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
         <Text style={styles.errorText}>Product not found.</Text>
-      </View>
+        <TouchableOpacity style={{ marginTop: 20 }} onPress={() => navigation.goBack()}>
+          <Text style={{ color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold' }}>Go Back</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent={true} />
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+
         {/* Image Gallery */}
         <View style={styles.imageGallery}>
           {product.images && product.images.length > 0 ? (
@@ -86,14 +93,24 @@ const ProductDetailScreen = ({ route, navigation }) => {
               }}
             >
               {product.images.map((img, idx) => (
-                <Image key={idx} source={{ uri: img }} style={styles.galleryImage} />
+                <Image key={idx} source={{ uri: img }} style={styles.galleryImage} resizeMode="cover" />
               ))}
             </ScrollView>
           ) : (
             <View style={[styles.galleryImage, styles.noImage]}>
-              <Text style={styles.noImageText}>🛍️</Text>
+              <Icon name="image" size={48} color="#E6C9B9" />
             </View>
           )}
+
+          {/* Overlay Buttons */}
+          <View style={styles.overlayHeader}>
+            <TouchableOpacity style={styles.iconCircle} onPress={() => navigation.goBack()}>
+              <Icon name="arrow-left" size={20} color="#43332E" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconCircle}>
+              <Icon name="heart" size={20} color="#43332E" />
+            </TouchableOpacity>
+          </View>
 
           {/* Image Indicator Dots */}
           {product.images && product.images.length > 1 && (
@@ -107,7 +124,6 @@ const ProductDetailScreen = ({ route, navigation }) => {
             </View>
           )}
 
-          {/* Out of Stock Overlay */}
           {isOutOfStock && (
             <View style={styles.outOfStockOverlay}>
               <Text style={styles.outOfStockText}>OUT OF STOCK</Text>
@@ -117,88 +133,101 @@ const ProductDetailScreen = ({ route, navigation }) => {
 
         {/* Product Info */}
         <View style={styles.infoSection}>
-          <Text style={styles.category}>{product.category}</Text>
           <Text style={styles.name}>{product.name}</Text>
+
+          <TouchableOpacity
+            style={styles.ratingRow}
+            onPress={() => navigation.navigate('ProductReviews', {
+              productId: product._id,
+              productName: product.name,
+            })}
+            activeOpacity={0.7}
+          >
+            <View style={styles.starsContainer}>
+              {[1, 2, 3, 4, 5].map((s) => (
+                <Icon key={s} name="star" size={14} color="#D4A853" style={product.averageRating >= s ? { fill: '#D4A853' } : {}} />
+              ))}
+            </View>
+            <Text style={styles.reviewCount}>({product.totalReviews} Reviews)</Text>
+          </TouchableOpacity>
+
           <Text style={styles.price}>LKR {product.price?.toLocaleString()}</Text>
-
-          {/* Rating — tappable to view all reviews */}
-          {product.averageRating > 0 ? (
-            <TouchableOpacity
-              style={styles.ratingRow}
-              onPress={() => navigation.navigate('ProductReviews', {
-                productId: product._id,
-                productName: product.name,
-              })}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.ratingStars}>
-                {'★'.repeat(Math.round(product.averageRating))}
-                {'☆'.repeat(5 - Math.round(product.averageRating))}
-              </Text>
-              <Text style={styles.ratingValue}>{product.averageRating.toFixed(1)}</Text>
-              <Text style={styles.reviewCount}>({product.totalReviews} reviews) →</Text>
-            </TouchableOpacity>
-          ) : (
-            <Text style={styles.noRatingText}>No reviews yet</Text>
-          )}
         </View>
 
-        {/* Size Selector */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Select Size</Text>
-          <View style={styles.chipRow}>
-            {product.sizes?.map((size) => (
-              <TouchableOpacity
-                key={size}
-                style={[styles.sizeChip, selectedSize === size && styles.sizeChipActive]}
-                onPress={() => setSelectedSize(size)}
-              >
-                <Text style={[styles.sizeText, selectedSize === size && styles.sizeTextActive]}>
-                  {size}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+        <View style={styles.divider} />
 
         {/* Color Selector */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Select Color</Text>
-          <View style={styles.chipRow}>
-            {product.colors?.map((color, idx) => (
-              <TouchableOpacity
-                key={idx}
-                style={[styles.colorChip, selectedColor === color.name && styles.colorChipActive]}
-                onPress={() => setSelectedColor(color.name)}
-              >
-                <Text style={[styles.colorText, selectedColor === color.name && styles.colorTextActive]}>
-                  {color.name}
-                </Text>
-              </TouchableOpacity>
-            ))}
+        {product.colors && product.colors.length > 0 && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Color</Text>
+              <Text style={styles.selectedValueText}>{selectedColor}</Text>
+            </View>
+            <View style={styles.chipRow}>
+              {product.colors.map((color, idx) => {
+                const isSelected = selectedColor === color.name;
+                const bgColor = colorMap[color.name] || '#D3D3D3';
+                return (
+                  <TouchableOpacity
+                    key={idx}
+                    style={[styles.colorCircleWrapper, isSelected && styles.colorCircleWrapperActive]}
+                    onPress={() => setSelectedColor(color.name)}
+                  >
+                    <View style={[styles.colorCircle, { backgroundColor: bgColor }]} />
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
-        </View>
+        )}
 
-        {/* Stock Status */}
-        <View style={styles.section}>
-          <View style={styles.stockRow}>
-            <Text style={styles.stockLabel}>Availability:</Text>
-            {isVariantOutOfStock ? (
-              <View style={styles.stockBadgeOut}>
-                <Text style={styles.stockBadgeOutText}>Out of Stock</Text>
-              </View>
-            ) : (
-              <View style={styles.stockBadgeIn}>
-                <Text style={styles.stockBadgeInText}>In Stock ({variantStock} available)</Text>
-              </View>
-            )}
+        {/* Size Selector */}
+        {product.sizes && product.sizes.length > 0 && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Size</Text>
+              <Text style={styles.sizeGuideText}>Size Guide</Text>
+            </View>
+            <View style={styles.chipRow}>
+              {product.sizes.map((size) => {
+                const isSelected = selectedSize === size;
+                return (
+                  <TouchableOpacity
+                    key={size}
+                    style={[styles.sizeSquare, isSelected && styles.sizeSquareActive]}
+                    onPress={() => setSelectedSize(size)}
+                  >
+                    <Text style={[styles.sizeText, isSelected && styles.sizeTextActive]}>
+                      {size}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
-        </View>
+        )}
+
+        {/* Stock Status (only visible if warning) */}
+        {product.totalStock > 0 && variantStock < 5 && (
+          <View style={[styles.section, { paddingTop: 0 }]}>
+            <Text style={{ fontFamily: 'InstrumentSans_400Regular', color: '#D32F2F', fontSize: 13 }}>
+              {isVariantOutOfStock ? 'This variant is out of stock' : `Only ${variantStock} left in stock!`}
+            </Text>
+          </View>
+        )}
 
         {/* Description */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Description</Text>
           <Text style={styles.description}>{product.description}</Text>
+
+          {/* Mock bullet points based on image */}
+          <View style={styles.bulletPoints}>
+            <Text style={styles.bulletText}>• 100% locally sourced organic cotton</Text>
+            <Text style={styles.bulletText}>• Natural, low-impact dyes</Text>
+            <Text style={styles.bulletText}>• Relaxed fit, dropped shoulder</Text>
+            <Text style={styles.bulletText}>• Hand wash recommended</Text>
+          </View>
         </View>
 
         {/* Seller Info */}
@@ -206,33 +235,39 @@ const ProductDetailScreen = ({ route, navigation }) => {
           <TouchableOpacity
             style={styles.sellerCard}
             onPress={() => {
-              // Navigate to shop profile if available
               if (product.seller._id) {
-                navigation.navigate('ShopProfile', { sellerId: product.seller._id });
+                navigation.navigate('SellerShopProfile', { sellerId: product.seller._id });
               }
             }}
-            activeOpacity={0.7}
+            activeOpacity={0.8}
           >
-            <View style={styles.sellerInfo}>
-              <Text style={styles.sellerIcon}>🏪</Text>
-              <View>
-                <Text style={styles.sellerName}>{product.seller.shopName}</Text>
-                {product.seller.averageRating > 0 && (
-                  <Text style={styles.sellerRating}>
-                    ⭐ {product.seller.averageRating?.toFixed(1)} · {product.seller.totalReviews} reviews
-                  </Text>
-                )}
-              </View>
+            <View style={styles.sellerIconCircle}>
+              <Text style={styles.sellerIconText}>{product.seller.shopName.charAt(0)}</Text>
             </View>
-            <Text style={styles.sellerArrow}>→</Text>
+            <View style={styles.sellerInfo}>
+              <Text style={styles.sellerName}>{product.seller.shopName}</Text>
+              {product.seller.averageRating > 0 && (
+                <View style={styles.sellerRatingRow}>
+                  <Icon name="star" size={12} color="#D4A853" style={{ fill: '#D4A853' }} />
+                  <Text style={styles.sellerRatingText}>
+                    {product.seller.averageRating?.toFixed(1)} Seller Rating
+                  </Text>
+                </View>
+              )}
+            </View>
+            <Icon name="chevron-right" size={20} color="#8C7A74" />
           </TouchableOpacity>
         )}
 
-        <View style={{ height: 100 }} />
+        <View style={{ height: 40 }} />
       </ScrollView>
 
       {/* Bottom Action Bar */}
       <View style={styles.bottomBar}>
+        <TouchableOpacity style={styles.bookmarkBtn}>
+          <Icon name="bookmark" size={22} color="#8B4513" />
+        </TouchableOpacity>
+
         <TouchableOpacity
           style={[styles.cartBtn, (isOutOfStock || isVariantOutOfStock) && styles.btnDisabled]}
           disabled={isOutOfStock || isVariantOutOfStock}
@@ -245,21 +280,8 @@ const ProductDetailScreen = ({ route, navigation }) => {
             Alert.alert('Added', 'Item added to your cart.');
           }}
         >
-          <Text style={styles.cartBtnText}>🛒 Add to Cart</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.buyBtn, (isOutOfStock || isVariantOutOfStock) && styles.btnDisabled]}
-          disabled={isOutOfStock || isVariantOutOfStock}
-          onPress={() => {
-            if (!selectedSize || !selectedColor) {
-              Alert.alert('Error', 'Please select a size and color.');
-              return;
-            }
-            addToCart(product, selectedSize, selectedColor, 1);
-            navigation.navigate('Cart');
-          }}
-        >
-          <Text style={styles.buyBtnText}>⚡ Buy Now</Text>
+          <Icon name="shopping-bag" size={18} color="#FFFFFF" style={{ marginRight: 8 }} />
+          <Text style={styles.cartBtnText}>Add to Cart</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -267,96 +289,116 @@ const ProductDetailScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: '#FFF1E8' },
   scroll: { flex: 1 },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
-  errorText: { fontSize: 16, color: '#888' },
-  imageGallery: { position: 'relative' },
-  galleryImage: { width, height: 350, backgroundColor: '#f1f1f1' },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF1E8' },
+  errorText: { fontSize: 16, color: '#43332E', fontFamily: 'InstrumentSans_400Regular' },
+  imageGallery: { position: 'relative', width: '100%' },
+  galleryImage: { width, height: 450, backgroundColor: '#E6C9B9' },
   noImage: { alignItems: 'center', justifyContent: 'center' },
-  noImageText: { fontSize: 60 },
+  overlayHeader: {
+    position: 'absolute', top: 40, left: 16, right: 16,
+    flexDirection: 'row', justifyContent: 'space-between',
+  },
+  iconCircle: {
+    width: 40, height: 40, borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    alignItems: 'center', justifyContent: 'center',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1, shadowRadius: 4, elevation: 2,
+  },
   dotsRow: {
     flexDirection: 'row', justifyContent: 'center',
-    position: 'absolute', bottom: 12, left: 0, right: 0,
+    position: 'absolute', bottom: 16, left: 0, right: 0,
   },
   dot: {
-    width: 8, height: 8, borderRadius: 4,
-    backgroundColor: 'rgba(255,255,255,0.5)', marginHorizontal: 4,
+    width: 6, height: 6, borderRadius: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)', marginHorizontal: 4,
   },
-  dotActive: { backgroundColor: '#fff', width: 20 },
+  dotActive: { backgroundColor: '#FFFFFF', width: 6 },
   outOfStockOverlay: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center', justifyContent: 'center',
   },
   outOfStockText: {
-    color: '#fff', fontSize: 22, fontWeight: '900',
-    backgroundColor: '#D32F2F', paddingHorizontal: 20, paddingVertical: 10,
-    borderRadius: 8,
+    color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold',
+    backgroundColor: '#D32F2F', paddingHorizontal: 20, paddingVertical: 8,
+    borderRadius: 4,
   },
-  infoSection: { padding: 20, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
-  category: {
-    fontSize: 12, color: '#8B2635', fontWeight: '700',
-    textTransform: 'uppercase', marginBottom: 6,
-  },
-  name: { fontSize: 22, fontWeight: '800', color: '#333', marginBottom: 8 },
-  price: { fontSize: 26, fontWeight: '900', color: '#8B2635', marginBottom: 8 },
-  ratingRow: { flexDirection: 'row', alignItems: 'center' },
-  ratingStars: { color: '#F57C00', fontSize: 16, marginRight: 6 },
-  ratingValue: { fontSize: 14, fontWeight: '700', color: '#333', marginRight: 4 },
-  reviewCount: { fontSize: 13, color: '#8B2635', fontWeight: '600' },
-  noRatingText: { fontSize: 13, color: '#aaa', fontStyle: 'italic' },
-  section: { padding: 20, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
-  sectionTitle: { fontSize: 15, fontWeight: '800', color: '#333', marginBottom: 12 },
+  infoSection: { padding: 20, paddingBottom: 16 },
+  name: { fontSize: 28, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 8 },
+  ratingRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
+  starsContainer: { flexDirection: 'row', marginRight: 8 },
+  reviewCount: { fontSize: 13, color: '#43332E', fontFamily: 'InstrumentSans_400Regular' },
+  price: { fontSize: 24, fontFamily: 'PlayfairDisplay_700Bold', color: '#8B4513' },
+  divider: { height: 1, backgroundColor: '#E6C9B9', marginHorizontal: 20, marginVertical: 4 },
+  section: { paddingHorizontal: 20, paddingVertical: 16 },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  sectionTitle: { fontSize: 16, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  selectedValueText: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#43332E' },
+  sizeGuideText: { fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8B4513', textDecorationLine: 'underline' },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap' },
-  sizeChip: {
-    paddingHorizontal: 18, paddingVertical: 10, borderRadius: 10,
-    backgroundColor: '#f5f5f5', marginRight: 10, marginBottom: 10,
-    borderWidth: 2, borderColor: '#e2e8f0',
+
+  colorCircleWrapper: {
+    width: 38, height: 38, borderRadius: 19,
+    borderWidth: 1, borderColor: '#E6C9B9',
+    alignItems: 'center', justifyContent: 'center',
+    marginRight: 12, marginBottom: 10,
   },
-  sizeChipActive: { borderColor: '#8B2635', backgroundColor: '#FBE9E7' },
-  sizeText: { fontSize: 14, fontWeight: '600', color: '#666' },
-  sizeTextActive: { color: '#8B2635', fontWeight: '800' },
-  colorChip: {
-    paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10,
-    backgroundColor: '#f5f5f5', marginRight: 10, marginBottom: 10,
-    borderWidth: 2, borderColor: '#e2e8f0',
+  colorCircleWrapperActive: {
+    borderColor: '#8B4513', borderWidth: 2,
   },
-  colorChipActive: { borderColor: '#8B2635', backgroundColor: '#FBE9E7' },
-  colorText: { fontSize: 14, fontWeight: '600', color: '#666' },
-  colorTextActive: { color: '#8B2635', fontWeight: '800' },
-  stockRow: { flexDirection: 'row', alignItems: 'center' },
-  stockLabel: { fontSize: 14, fontWeight: '700', color: '#555', marginRight: 10 },
-  stockBadgeIn: { backgroundColor: '#E8F5E9', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
-  stockBadgeInText: { color: '#2E7D32', fontWeight: '700', fontSize: 13 },
-  stockBadgeOut: { backgroundColor: '#FFEBEE', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
-  stockBadgeOutText: { color: '#D32F2F', fontWeight: '700', fontSize: 13 },
-  description: { fontSize: 14, color: '#555', lineHeight: 22 },
+  colorCircle: {
+    width: 28, height: 28, borderRadius: 14,
+  },
+
+  sizeSquare: {
+    width: 48, height: 48, borderRadius: 8,
+    backgroundColor: '#FFFFFF', marginRight: 12, marginBottom: 12,
+    borderWidth: 1, borderColor: '#E6C9B9',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  sizeSquareActive: { borderColor: '#8B4513', borderWidth: 2, backgroundColor: '#FFF5EE' },
+  sizeText: { fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D' },
+  sizeTextActive: { color: '#8B4513' },
+
+  description: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', lineHeight: 24, marginTop: 8 },
+  bulletPoints: { marginTop: 16, marginLeft: 8 },
+  bulletText: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', lineHeight: 24 },
+
   sellerCard: {
-    margin: 20, padding: 16, backgroundColor: '#f8f8f8',
-    borderRadius: 14, flexDirection: 'row', alignItems: 'center',
-    justifyContent: 'space-between', borderWidth: 1, borderColor: '#e2e8f0',
+    marginHorizontal: 20, marginTop: 8, padding: 16,
+    backgroundColor: '#FFFFFF', borderRadius: 12,
+    flexDirection: 'row', alignItems: 'center',
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
-  sellerInfo: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  sellerIcon: { fontSize: 30, marginRight: 12 },
-  sellerName: { fontSize: 15, fontWeight: '700', color: '#333' },
-  sellerRating: { fontSize: 12, color: '#888', marginTop: 2 },
-  sellerArrow: { fontSize: 20, color: '#ccc', fontWeight: '700' },
+  sellerIconCircle: {
+    width: 44, height: 44, borderRadius: 22, backgroundColor: '#E6C9B9',
+    alignItems: 'center', justifyContent: 'center', marginRight: 16,
+  },
+  sellerIconText: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#43332E' },
+  sellerInfo: { flex: 1 },
+  sellerName: { fontSize: 15, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D', marginBottom: 4 },
+  sellerRatingRow: { flexDirection: 'row', alignItems: 'center' },
+  sellerRatingText: { fontSize: 12, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', marginLeft: 4 },
+
   bottomBar: {
-    flexDirection: 'row', padding: 16,
-    backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#e2e8f0',
+    flexDirection: 'row', padding: 16, paddingBottom: 24,
+    backgroundColor: '#FFF1E8', borderTopWidth: 1, borderTopColor: '#E6C9B9',
+  },
+  bookmarkBtn: {
+    width: 56, height: 56, borderRadius: 12,
+    backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1, borderColor: '#8B4513', marginRight: 16,
   },
   cartBtn: {
-    flex: 1, paddingVertical: 14, borderRadius: 12,
-    backgroundColor: '#fff', alignItems: 'center',
-    marginRight: 10, borderWidth: 2, borderColor: '#8B2635',
+    flex: 1, height: 56, borderRadius: 12,
+    backgroundColor: '#8B4513', flexDirection: 'row',
+    alignItems: 'center', justifyContent: 'center',
   },
-  cartBtnText: { color: '#8B2635', fontSize: 15, fontWeight: '800' },
-  buyBtn: {
-    flex: 1, paddingVertical: 14, borderRadius: 12,
-    backgroundColor: '#8B2635', alignItems: 'center',
-  },
-  buyBtnText: { color: '#fff', fontSize: 15, fontWeight: '800' },
-  btnDisabled: { opacity: 0.4 },
+  cartBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
+  btnDisabled: { opacity: 0.5 },
 });
 
 export default ProductDetailScreen;

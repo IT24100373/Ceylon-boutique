@@ -1,9 +1,10 @@
 import React from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
-  TouchableOpacity, Alert, SafeAreaView,
+  TouchableOpacity, Alert, SafeAreaView, StatusBar
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import Icon from 'react-native-vector-icons/Feather';
 
 const ProfileRow = ({ label, value }) => (
   <View style={styles.row}>
@@ -43,7 +44,11 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Profile</Text>
+      </View>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         {/* Avatar */}
         <View style={styles.avatarSection}>
           <View style={styles.avatar}>
@@ -67,33 +72,53 @@ const ProfileScreen = ({ navigation }) => {
         {/* Actions */}
         <View style={styles.actionsCard}>
           <TouchableOpacity style={styles.actionItem} onPress={() => navigation.navigate('MyOrders')}>
-            <Text style={styles.actionText}>📦  My Orders</Text>
-            <Text style={styles.chevron}>›</Text>
+            <View style={styles.actionLeft}>
+              <Icon name="package" size={20} color="#B4725E" style={styles.actionIcon} />
+              <Text style={styles.actionText}>My Orders</Text>
+            </View>
+            <Icon name="chevron-right" size={20} color="#8C7A74" />
           </TouchableOpacity>
           <View style={styles.divider} />
+
           <TouchableOpacity style={styles.actionItem} onPress={() => navigation.navigate('MyReviews')}>
-            <Text style={styles.actionText}>⭐  My Reviews</Text>
-            <Text style={styles.chevron}>›</Text>
+            <View style={styles.actionLeft}>
+              <Icon name="star" size={20} color="#B4725E" style={styles.actionIcon} />
+              <Text style={styles.actionText}>My Reviews</Text>
+            </View>
+            <Icon name="chevron-right" size={20} color="#8C7A74" />
           </TouchableOpacity>
           <View style={styles.divider} />
+
           <TouchableOpacity style={styles.actionItem} onPress={() => navigation.navigate('EditProfile')}>
-            <Text style={styles.actionText}>✏️  Edit Profile</Text>
-            <Text style={styles.chevron}>›</Text>
+            <View style={styles.actionLeft}>
+              <Icon name="edit-2" size={20} color="#B4725E" style={styles.actionIcon} />
+              <Text style={styles.actionText}>Edit Profile</Text>
+            </View>
+            <Icon name="chevron-right" size={20} color="#8C7A74" />
           </TouchableOpacity>
           <View style={styles.divider} />
+
           <TouchableOpacity style={styles.actionItem} onPress={() => navigation.navigate('ChangePassword')}>
-            <Text style={styles.actionText}>🔒  Change Password</Text>
-            <Text style={styles.chevron}>›</Text>
+            <View style={styles.actionLeft}>
+              <Icon name="lock" size={20} color="#B4725E" style={styles.actionIcon} />
+              <Text style={styles.actionText}>Change Password</Text>
+            </View>
+            <Icon name="chevron-right" size={20} color="#8C7A74" />
           </TouchableOpacity>
           <View style={styles.divider} />
+
           <TouchableOpacity style={styles.actionItem} onPress={() => navigation.navigate('Addresses')}>
-            <Text style={styles.actionText}>📍  My Addresses</Text>
-            <Text style={styles.chevron}>›</Text>
+            <View style={styles.actionLeft}>
+              <Icon name="map-pin" size={20} color="#B4725E" style={styles.actionIcon} />
+              <Text style={styles.actionText}>My Addresses</Text>
+            </View>
+            <Icon name="chevron-right" size={20} color="#8C7A74" />
           </TouchableOpacity>
         </View>
 
         {/* Danger Zone */}
         <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+          <Icon name="log-out" size={18} color="#B4725E" style={{ marginRight: 8 }} />
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
 
@@ -106,51 +131,59 @@ const ProfileScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#f8f8f8' },
+  safe: { flex: 1, backgroundColor: '#FFF1E8' },
+  header: { paddingHorizontal: 20, paddingVertical: 14, backgroundColor: '#FFF1E8' },
+  headerTitle: { fontSize: 24, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
   container: { padding: 20, paddingBottom: 40 },
-  avatarSection: { alignItems: 'center', marginBottom: 24 },
+  avatarSection: { alignItems: 'center', marginBottom: 28 },
   avatar: {
     width: 80, height: 80, borderRadius: 40,
-    backgroundColor: '#8B2635',
+    backgroundColor: '#F7D9C4',
     alignItems: 'center', justifyContent: 'center',
     marginBottom: 12,
   },
-  avatarText: { color: '#fff', fontSize: 32, fontWeight: '800' },
-  name: { fontSize: 20, fontWeight: '800', color: '#222' },
-  role: { fontSize: 13, color: '#888', marginTop: 2 },
+  avatarText: { color: '#B4725E', fontSize: 32, fontFamily: 'PlayfairDisplay_700Bold' },
+  name: { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  role: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginTop: 4 },
+
   card: {
-    backgroundColor: '#fff', borderRadius: 14,
-    paddingHorizontal: 16, marginBottom: 16,
-    borderWidth: 1, borderColor: '#eee',
+    backgroundColor: '#FFFFFF', borderRadius: 14,
+    paddingHorizontal: 16, marginBottom: 20,
+    borderWidth: 1, borderColor: '#E6C9B9',
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   row: {
     flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'center', paddingVertical: 14,
+    alignItems: 'center', paddingVertical: 16,
   },
-  rowLabel: { fontSize: 14, color: '#888', fontWeight: '600' },
-  rowValue: { fontSize: 14, color: '#222', fontWeight: '600', flexShrink: 1, textAlign: 'right' },
-  divider: { height: 1, backgroundColor: '#f0f0f0' },
+  rowLabel: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74' },
+  rowValue: { fontSize: 15, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D', flexShrink: 1, textAlign: 'right' },
+  divider: { height: 1, backgroundColor: '#E6C9B9' },
+
   actionsCard: {
-    backgroundColor: '#fff', borderRadius: 14,
+    backgroundColor: '#FFFFFF', borderRadius: 14,
     paddingHorizontal: 16, marginBottom: 24,
-    borderWidth: 1, borderColor: '#eee',
+    borderWidth: 1, borderColor: '#E6C9B9',
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   actionItem: {
     flexDirection: 'row', justifyContent: 'space-between',
     alignItems: 'center', paddingVertical: 16,
   },
-  actionText: { fontSize: 15, color: '#222', fontWeight: '500' },
-  chevron: { fontSize: 20, color: '#bbb' },
+  actionLeft: { flexDirection: 'row', alignItems: 'center' },
+  actionIcon: { marginRight: 12 },
+  actionText: { fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D' },
+
   logoutBtn: {
-    backgroundColor: '#fff', borderRadius: 12, padding: 16,
-    alignItems: 'center', borderWidth: 1.5, borderColor: '#8B2635',
-    marginBottom: 12,
+    backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1, borderColor: '#B4725E',
+    marginBottom: 16,
   },
-  logoutText: { color: '#8B2635', fontWeight: '700', fontSize: 15 },
-  deactivateBtn: {
-    alignItems: 'center', padding: 12,
-  },
-  deactivateText: { color: '#c53030', fontSize: 13, fontWeight: '600' },
+  logoutText: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 16 },
+
+  deactivateBtn: { alignItems: 'center', padding: 12 },
+  deactivateText: { color: '#D32F2F', fontSize: 14, fontFamily: 'InstrumentSans_400Regular', textDecorationLine: 'underline' },
 });
 
 export default ProfileScreen;

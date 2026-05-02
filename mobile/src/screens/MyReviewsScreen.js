@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, FlatList,
-  TouchableOpacity, ActivityIndicator, Alert,
+  TouchableOpacity, ActivityIndicator, Alert, StatusBar
 } from 'react-native';
 import apiClient from '../api/client';
+import Icon from 'react-native-vector-icons/Feather';
 
 // -------------------------------------------------------
 // Customer — My Reviews Screen
@@ -15,9 +16,18 @@ import apiClient from '../api/client';
 const StarDisplay = ({ rating }) => {
   const filled = Math.round(rating);
   return (
-    <Text style={styles.stars}>
-      {'★'.repeat(filled)}{'☆'.repeat(5 - filled)}
-    </Text>
+    <View style={styles.starRow}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Icon
+          key={star}
+          name="star"
+          size={16}
+          color={star <= filled ? "#B4725E" : "#E6C9B9"}
+          style={styles.starIcon}
+          solid={star <= filled}
+        />
+      ))}
+    </View>
   );
 };
 
@@ -108,15 +118,19 @@ const MyReviewsScreen = ({ navigation }) => {
         {/* Header: type badge + target name */}
         <View style={styles.cardHeader}>
           <View style={[styles.typeBadge, isProduct ? styles.typeBadgeProduct : styles.typeBadgeSeller]}>
-            <Text style={styles.typeBadgeText}>
-              {isProduct ? '🛍️ Product' : '🏪 Seller'}
+            <Icon name={isProduct ? "package" : "home"} size={12} color={isProduct ? "#2A201D" : "#4A148C"} style={{ marginRight: 6 }} />
+            <Text style={[styles.typeBadgeText, { color: isProduct ? '#2A201D' : '#4A148C' }]}>
+              {isProduct ? 'Product' : 'Seller'}
             </Text>
           </View>
-          <Text style={styles.editWindow}>
-            {item.canEdit
-              ? `✏️ Editable · ${item.hoursUntilLock}h left`
-              : '🔒 Locked'}
-          </Text>
+          <View style={styles.editWindowBadge}>
+            <Icon name={item.canEdit ? "edit-2" : "lock"} size={12} color="#8C7A74" style={{ marginRight: 4 }} />
+            <Text style={styles.editWindow}>
+              {item.canEdit
+                ? `${item.hoursUntilLock}h left to edit`
+                : 'Locked'}
+            </Text>
+          </View>
         </View>
 
         <Text style={styles.targetName} numberOfLines={2}>{targetName}</Text>
@@ -170,13 +184,23 @@ const MyReviewsScreen = ({ navigation }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#8B2635" />
+        <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+        <ActivityIndicator size="large" color="#B4725E" />
       </View>
     );
   }
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Icon name="arrow-left" size={24} color="#43332E" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>My Reviews</Text>
+        <View style={{ width: 24 }} />
+      </View>
+
       <FlatList
         data={reviews}
         keyExtractor={(item) => item.id}
@@ -184,11 +208,13 @@ const MyReviewsScreen = ({ navigation }) => {
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.4}
         ListFooterComponent={loadingMore ? (
-          <ActivityIndicator size="small" color="#8B2635" style={{ marginVertical: 20 }} />
+          <ActivityIndicator size="small" color="#B4725E" style={{ marginVertical: 20 }} />
         ) : null}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>⭐</Text>
+            <View style={styles.emptyIconCircle}>
+              <Icon name="star" size={40} color="#B4725E" />
+            </View>
             <Text style={styles.emptyTitle}>No reviews yet</Text>
             <Text style={styles.emptySubtitle}>
               After your orders are delivered, you can rate your purchases here.
@@ -203,44 +229,64 @@ const MyReviewsScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8f8f8' },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+  },
+  backBtn: { padding: 4 },
+  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF1E8' },
+
   list: { padding: 16, paddingBottom: 40 },
-  emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40 },
+  emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40, paddingBottom: 80 },
+
   card: {
-    backgroundColor: '#fff', borderRadius: 14, padding: 16,
-    marginBottom: 14, borderWidth: 1, borderColor: '#eee',
+    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16,
+    marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  typeBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
-  typeBadgeProduct: { backgroundColor: '#E3F2FD' },
-  typeBadgeSeller: { backgroundColor: '#F3E5F5' },
-  typeBadgeText: { fontSize: 12, fontWeight: '700' },
-  editWindow: { fontSize: 11, color: '#888' },
-  targetName: { fontSize: 15, fontWeight: '700', color: '#333', marginBottom: 8 },
-  ratingRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
-  stars: { fontSize: 18, color: '#F57C00', marginRight: 6 },
-  ratingNum: { fontSize: 13, fontWeight: '600', color: '#555' },
-  editedTag: { fontSize: 12, color: '#aaa', fontStyle: 'italic', marginLeft: 4 },
-  reviewText: { fontSize: 14, color: '#555', lineHeight: 21, marginBottom: 8 },
-  noText: { fontSize: 13, color: '#bbb', fontStyle: 'italic', marginBottom: 8 },
-  dateText: { fontSize: 12, color: '#aaa', marginBottom: 12 },
-  actionRow: { flexDirection: 'row', gap: 10 },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  typeBadge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
+  typeBadgeProduct: { backgroundColor: '#F8F8F8', borderWidth: 1, borderColor: '#E6C9B9' },
+  typeBadgeSeller: { backgroundColor: '#F3E5F5', borderWidth: 1, borderColor: '#E1BEE7' },
+  typeBadgeText: { fontSize: 12, fontFamily: 'InstrumentSans_600SemiBold' },
+
+  editWindowBadge: { flexDirection: 'row', alignItems: 'center' },
+  editWindow: { fontSize: 12, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74' },
+
+  targetName: { fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D', marginBottom: 8, lineHeight: 22 },
+
+  ratingRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
+  starRow: { flexDirection: 'row', marginRight: 8 },
+  starIcon: { marginRight: 2 },
+  ratingNum: { fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#43332E' },
+  editedTag: { fontSize: 12, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', fontStyle: 'italic', marginLeft: 4 },
+
+  reviewText: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', lineHeight: 22, marginBottom: 12 },
+  noText: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', fontStyle: 'italic', marginBottom: 12 },
+  dateText: { fontSize: 12, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginBottom: 16 },
+
+  actionRow: { flexDirection: 'row', gap: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#F0F0F0' },
   editBtn: {
-    flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center',
-    backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#8B2635',
+    flex: 1, paddingVertical: 12, borderRadius: 10, alignItems: 'center',
+    backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#B4725E',
   },
-  editBtnText: { color: '#8B2635', fontWeight: '700', fontSize: 14 },
+  editBtnText: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
   deleteBtn: {
-    flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center',
-    backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#D32F2F',
+    flex: 1, paddingVertical: 12, borderRadius: 10, alignItems: 'center',
+    backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#D32F2F',
   },
   deleteBtnDisabled: { opacity: 0.5 },
-  deleteBtnText: { color: '#D32F2F', fontWeight: '700', fontSize: 14 },
+  deleteBtnText: { color: '#D32F2F', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
+
   emptyState: { alignItems: 'center' },
-  emptyIcon: { fontSize: 56, marginBottom: 16 },
-  emptyTitle: { fontSize: 20, fontWeight: '800', color: '#333', marginBottom: 8 },
-  emptySubtitle: { fontSize: 14, color: '#888', textAlign: 'center', lineHeight: 22 },
+  emptyIconCircle: {
+    width: 80, height: 80, borderRadius: 40, backgroundColor: '#F7D9C4',
+    alignItems: 'center', justifyContent: 'center', marginBottom: 24,
+  },
+  emptyTitle: { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 12 },
+  emptySubtitle: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', textAlign: 'center', lineHeight: 22, opacity: 0.8 },
 });
 
 export default MyReviewsScreen;

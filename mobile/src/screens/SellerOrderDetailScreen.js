@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
-  TouchableOpacity, ActivityIndicator, Alert, TextInput
+  TouchableOpacity, ActivityIndicator, Alert, TextInput, StatusBar
 } from 'react-native';
 import apiClient from '../api/client';
+import Icon from 'react-native-vector-icons/Feather';
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -83,7 +84,8 @@ const SellerOrderDetailScreen = ({ route, navigation }) => {
   if (loading || !order) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#8B2635" />
+        <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+        <ActivityIndicator size="large" color="#B4725E" />
       </View>
     );
   }
@@ -92,12 +94,25 @@ const SellerOrderDetailScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Icon name="arrow-left" size={24} color="#43332E" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Order Detail</Text>
+        <View style={{ width: 24 }} />
+      </View>
+
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Header / Status */}
         <View style={styles.headerCard}>
-          <Text style={styles.orderNumber}>{order.orderNumber}</Text>
+          <View style={styles.orderNumberContainer}>
+            <Icon name="file-text" size={24} color="#B4725E" style={{ marginRight: 8 }} />
+            <Text style={styles.orderNumber}>{order.orderNumber}</Text>
+          </View>
           <Text style={styles.dateText}>Placed on {new Date(order.createdAt).toLocaleDateString()}</Text>
-          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(order.status) + '20' }]}>
+          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(order.status) + '15' }]}>
             <Text style={[styles.statusText, { color: getStatusColor(order.status) }]}>
               {order.status.toUpperCase()}
             </Text>
@@ -107,9 +122,18 @@ const SellerOrderDetailScreen = ({ route, navigation }) => {
         {/* Customer Info */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Customer Information</Text>
-          <Text style={styles.infoText}>Name: {customer?.fullName}</Text>
-          <Text style={styles.infoText}>Email: {customer?.email}</Text>
-          <Text style={styles.infoText}>Phone: {customer?.phone}</Text>
+          <View style={styles.infoRow}>
+            <Icon name="user" size={16} color="#8C7A74" style={styles.infoIcon} />
+            <Text style={styles.infoText}>{customer?.fullName}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Icon name="mail" size={16} color="#8C7A74" style={styles.infoIcon} />
+            <Text style={styles.infoText}>{customer?.email}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Icon name="phone" size={16} color="#8C7A74" style={styles.infoIcon} />
+            <Text style={styles.infoText}>{customer?.phone}</Text>
+          </View>
         </View>
 
         {/* Items */}
@@ -131,7 +155,10 @@ const SellerOrderDetailScreen = ({ route, navigation }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Shipping Address</Text>
           <View style={styles.addressBox}>
-            <Text style={styles.addressLabel}>{shippingAddress.label}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+              <Icon name="map-pin" size={16} color="#B4725E" style={{ marginRight: 6 }} />
+              <Text style={styles.addressLabel}>{shippingAddress.label}</Text>
+            </View>
             <Text style={styles.addressText}>{shippingAddress.addressLine1}</Text>
             {shippingAddress.addressLine2 ? <Text style={styles.addressText}>{shippingAddress.addressLine2}</Text> : null}
             <Text style={styles.addressText}>
@@ -144,22 +171,30 @@ const SellerOrderDetailScreen = ({ route, navigation }) => {
         {order.status === 'confirmed' && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Shipping Details (Optional)</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Courier Name (e.g., DHL, FedEx)"
-              value={courierName}
-              onChangeText={setCourierName}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Tracking Number"
-              value={trackingNumber}
-              onChangeText={setTrackingNumber}
-            />
+            <View style={styles.inputContainer}>
+              <Icon name="truck" size={20} color="#8C7A74" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Courier Name (e.g., DHL, FedEx)"
+                placeholderTextColor="#8C7A74"
+                value={courierName}
+                onChangeText={setCourierName}
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Icon name="hash" size={20} color="#8C7A74" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Tracking Number"
+                placeholderTextColor="#8C7A74"
+                value={trackingNumber}
+                onChangeText={setTrackingNumber}
+              />
+            </View>
           </View>
         )}
 
-        <View style={{ height: 30 }} />
+        <View style={{ height: 40 }} />
       </ScrollView>
 
       {/* Action Footer */}
@@ -170,7 +205,7 @@ const SellerOrderDetailScreen = ({ route, navigation }) => {
             disabled={updating}
             onPress={handleConfirmOrder}
           >
-            {updating ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryBtnText}>Confirm Order</Text>}
+            {updating ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.primaryBtnText}>Confirm Order</Text>}
           </TouchableOpacity>
         </View>
       )}
@@ -182,7 +217,7 @@ const SellerOrderDetailScreen = ({ route, navigation }) => {
             disabled={updating}
             onPress={handleShipOrder}
           >
-            {updating ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryBtnText}>Mark as Shipped</Text>}
+            {updating ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.primaryBtnText}>Mark as Shipped</Text>}
           </TouchableOpacity>
         </View>
       )}
@@ -191,30 +226,49 @@ const SellerOrderDetailScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8f8f8' },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+  },
+  backBtn: { padding: 4 },
+  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF1E8' },
   scroll: { flex: 1 },
-  headerCard: { backgroundColor: '#fff', padding: 20, alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#e2e8f0' },
-  orderNumber: { fontSize: 22, fontWeight: '800', color: '#333', marginBottom: 4 },
-  dateText: { fontSize: 14, color: '#666', marginBottom: 12 },
+
+  headerCard: { backgroundColor: '#FFFFFF', padding: 24, alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E6C9B9', marginBottom: 8 },
+  orderNumberContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
+  orderNumber: { fontSize: 24, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  dateText: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginBottom: 16 },
   statusBadge: { paddingHorizontal: 16, paddingVertical: 6, borderRadius: 12 },
-  statusText: { fontSize: 14, fontWeight: '800' },
-  section: { backgroundColor: '#fff', padding: 16, marginTop: 12, borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#e2e8f0' },
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#333', marginBottom: 12 },
-  infoText: { fontSize: 15, color: '#555', marginBottom: 6 },
-  itemRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#f0f0f0', paddingBottom: 12, marginBottom: 12 },
+  statusText: { fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold' },
+
+  section: { backgroundColor: '#FFFFFF', padding: 20, marginTop: 12, borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#E6C9B9' },
+  sectionTitle: { fontSize: 18, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 16 },
+
+  infoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  infoIcon: { width: 24 },
+  infoText: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', flex: 1 },
+
+  itemRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#F8F8F8', paddingBottom: 16, marginBottom: 16 },
   itemDetails: { flex: 1, paddingRight: 10 },
-  itemName: { fontSize: 15, fontWeight: '600', color: '#333', marginBottom: 4 },
-  itemVariant: { fontSize: 14, color: '#666' },
-  itemPrice: { fontSize: 16, fontWeight: '700', color: '#8B2635' },
-  addressBox: { backgroundColor: '#f8f8f8', padding: 12, borderRadius: 8 },
-  addressLabel: { fontSize: 14, fontWeight: '700', color: '#333', marginBottom: 4 },
-  addressText: { fontSize: 14, color: '#666', marginBottom: 2 },
-  input: { backgroundColor: '#f0f0f0', padding: 12, borderRadius: 8, fontSize: 15, marginBottom: 10, borderWidth: 1, borderColor: '#e2e8f0' },
-  footer: { backgroundColor: '#fff', padding: 20, borderTopWidth: 1, borderTopColor: '#e2e8f0' },
-  primaryBtn: { backgroundColor: '#8B2635', padding: 16, borderRadius: 12, alignItems: 'center' },
-  btnDisabled: { opacity: 0.5 },
-  primaryBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  itemName: { fontSize: 15, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D', marginBottom: 6 },
+  itemVariant: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginBottom: 2 },
+  itemPrice: { fontSize: 16, fontFamily: 'PlayfairDisplay_700Bold', color: '#B4725E' },
+
+  addressBox: { backgroundColor: '#FFF5EE', padding: 16, borderRadius: 10, borderWidth: 1, borderColor: '#E6C9B9' },
+  addressLabel: { fontSize: 15, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D' },
+  addressText: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', marginBottom: 4, lineHeight: 20 },
+
+  inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E6C9B9', borderRadius: 10, paddingHorizontal: 14, marginBottom: 12 },
+  inputIcon: { marginRight: 10 },
+  input: { flex: 1, paddingVertical: 14, fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D' },
+
+  footer: { backgroundColor: '#FFFFFF', padding: 20, borderTopWidth: 1, borderTopColor: '#E6C9B9' },
+  primaryBtn: { backgroundColor: '#B4725E', padding: 16, borderRadius: 12, alignItems: 'center' },
+  btnDisabled: { opacity: 0.6 },
+  primaryBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
 });
 
 export default SellerOrderDetailScreen;

@@ -6,11 +6,8 @@ import {
 import InputField from '../components/InputField';
 import Button from '../components/Button';
 import { useAuth } from '../context/AuthContext';
+import Icon from 'react-native-vector-icons/Feather';
 
-// -------------------------------------------------------
-// FR2.1 — Seller Login Screen
-// Same layout as customer LoginScreen but calls seller login
-// -------------------------------------------------------
 const SellerLoginScreen = ({ navigation }) => {
   const { sellerLoginAction } = useAuth();
   const [email, setEmail] = useState('');
@@ -35,22 +32,18 @@ const SellerLoginScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#8B2635" />
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          {/* Brand Section */}
-          <View style={styles.brandSection}>
-            <View style={styles.logoCircle}>
-              <Text style={styles.logoText}>CB</Text>
-            </View>
-            <Text style={styles.title}>Seller Login</Text>
-            <Text style={styles.subtitle}>Access your shop dashboard</Text>
-          </View>
 
-          {/* Form */}
+          <Text style={styles.brandText}>Ceylon Boutique</Text>
+          <Text style={styles.title}>Seller Login</Text>
+          <Text style={styles.subtitle}>Access your shop dashboard</Text>
+
           <View style={styles.formSection}>
             <InputField
               label="Email Address"
+              icon="mail"
               value={email}
               onChangeText={setEmail}
               placeholder="e.g. seller@email.com"
@@ -59,6 +52,7 @@ const SellerLoginScreen = ({ navigation }) => {
             />
             <InputField
               label="Password"
+              icon="lock"
               value={password}
               onChangeText={setPassword}
               placeholder="Enter your password"
@@ -66,7 +60,7 @@ const SellerLoginScreen = ({ navigation }) => {
             />
 
             <Button
-              title={loading ? 'Logging in...' : 'Login'}
+              title={loading ? 'Logging in...' : 'Login →'}
               onPress={handleLogin}
               disabled={loading}
               style={styles.loginBtn}
@@ -96,30 +90,39 @@ const SellerLoginScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#8B2635' },
-  scroll: { flexGrow: 1, justifyContent: 'center' },
-  brandSection: {
-    alignItems: 'center', paddingVertical: 40,
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  scroll: { flexGrow: 1, justifyContent: 'center', padding: 30 },
+  brandText: {
+    fontFamily: 'PlayfairDisplay_700Bold',
+    fontSize: 32,
+    color: '#43332E',
+    textAlign: 'center',
+    marginBottom: 8,
   },
-  logoCircle: {
-    width: 80, height: 80, borderRadius: 40,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center', justifyContent: 'center',
-    marginBottom: 16, borderWidth: 2, borderColor: 'rgba(255,255,255,0.5)',
+  title: {
+    fontFamily: 'PlayfairDisplay_700Bold',
+    fontSize: 40,
+    color: '#2A201D',
+    textAlign: 'center',
+    marginBottom: 10,
   },
-  logoText: { color: '#fff', fontSize: 28, fontWeight: '800' },
-  title: { color: '#fff', fontSize: 26, fontWeight: '800', marginBottom: 6 },
-  subtitle: { color: 'rgba(255,255,255,0.75)', fontSize: 15 },
+  subtitle: {
+    fontFamily: 'InstrumentSans_400Regular',
+    fontSize: 16,
+    color: '#43332E',
+    textAlign: 'center',
+    marginBottom: 40,
+    opacity: 0.8,
+  },
   formSection: {
-    backgroundColor: '#fff', borderTopLeftRadius: 30, borderTopRightRadius: 30,
-    padding: 30, paddingBottom: 40, flex: 1,
+    marginBottom: 10,
   },
-  loginBtn: { marginTop: 10 },
-  registerLink: { marginTop: 20, alignItems: 'center' },
-  registerLinkText: { fontSize: 14, color: '#666' },
-  registerLinkBold: { color: '#8B2635', fontWeight: '700' },
-  backLink: { marginTop: 16, alignItems: 'center' },
-  backLinkText: { color: '#8B2635', fontWeight: '600', fontSize: 14 },
+  loginBtn: { marginTop: 10, borderRadius: 8 },
+  registerLink: { marginTop: 30, alignItems: 'center' },
+  registerLinkText: { fontFamily: 'InstrumentSans_400Regular', fontSize: 14, color: '#43332E' },
+  registerLinkBold: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold' },
+  backLink: { marginTop: 20, alignItems: 'center' },
+  backLinkText: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
 });
 
 export default SellerLoginScreen;

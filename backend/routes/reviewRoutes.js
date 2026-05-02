@@ -5,6 +5,7 @@ const {
   submitReview,
   getProductReviews,
   getSellerReviews,
+  getSellerProductReviews,
   getMyReviews,
   getOrderReviewStatus,
   editReview,
@@ -56,6 +57,9 @@ router.get('/product/:productId', protect, getProductReviews);
 
 // FR5.3 — View seller reviews (paginated + sorted)
 router.get('/seller/:sellerId', protect, getSellerReviews);
+
+// View all product reviews belonging to a seller
+router.get('/seller/:sellerId/products', protect, getSellerProductReviews);
 
 // -------------------------------------------------------
 // Admin routes (JWT + admin role)

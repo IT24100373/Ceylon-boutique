@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
   Alert, SafeAreaView, KeyboardAvoidingView, Platform,
+  TouchableOpacity, StatusBar
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import apiClient from '../api/client';
 import InputField from '../components/InputField';
 import Button from '../components/Button';
+import Icon from 'react-native-vector-icons/Feather';
 
 const EditProfileScreen = ({ navigation }) => {
   const { user, updateLocalUser } = useAuth();
@@ -43,35 +45,52 @@ const EditProfileScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safe}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Icon name="arrow-left" size={24} color="#43332E" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Edit Profile</Text>
+        <View style={{ width: 24 }} />
+      </View>
+
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-          <Text style={styles.hint}>Email cannot be changed as it is your account identifier.</Text>
 
-          <InputField
-            label="Full Name"
-            value={fullName}
-            onChangeText={setFullName}
-            placeholder="Your full name"
-            autoCapitalize="words"
-            error={errors.fullName}
-          />
-          <InputField
-            label="Email Address"
-            value={user?.email}
-            placeholder="Email"
-            editable={false}
-          />
-          <InputField
-            label="Phone Number"
-            value={phone}
-            onChangeText={setPhone}
-            placeholder="0771234567"
-            keyboardType="phone-pad"
-            error={errors.phone}
-          />
+          <View style={styles.card}>
+            <View style={styles.hintBox}>
+              <Icon name="info" size={18} color="#B4725E" style={{ marginRight: 8, marginTop: 2 }} />
+              <Text style={styles.hint}>Email cannot be changed as it is your account identifier.</Text>
+            </View>
 
-          <Button title="Save Changes" onPress={handleSave} loading={loading} style={styles.btn} />
-          <Button title="Cancel" onPress={() => navigation.goBack()} variant="secondary" style={styles.cancelBtn} />
+            <InputField
+              label="Full Name"
+              value={fullName}
+              onChangeText={setFullName}
+              placeholder="Your full name"
+              autoCapitalize="words"
+              error={errors.fullName}
+            />
+            <InputField
+              label="Email Address"
+              value={user?.email}
+              placeholder="Email"
+              editable={false}
+            />
+            <InputField
+              label="Phone Number"
+              value={phone}
+              onChangeText={setPhone}
+              placeholder="0771234567"
+              keyboardType="phone-pad"
+              error={errors.phone}
+            />
+          </View>
+
+          <View style={styles.actionContainer}>
+            <Button title="Save Changes" onPress={handleSave} loading={loading} style={styles.btn} />
+            <Button title="Cancel" onPress={() => navigation.goBack()} variant="secondary" style={styles.cancelBtn} />
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -79,14 +98,39 @@ const EditProfileScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#fff' },
-  container: { flexGrow: 1, padding: 24 },
-  hint: {
-    backgroundColor: '#fff8e1', borderRadius: 8, padding: 12,
-    color: '#7a6012', fontSize: 13, marginBottom: 22, lineHeight: 19,
+  safe: { flex: 1, backgroundColor: '#FFF1E8' },
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
   },
-  btn: { marginTop: 8 },
-  cancelBtn: { marginTop: 12 },
+  backBtn: { padding: 4 },
+  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+
+  container: { flexGrow: 1, padding: 20 },
+
+  card: {
+    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 20,
+    borderWidth: 1, borderColor: '#E6C9B9', marginBottom: 24,
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+  },
+
+  hintBox: {
+    flexDirection: 'row', backgroundColor: '#FFF5EE', borderRadius: 10, padding: 14,
+    marginBottom: 24, borderWidth: 1, borderColor: '#E6C9B9',
+  },
+  hint: {
+    flex: 1, color: '#8C7A74', fontSize: 13, fontFamily: 'InstrumentSans_400Regular', lineHeight: 20,
+  },
+
+  actionContainer: {
+    marginTop: 'auto',
+  },
+  btn: {
+    backgroundColor: '#B4725E', borderRadius: 12, paddingVertical: 16, marginBottom: 12
+  },
+  cancelBtn: {
+    backgroundColor: 'transparent', borderWidth: 1, borderColor: '#B4725E', borderRadius: 12, paddingVertical: 16
+  },
 });
 
 export default EditProfileScreen;

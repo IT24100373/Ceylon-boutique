@@ -6,13 +6,6 @@ import {
 import apiClient from '../api/client';
 import Icon from 'react-native-vector-icons/Feather';
 
-// -------------------------------------------------------
-// FR5.3 — Seller Reviews Screen
-// Paginated list of seller reviews on a shop.
-// Reached from: SellerShopProfileScreen → tap rating section
-// Params: sellerId, shopName (optional)
-// -------------------------------------------------------
-
 const StarDisplay = ({ rating, size = 14 }) => {
   const filled = Math.round(rating);
   return (
@@ -46,6 +39,18 @@ const RatingBar = ({ star, count, total }) => {
 
 const ReviewCard = ({ review }) => (
   <View style={styles.reviewCard}>
+    {/* Product info banner at the top of the review */}
+    <View style={styles.productBanner}>
+      {review.productImage ? (
+        <Image source={{ uri: review.productImage }} style={styles.productBannerImg} />
+      ) : (
+        <View style={styles.productBannerPlaceholder}>
+          <Icon name="package" size={16} color="#B4725E" />
+        </View>
+      )}
+      <Text style={styles.productBannerName} numberOfLines={1}>{review.productName}</Text>
+    </View>
+
     <View style={styles.reviewHeader}>
       <View style={styles.reviewerAvatar}>
         <Text style={styles.reviewerInitial}>
@@ -89,7 +94,7 @@ const SORT_OPTIONS = [
   { key: 'helpful', label: 'Most Helpful' },
 ];
 
-const SellerReviewsScreen = ({ route, navigation }) => {
+const SellerProductReviewsScreen = ({ route, navigation }) => {
   const { sellerId, shopName } = route.params;
 
   const [reviews, setReviews] = useState([]);
@@ -107,7 +112,7 @@ const SellerReviewsScreen = ({ route, navigation }) => {
       if (pageNum === 1) setLoading(true);
       else setLoadingMore(true);
 
-      const res = await apiClient.get(`/api/reviews/seller/${sellerId}`, {
+      const res = await apiClient.get(`/api/reviews/seller/${sellerId}/products`, {
         params: { sortBy: sort, page: pageNum, limit: 10 },
       });
 
@@ -127,7 +132,7 @@ const SellerReviewsScreen = ({ route, navigation }) => {
         setReviews((prev) => [...prev, ...data.reviews]);
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to load seller reviews.');
+      Alert.alert('Error', 'Failed to load product reviews.');
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -161,8 +166,8 @@ const SellerReviewsScreen = ({ route, navigation }) => {
       {/* Shop name header */}
       {shopName && (
         <View style={styles.shopHeader}>
-          <Icon name="home" size={20} color="#B4725E" style={{ marginRight: 10 }} />
-          <Text style={styles.shopName}>{shopName}</Text>
+          <Icon name="package" size={20} color="#B4725E" style={{ marginRight: 10 }} />
+          <Text style={styles.shopName}>Product Reviews for {shopName}</Text>
         </View>
       )}
 
@@ -205,7 +210,7 @@ const SellerReviewsScreen = ({ route, navigation }) => {
             <Icon name="star" size={40} color="#B4725E" />
           </View>
           <Text style={styles.emptyTitle}>No reviews yet</Text>
-          <Text style={styles.emptySubtitle}>This seller hasn't received any reviews yet.</Text>
+          <Text style={styles.emptySubtitle}>Your products haven't received any reviews yet.</Text>
         </View>
       )}
     </View>
@@ -218,7 +223,7 @@ const SellerReviewsScreen = ({ route, navigation }) => {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Icon name="arrow-left" size={24} color="#43332E" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Shop Reviews</Text>
+        <Text style={styles.headerTitle}>Product Reviews</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -254,7 +259,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: 20, paddingVertical: 16, backgroundColor: '#FFF5EE', borderBottomWidth: 1, borderBottomColor: '#E6C9B9',
   },
-  shopName: { fontSize: 18, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+  shopName: { fontSize: 16, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
 
   summaryCard: {
     backgroundColor: '#FFFFFF', flexDirection: 'row', padding: 24,
@@ -287,6 +292,14 @@ const styles = StyleSheet.create({
     borderRadius: 14, padding: 20, borderWidth: 1, borderColor: '#E6C9B9',
     shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
+  productBanner: {
+    flexDirection: 'row', alignItems: 'center', marginBottom: 16,
+    paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: '#F8F8F8',
+  },
+  productBannerImg: { width: 36, height: 36, borderRadius: 6, marginRight: 12, borderWidth: 1, borderColor: '#E6C9B9' },
+  productBannerPlaceholder: { width: 36, height: 36, borderRadius: 6, marginRight: 12, backgroundColor: '#FFF5EE', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#E6C9B9' },
+  productBannerName: { flex: 1, fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D' },
+
   reviewHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   reviewerAvatar: {
     width: 40, height: 40, borderRadius: 20, backgroundColor: '#FFF5EE',
@@ -315,4 +328,4 @@ const styles = StyleSheet.create({
   emptySubtitle: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#43332E' },
 });
 
-export default SellerReviewsScreen;
+export default SellerProductReviewsScreen;

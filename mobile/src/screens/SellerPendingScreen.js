@@ -5,6 +5,7 @@ import {
 import Button from '../components/Button';
 import { useAuth } from '../context/AuthContext';
 import apiClient from '../api/client';
+import Icon from 'react-native-vector-icons/Feather';
 
 // -------------------------------------------------------
 // Seller Pending Verification Screen
@@ -56,11 +57,11 @@ const SellerPendingScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f8f8f8" />
+      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
       <View style={styles.content}>
         {/* Status Icon */}
         <View style={styles.iconCircle}>
-          <Text style={styles.icon}>⏳</Text>
+          <Icon name="clock" size={40} color="#D4A853" />
         </View>
 
         <Text style={styles.title}>Under Review</Text>
@@ -72,7 +73,10 @@ const SellerPendingScreen = () => {
 
         {/* Info Cards */}
         <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>📋 What happens next?</Text>
+          <View style={styles.infoHeader}>
+            <Icon name="file-text" size={18} color="#B4725E" style={{ marginRight: 8 }} />
+            <Text style={styles.infoTitle}>What happens next?</Text>
+          </View>
           <Text style={styles.infoText}>
             • Our admin team reviews your business documents{'\n'}
             • This usually takes 3-5 business days{'\n'}
@@ -84,7 +88,8 @@ const SellerPendingScreen = () => {
         <View style={styles.statusCard}>
           <Text style={styles.statusLabel}>Current Status</Text>
           <View style={styles.statusBadge}>
-            <Text style={styles.statusBadgeText}>⏳ Pending Verification</Text>
+            <Icon name="loader" size={16} color="#D4A853" style={{ marginRight: 6 }} />
+            <Text style={styles.statusBadgeText}>Pending Verification</Text>
           </View>
         </View>
 
@@ -108,52 +113,55 @@ const SellerPendingScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8f8f8' },
+  container: { flex: 1, backgroundColor: '#FFF1E8' },
   content: {
     flex: 1, padding: 24, alignItems: 'center', justifyContent: 'center',
   },
   iconCircle: {
-    width: 80, height: 80, borderRadius: 40,
-    backgroundColor: '#FFF3E0', alignItems: 'center', justifyContent: 'center',
-    marginBottom: 20,
+    width: 90, height: 90, borderRadius: 45,
+    backgroundColor: '#FFF5EE', alignItems: 'center', justifyContent: 'center',
+    marginBottom: 24, borderWidth: 1, borderColor: '#E6C9B9'
   },
-  icon: { fontSize: 40 },
   title: {
-    fontSize: 24, fontWeight: '800', color: '#333', marginBottom: 10,
+    fontSize: 26, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 12,
   },
   subtitle: {
-    fontSize: 15, color: '#666', textAlign: 'center', lineHeight: 22,
+    fontSize: 16, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', textAlign: 'center', lineHeight: 24,
   },
   shopName: {
-    fontSize: 17, fontWeight: '700', color: '#8B2635',
-    marginVertical: 6, textAlign: 'center',
+    fontSize: 18, fontFamily: 'PlayfairDisplay_700Bold', color: '#B4725E',
+    marginVertical: 8, textAlign: 'center',
   },
   infoCard: {
-    backgroundColor: '#fff', borderRadius: 14, padding: 18,
-    marginTop: 24, width: '100%',
-    borderWidth: 1, borderColor: '#e2e8f0',
+    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 20,
+    marginTop: 30, width: '100%',
+    borderWidth: 1, borderColor: '#E6C9B9',
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
+  infoHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   infoTitle: {
-    fontSize: 15, fontWeight: '700', color: '#333', marginBottom: 10,
+    fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D',
   },
   infoText: {
-    fontSize: 13, color: '#555', lineHeight: 22,
+    fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#43332E', lineHeight: 24,
   },
   statusCard: {
-    backgroundColor: '#fff', borderRadius: 14, padding: 16,
-    marginTop: 14, width: '100%', alignItems: 'center',
-    borderWidth: 1, borderColor: '#e2e8f0',
+    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 20,
+    marginTop: 16, width: '100%', alignItems: 'center',
+    borderWidth: 1, borderColor: '#E6C9B9',
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   statusLabel: {
-    fontSize: 13, color: '#999', fontWeight: '600', marginBottom: 8,
+    fontSize: 14, color: '#8C7A74', fontFamily: 'InstrumentSans_600SemiBold', marginBottom: 10,
   },
   statusBadge: {
-    backgroundColor: '#FFF3E0', paddingHorizontal: 16, paddingVertical: 8,
-    borderRadius: 20,
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: '#FFF5EE', paddingHorizontal: 16, paddingVertical: 10,
+    borderRadius: 20, borderWidth: 1, borderColor: '#E6C9B9'
   },
-  statusBadgeText: { color: '#E65100', fontWeight: '700', fontSize: 14 },
-  refreshBtn: { marginTop: 24, width: '100%' },
-  logoutBtn: { marginTop: 10, width: '100%' },
+  statusBadgeText: { color: '#D4A853', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
+  refreshBtn: { marginTop: 32, width: '100%', backgroundColor: '#B4725E' },
+  logoutBtn: { marginTop: 12, width: '100%' },
 });
 
 export default SellerPendingScreen;

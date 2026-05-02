@@ -1,4 +1,5 @@
 const { validationResult } = require('express-validator');
+const mongoose = require('mongoose');
 const Review = require('../models/Review');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
@@ -241,7 +242,7 @@ const getProductReviews = async (req, res, next) => {
     const sort = sortOptions[sortBy] || sortOptions.newest;
 
     const filter = {
-      product: productId,
+      product: new mongoose.Types.ObjectId(productId),
       reviewType: 'product',
       isDeleted: false,
       adminRemoved: false,
@@ -313,7 +314,7 @@ const getSellerReviews = async (req, res, next) => {
     const sort = sortOptions[sortBy] || sortOptions.newest;
 
     const filter = {
-      seller: sellerId,
+      seller: new mongoose.Types.ObjectId(sellerId),
       reviewType: 'seller',
       isDeleted: false,
       adminRemoved: false,
@@ -343,6 +344,83 @@ const getSellerReviews = async (req, res, next) => {
       reviewerName: r.customer
         ? `${r.customer.fullName.split(' ')[0]} ${r.customer.fullName.split(' ').slice(-1)[0]?.charAt(0) || ''}.`
         : 'Customer',
+      rating: r.rating,
+      reviewText: r.reviewText,
+      photos: r.photos,
+      helpfulCount: r.helpfulCount,
+      isEdited: r.isEdited,
+      editedAt: r.editedAt,
+      createdAt: r.createdAt,
+    }));
+
+    res.status(200).json({
+      success: true,
+      count: reviews.length,
+      total,
+      page: parseInt(page),
+      totalPages: Math.ceil(total / parseInt(limit)),
+      ratingBreakdown: ratingMap,
+      reviews: formattedReviews,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// -------------------------------------------------------
+// GET /api/reviews/seller/:sellerId/products
+// View paginated product reviews for all products of a seller
+// -------------------------------------------------------
+const getSellerProductReviews = async (req, res, next) => {
+  try {
+    const { sellerId } = req.params;
+    const { sortBy = 'newest', page = 1, limit = 10 } = req.query;
+
+    const sortOptions = {
+      newest: { createdAt: -1 },
+      highest: { rating: -1, createdAt: -1 },
+      helpful: { helpfulCount: -1, createdAt: -1 },
+    };
+    const sort = sortOptions[sortBy] || sortOptions.newest;
+
+    // Find all products owned by this seller
+    const products = await Product.find({ seller: new mongoose.Types.ObjectId(sellerId) }).select('_id');
+    const productIds = products.map((p) => p._id);
+
+    const filter = {
+      product: { $in: productIds },
+      reviewType: 'product',
+      isDeleted: false,
+      adminRemoved: false,
+    };
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const reviews = await Review.find(filter)
+      .populate('customer', 'fullName')
+      .populate('product', 'name images')
+      .sort(sort)
+      .skip(skip)
+      .limit(parseInt(limit))
+      .select('customer product rating reviewText photos helpfulCount isEdited editedAt createdAt');
+
+    const total = await Review.countDocuments(filter);
+
+    const breakdown = await Review.aggregate([
+      { $match: filter },
+      { $group: { _id: '$rating', count: { $sum: 1 } } },
+    ]);
+
+    const ratingMap = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    breakdown.forEach((b) => { ratingMap[b._id] = b.count; });
+
+    const formattedReviews = reviews.map((r) => ({
+      id: r._id,
+      reviewerName: r.customer
+        ? `${r.customer.fullName.split(' ')[0]} ${r.customer.fullName.split(' ').slice(-1)[0]?.charAt(0) || ''}.`
+        : 'Customer',
+      productName: r.product?.name || 'Deleted Product',
+      productImage: r.product?.images?.[0] || null,
       rating: r.rating,
       reviewText: r.reviewText,
       photos: r.photos,
@@ -730,6 +808,7 @@ module.exports = {
   submitReview,
   getProductReviews,
   getSellerReviews,
+  getSellerProductReviews,
   getMyReviews,
   getOrderReviewStatus,
   editReview,

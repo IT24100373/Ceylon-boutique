@@ -45,27 +45,34 @@ const LoginScreen = ({ navigation }) => {
         style={{ flex: 1 }}
       >
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+
+          <Text style={styles.brandText}>Ceylon Boutique</Text>
           <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>Login to your Ceylon Boutique account</Text>
+          <Text style={styles.subtitle}>Enter your credentials to access your curated collection.</Text>
 
-          <InputField
-            label="Email Address"
-            value={email}
-            onChangeText={setEmail}
-            placeholder="you@example.com"
-            keyboardType="email-address"
-            error={errors.email}
-          />
-          <InputField
-            label="Password"
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Your password"
-            secureTextEntry
-            error={errors.password}
-          />
+          <View style={styles.formContainer}>
+            <InputField
+              label="Email Address"
+              icon="mail"
+              value={email}
+              onChangeText={setEmail}
+              placeholder="name@example.com"
+              keyboardType="email-address"
+              error={errors.email}
+            />
+            <InputField
+              label="Password"
+              icon="lock"
+              rightLabel="Forgot Password?"
+              value={password}
+              onChangeText={setPassword}
+              placeholder="••••••••"
+              secureTextEntry
+              error={errors.password}
+            />
+          </View>
 
-          <Button title="Login" onPress={handleLogin} loading={loading} style={styles.btn} />
+          <Button title="Login →" onPress={handleLogin} loading={loading} style={styles.btn} />
 
           <TouchableOpacity
             style={styles.linkRow}
@@ -82,14 +89,41 @@ const LoginScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#fff' },
-  container: { flexGrow: 1, padding: 24, justifyContent: 'center' },
-  title: { fontSize: 28, fontWeight: '800', color: '#8B2635', marginBottom: 6 },
-  subtitle: { fontSize: 15, color: '#666', marginBottom: 30 },
-  btn: { marginTop: 8 },
-  linkRow: { marginTop: 20, alignItems: 'center' },
-  linkText: { color: '#555', fontSize: 14 },
-  link: { color: '#8B2635', fontWeight: '700' },
+  safe: { flex: 1, backgroundColor: '#FFFFFF' }, // matching the image background (white/very light)
+  container: { flexGrow: 1, padding: 30, justifyContent: 'center' },
+  brandText: {
+    fontFamily: 'PlayfairDisplay_700Bold',
+    fontSize: 32,
+    color: '#43332E',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  title: {
+    fontFamily: 'PlayfairDisplay_700Bold',
+    fontSize: 48,
+    color: '#2A201D',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  subtitle: {
+    fontFamily: 'InstrumentSans_400Regular',
+    fontSize: 16,
+    color: '#43332E',
+    textAlign: 'center',
+    marginBottom: 40,
+    lineHeight: 24,
+    paddingHorizontal: 10,
+  },
+  formContainer: {
+    marginBottom: 10,
+  },
+  btn: {
+    marginTop: 10,
+    borderRadius: 8, // the image login button is slightly rounded, not full pill
+  },
+  linkRow: { marginTop: 40, alignItems: 'center' },
+  linkText: { fontFamily: 'InstrumentSans_400Regular', color: '#43332E', fontSize: 15 },
+  link: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold' },
 });
 
 export default LoginScreen;

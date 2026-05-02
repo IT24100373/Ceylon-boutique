@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
-  TextInput, TouchableOpacity, Alert, ActivityIndicator,
+  TextInput, TouchableOpacity, Alert, ActivityIndicator, StatusBar
 } from 'react-native';
 import apiClient from '../api/client';
+import Icon from 'react-native-vector-icons/Feather';
 
 // -------------------------------------------------------
 // Seller — Add Product Screen
@@ -127,7 +128,7 @@ const AddProductScreen = ({ navigation }) => {
         images,
         variants,
       });
-      Alert.alert('Success! 🎉', 'Your product has been listed and is now visible to customers.', [
+      Alert.alert('Success!', 'Your product has been listed and is now visible to customers.', [
         { text: 'OK', onPress: () => navigation.goBack() },
       ]);
     } catch (error) {
@@ -140,9 +141,22 @@ const AddProductScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Icon name="arrow-left" size={24} color="#43332E" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Add Product</Text>
+        <View style={{ width: 24 }} />
+      </View>
+
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Section 1: Basic Info */}
-        <Text style={styles.sectionTitle}>📋 Basic Information</Text>
+        <View style={styles.sectionHeader}>
+          <Icon name="info" size={20} color="#B4725E" style={styles.sectionIcon} />
+          <Text style={styles.sectionTitle}>Basic Information</Text>
+        </View>
         <View style={styles.card}>
           <Text style={styles.label}>Product Name *</Text>
           <TextInput
@@ -150,6 +164,7 @@ const AddProductScreen = ({ navigation }) => {
             value={name}
             onChangeText={setName}
             placeholder="e.g. Handloom Cotton Saree"
+            placeholderTextColor="#8C7A74"
             maxLength={200}
           />
 
@@ -159,6 +174,7 @@ const AddProductScreen = ({ navigation }) => {
             value={description}
             onChangeText={setDescription}
             placeholder="Describe your product in detail..."
+            placeholderTextColor="#8C7A74"
             multiline
             numberOfLines={4}
             maxLength={2000}
@@ -172,7 +188,7 @@ const AddProductScreen = ({ navigation }) => {
             <Text style={category ? styles.pickerText : styles.pickerPlaceholder}>
               {category || 'Select a category'}
             </Text>
-            <Text style={styles.pickerArrow}>{showCategoryPicker ? '▲' : '▼'}</Text>
+            <Icon name={showCategoryPicker ? "chevron-up" : "chevron-down"} size={20} color="#8C7A74" />
           </TouchableOpacity>
           {showCategoryPicker && (
             <View style={styles.pickerList}>
@@ -185,6 +201,7 @@ const AddProductScreen = ({ navigation }) => {
                   <Text style={[styles.pickerItemText, category === cat && styles.pickerItemTextActive]}>
                     {cat}
                   </Text>
+                  {category === cat && <Icon name="check" size={16} color="#B4725E" />}
                 </TouchableOpacity>
               ))}
             </View>
@@ -196,12 +213,16 @@ const AddProductScreen = ({ navigation }) => {
             value={price}
             onChangeText={setPrice}
             placeholder="e.g. 2500"
+            placeholderTextColor="#8C7A74"
             keyboardType="numeric"
           />
         </View>
 
         {/* Section 2: Sizes */}
-        <Text style={styles.sectionTitle}>📏 Sizes *</Text>
+        <View style={styles.sectionHeader}>
+          <Icon name="maximize" size={20} color="#B4725E" style={styles.sectionIcon} />
+          <Text style={styles.sectionTitle}>Sizes *</Text>
+        </View>
         <View style={styles.card}>
           <View style={styles.chipRow}>
             {SIZE_OPTIONS.map((size) => (
@@ -219,7 +240,10 @@ const AddProductScreen = ({ navigation }) => {
         </View>
 
         {/* Section 3: Colors */}
-        <Text style={styles.sectionTitle}>🎨 Colors *</Text>
+        <View style={styles.sectionHeader}>
+          <Icon name="aperture" size={20} color="#B4725E" style={styles.sectionIcon} />
+          <Text style={styles.sectionTitle}>Colors *</Text>
+        </View>
         <View style={styles.card}>
           <View style={styles.addRow}>
             <TextInput
@@ -227,22 +251,28 @@ const AddProductScreen = ({ navigation }) => {
               value={colorInput}
               onChangeText={setColorInput}
               placeholder="e.g. Navy Blue"
+              placeholderTextColor="#8C7A74"
             />
             <TouchableOpacity style={styles.addBtn} onPress={addColor}>
-              <Text style={styles.addBtnText}>+ Add</Text>
+              <Icon name="plus" size={16} color="#FFFFFF" style={{ marginRight: 4 }} />
+              <Text style={styles.addBtnText}>Add</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.chipRow}>
             {colors.map((color, idx) => (
               <TouchableOpacity key={idx} style={styles.chipRemovable} onPress={() => removeColor(idx)}>
-                <Text style={styles.chipRemovableText}>{color.name} ✕</Text>
+                <Text style={styles.chipRemovableText}>{color.name}</Text>
+                <Icon name="x" size={14} color="#B4725E" style={{ marginLeft: 6 }} />
               </TouchableOpacity>
             ))}
           </View>
         </View>
 
         {/* Section 4: Images */}
-        <Text style={styles.sectionTitle}>📸 Images * (1–10)</Text>
+        <View style={styles.sectionHeader}>
+          <Icon name="image" size={20} color="#B4725E" style={styles.sectionIcon} />
+          <Text style={styles.sectionTitle}>Images * (1–10)</Text>
+        </View>
         <View style={styles.card}>
           <View style={styles.addRow}>
             <TextInput
@@ -250,26 +280,32 @@ const AddProductScreen = ({ navigation }) => {
               value={imageInput}
               onChangeText={setImageInput}
               placeholder="Paste image URL"
+              placeholderTextColor="#8C7A74"
             />
             <TouchableOpacity style={styles.addBtn} onPress={addImage}>
-              <Text style={styles.addBtnText}>+ Add</Text>
+              <Icon name="plus" size={16} color="#FFFFFF" style={{ marginRight: 4 }} />
+              <Text style={styles.addBtnText}>Add</Text>
             </TouchableOpacity>
           </View>
           {images.map((img, idx) => (
             <View key={idx} style={styles.imageItem}>
               <Text style={styles.imageUrl} numberOfLines={1}>{img}</Text>
-              <TouchableOpacity onPress={() => removeImage(idx)}>
-                <Text style={styles.removeText}>✕</Text>
+              <TouchableOpacity onPress={() => removeImage(idx)} style={styles.removeBtn}>
+                <Icon name="trash-2" size={18} color="#D32F2F" />
               </TouchableOpacity>
             </View>
           ))}
         </View>
 
         {/* Section 5: Variants & Stock */}
-        <Text style={styles.sectionTitle}>📦 Stock per Variant</Text>
+        <View style={styles.sectionHeader}>
+          <Icon name="package" size={20} color="#B4725E" style={styles.sectionIcon} />
+          <Text style={styles.sectionTitle}>Stock per Variant</Text>
+        </View>
         <View style={styles.card}>
           <TouchableOpacity style={styles.generateBtn} onPress={generateVariants}>
-            <Text style={styles.generateBtnText}>🔄 Generate Variants from Sizes × Colors</Text>
+            <Icon name="refresh-cw" size={16} color="#B4725E" style={{ marginRight: 8 }} />
+            <Text style={styles.generateBtnText}>Generate Variants from Sizes × Colors</Text>
           </TouchableOpacity>
 
           {variants.length > 0 && (
@@ -303,9 +339,12 @@ const AddProductScreen = ({ navigation }) => {
           activeOpacity={0.8}
         >
           {loading ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Text style={styles.submitBtnText}>🚀 Publish Product</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Icon name="upload-cloud" size={20} color="#FFFFFF" style={{ marginRight: 8 }} />
+              <Text style={styles.submitBtnText}>Publish Product</Text>
+            </View>
           )}
         </TouchableOpacity>
 
@@ -316,97 +355,114 @@ const AddProductScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8f8f8' },
-  scroll: { flex: 1, padding: 16 },
-  sectionTitle: {
-    fontSize: 16, fontWeight: '800', color: '#333',
-    marginBottom: 10, marginTop: 6,
+  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
   },
+  backBtn: { padding: 4 },
+  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+
+  scroll: { flex: 1, padding: 16 },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, marginTop: 10 },
+  sectionIcon: { marginRight: 8 },
+  sectionTitle: { fontSize: 18, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+
   card: {
-    backgroundColor: '#fff', borderRadius: 14, padding: 16,
-    marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0',
+    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 20,
+    marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   label: {
-    fontSize: 13, fontWeight: '700', color: '#555',
-    marginBottom: 6, marginTop: 10,
+    fontSize: 14, fontFamily: 'InstrumentSans_600SemiBold', color: '#43332E',
+    marginBottom: 8, marginTop: 14,
   },
   input: {
-    backgroundColor: '#f7f7f7', borderRadius: 10, paddingHorizontal: 14,
-    paddingVertical: 12, fontSize: 14, color: '#333',
-    borderWidth: 1, borderColor: '#e2e8f0', marginBottom: 4,
+    backgroundColor: '#FFFFFF', borderRadius: 10, paddingHorizontal: 14,
+    paddingVertical: 12, fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D',
+    borderWidth: 1, borderColor: '#E6C9B9', marginBottom: 4,
   },
   textArea: { minHeight: 100, textAlignVertical: 'top' },
   pickerBtn: {
-    backgroundColor: '#f7f7f7', borderRadius: 10, paddingHorizontal: 14,
-    paddingVertical: 14, borderWidth: 1, borderColor: '#e2e8f0',
+    backgroundColor: '#FFFFFF', borderRadius: 10, paddingHorizontal: 14,
+    paddingVertical: 14, borderWidth: 1, borderColor: '#E6C9B9',
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
   },
-  pickerText: { fontSize: 14, color: '#333' },
-  pickerPlaceholder: { fontSize: 14, color: '#999' },
-  pickerArrow: { fontSize: 12, color: '#888' },
+  pickerText: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D' },
+  pickerPlaceholder: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74' },
   pickerList: {
-    backgroundColor: '#fff', borderRadius: 10, marginTop: 6,
-    borderWidth: 1, borderColor: '#e2e8f0', overflow: 'hidden',
+    backgroundColor: '#FFFFFF', borderRadius: 10, marginTop: 6,
+    borderWidth: 1, borderColor: '#E6C9B9', overflow: 'hidden',
   },
-  pickerItem: { paddingVertical: 12, paddingHorizontal: 14 },
-  pickerItemActive: { backgroundColor: '#FBE9E7' },
-  pickerItemText: { fontSize: 14, color: '#333' },
-  pickerItemTextActive: { color: '#8B2635', fontWeight: '700' },
+  pickerItem: { paddingVertical: 14, paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  pickerItemActive: { backgroundColor: '#FFF5EE' },
+  pickerItemText: { fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D' },
+  pickerItemTextActive: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold' },
+
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 },
   chip: {
-    paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
-    backgroundColor: '#f1f1f1', marginRight: 8, marginBottom: 8,
-    borderWidth: 1, borderColor: '#e2e8f0',
+    paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20,
+    backgroundColor: '#FFF5EE', marginRight: 10, marginBottom: 10,
+    borderWidth: 1, borderColor: '#E6C9B9',
   },
-  chipActive: { backgroundColor: '#8B2635', borderColor: '#8B2635' },
-  chipText: { fontSize: 13, color: '#666', fontWeight: '600' },
-  chipTextActive: { color: '#fff' },
+  chipActive: { backgroundColor: '#B4725E', borderColor: '#B4725E' },
+  chipText: { fontSize: 14, color: '#43332E', fontFamily: 'InstrumentSans_600SemiBold' },
+  chipTextActive: { color: '#FFFFFF' },
   chipRemovable: {
-    paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16,
-    backgroundColor: '#E3F2FD', marginRight: 8, marginBottom: 8,
+    flexDirection: 'row', alignItems: 'center',
+    paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
+    backgroundColor: '#FFF5EE', marginRight: 10, marginBottom: 10,
+    borderWidth: 1, borderColor: '#E6C9B9',
   },
-  chipRemovableText: { fontSize: 13, color: '#1565C0', fontWeight: '600' },
-  addRow: { flexDirection: 'row', alignItems: 'center' },
+  chipRemovableText: { fontSize: 14, color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold' },
+
+  addRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
   addBtn: {
-    backgroundColor: '#8B2635', paddingHorizontal: 16, paddingVertical: 12,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: '#B4725E', paddingHorizontal: 16, paddingVertical: 12,
     borderRadius: 10,
   },
-  addBtnText: { color: '#fff', fontWeight: '700', fontSize: 13 },
+  addBtnText: { color: '#FFFFFF', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
+
   imageItem: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#f0f0f0',
+    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#F8F8F8',
   },
-  imageUrl: { flex: 1, fontSize: 12, color: '#666', marginRight: 10 },
-  removeText: { fontSize: 16, color: '#D32F2F', fontWeight: '700', padding: 4 },
+  imageUrl: { flex: 1, fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginRight: 10 },
+  removeBtn: { padding: 4 },
+
   generateBtn: {
-    backgroundColor: '#E8F5E9', paddingVertical: 14, borderRadius: 10,
-    alignItems: 'center',
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: '#FFF5EE', paddingVertical: 14, borderRadius: 10,
+    borderWidth: 1, borderColor: '#E6C9B9',
   },
-  generateBtnText: { color: '#2E7D32', fontWeight: '700', fontSize: 14 },
-  variantTable: { marginTop: 14 },
+  generateBtnText: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold', fontSize: 14 },
+
+  variantTable: { marginTop: 20 },
   variantHeader: {
-    flexDirection: 'row', paddingVertical: 8, paddingHorizontal: 4,
-    backgroundColor: '#f5f5f5', borderRadius: 8, marginBottom: 4,
+    flexDirection: 'row', paddingVertical: 10, paddingHorizontal: 8,
+    backgroundColor: '#F8F8F8', borderRadius: 8, marginBottom: 8,
   },
-  variantHeaderText: { fontSize: 12, fontWeight: '800', color: '#555' },
+  variantHeaderText: { fontSize: 13, fontFamily: 'InstrumentSans_600SemiBold', color: '#8C7A74' },
   variantRow: {
     flexDirection: 'row', alignItems: 'center',
-    paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#f0f0f0',
+    paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#F8F8F8',
   },
-  variantCell: { fontSize: 13, color: '#333', paddingHorizontal: 4 },
+  variantCell: { fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D', paddingHorizontal: 8 },
   variantInput: {
-    flex: 0.8, backgroundColor: '#f7f7f7', borderRadius: 8,
-    paddingHorizontal: 10, paddingVertical: 8, fontSize: 14,
-    borderWidth: 1, borderColor: '#e2e8f0', textAlign: 'center',
+    flex: 0.8, backgroundColor: '#FFFFFF', borderRadius: 8,
+    paddingHorizontal: 10, paddingVertical: 8, fontSize: 14, fontFamily: 'InstrumentSans_400Regular',
+    borderWidth: 1, borderColor: '#E6C9B9', textAlign: 'center', color: '#2A201D'
   },
+
   submitBtn: {
-    backgroundColor: '#8B2635', paddingVertical: 16, borderRadius: 14,
+    backgroundColor: '#B4725E', paddingVertical: 16, borderRadius: 14,
     alignItems: 'center', marginTop: 10,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2, shadowRadius: 6, elevation: 6,
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1, shadowRadius: 8, elevation: 4,
   },
   submitBtnDisabled: { opacity: 0.6 },
-  submitBtnText: { color: '#fff', fontSize: 16, fontWeight: '800' },
+  submitBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
 });
 
 export default AddProductScreen;

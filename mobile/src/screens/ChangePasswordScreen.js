@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
-  Alert, SafeAreaView, KeyboardAvoidingView, Platform,
+  Alert, SafeAreaView, KeyboardAvoidingView, Platform, TouchableOpacity, StatusBar
 } from 'react-native';
 import apiClient from '../api/client';
 import InputField from '../components/InputField';
 import Button from '../components/Button';
+import Icon from 'react-native-vector-icons/Feather';
 
 const ChangePasswordScreen = ({ navigation }) => {
   const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
@@ -32,7 +33,7 @@ const ChangePasswordScreen = ({ navigation }) => {
     setLoading(true);
     try {
       await apiClient.put('/api/users/change-password', form);
-      Alert.alert('Password Updated', 'Your password has been changed. Please log in again.', [
+      Alert.alert('Password Updated', 'Your password has been changed successfully.', [
         { text: 'OK', onPress: () => navigation.goBack() },
       ]);
     } catch (err) {
@@ -49,24 +50,59 @@ const ChangePasswordScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safe}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Icon name="arrow-left" size={24} color="#43332E" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Change Password</Text>
+        <View style={{ width: 24 }} />
+      </View>
+
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-          <Text style={styles.hint}>
-            Choose a strong password with at least 8 characters, one uppercase letter, and one number.
-          </Text>
 
-          <InputField label="Current Password" value={form.currentPassword}
-            onChangeText={set('currentPassword')} placeholder="Your current password"
-            secureTextEntry error={errors.currentPassword} />
-          <InputField label="New Password" value={form.newPassword}
-            onChangeText={set('newPassword')} placeholder="New password"
-            secureTextEntry error={errors.newPassword} />
-          <InputField label="Confirm New Password" value={form.confirmNewPassword}
-            onChangeText={set('confirmNewPassword')} placeholder="Re-enter new password"
-            secureTextEntry error={errors.confirmNewPassword} />
+          <View style={styles.card}>
+            <View style={styles.hintBox}>
+              <Icon name="shield" size={18} color="#B4725E" style={{ marginRight: 10, marginTop: 2 }} />
+              <Text style={styles.hint}>
+                Choose a strong password with at least 8 characters, one uppercase letter, and one number.
+              </Text>
+            </View>
 
-          <Button title="Update Password" onPress={handleSubmit} loading={loading} style={styles.btn} />
-          <Button title="Cancel" onPress={() => navigation.goBack()} variant="secondary" style={styles.cancel} />
+            <InputField
+              label="Current Password"
+              icon="lock"
+              value={form.currentPassword}
+              onChangeText={set('currentPassword')}
+              placeholder="Your current password"
+              secureTextEntry
+              error={errors.currentPassword}
+            />
+            <InputField
+              label="New Password"
+              icon="lock"
+              value={form.newPassword}
+              onChangeText={set('newPassword')}
+              placeholder="New password"
+              secureTextEntry
+              error={errors.newPassword}
+            />
+            <InputField
+              label="Confirm New Password"
+              icon="lock"
+              value={form.confirmNewPassword}
+              onChangeText={set('confirmNewPassword')}
+              placeholder="Re-enter new password"
+              secureTextEntry
+              error={errors.confirmNewPassword}
+            />
+          </View>
+
+          <View style={styles.actionContainer}>
+            <Button title="Update Password" onPress={handleSubmit} loading={loading} style={styles.btn} />
+            <Button title="Cancel" onPress={() => navigation.goBack()} variant="secondary" style={styles.cancelBtn} />
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -74,14 +110,40 @@ const ChangePasswordScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#fff' },
-  container: { flexGrow: 1, padding: 24 },
-  hint: {
-    backgroundColor: '#fff8e1', borderRadius: 8, padding: 12,
-    color: '#7a6012', fontSize: 13, marginBottom: 22, lineHeight: 19,
+  safe: { flex: 1, backgroundColor: '#FFF1E8' },
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
   },
-  btn: { marginTop: 8 },
-  cancel: { marginTop: 12 },
+  backBtn: { padding: 4 },
+  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+
+  container: { flexGrow: 1, padding: 20 },
+
+  card: {
+    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 20,
+    borderWidth: 1, borderColor: '#E6C9B9', marginBottom: 24,
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+  },
+
+  hintBox: {
+    flexDirection: 'row', backgroundColor: '#FFF5EE', borderRadius: 10, padding: 14,
+    marginBottom: 24, borderWidth: 1, borderColor: '#E6C9B9',
+  },
+  hint: {
+    flex: 1, color: '#8C7A74', fontSize: 13, fontFamily: 'InstrumentSans_400Regular', lineHeight: 20,
+  },
+
+  actionContainer: {
+    marginTop: 'auto',
+  },
+  btn: {
+    backgroundColor: '#B4725E', borderRadius: 12, paddingVertical: 16, marginBottom: 12
+  },
+  cancelBtn: {
+    backgroundColor: 'transparent', borderWidth: 1, borderColor: '#B4725E', borderRadius: 12, paddingVertical: 16
+  },
 });
 
 export default ChangePasswordScreen;
+

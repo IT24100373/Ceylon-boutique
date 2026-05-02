@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
-  TextInput, TouchableOpacity, Switch,
+  TextInput, TouchableOpacity, Switch, StatusBar
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
 
 // -------------------------------------------------------
 // Customer — Search & Filter Screen
@@ -18,10 +19,10 @@ const CATEGORIES = [
 const SIZE_OPTIONS = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Free Size'];
 
 const SORT_OPTIONS = [
-  { key: 'newest', label: '🕐 Newest First' },
-  { key: 'price_low', label: '💰 Price: Low → High' },
-  { key: 'price_high', label: '💎 Price: High → Low' },
-  { key: 'popular', label: '⭐ Most Popular' },
+  { key: 'newest', label: 'Newest First', icon: 'clock' },
+  { key: 'price_low', label: 'Price: Low → High', icon: 'trending-up' },
+  { key: 'price_high', label: 'Price: High → Low', icon: 'trending-down' },
+  { key: 'popular', label: 'Most Popular', icon: 'star' },
 ];
 
 const SearchFilterScreen = ({ route, navigation }) => {
@@ -44,16 +45,14 @@ const SearchFilterScreen = ({ route, navigation }) => {
       category: selectedCategory === 'All' ? '' : selectedCategory,
       minPrice: minPrice || undefined,
       maxPrice: maxPrice || undefined,
-      size: selectedSizes.length > 0 ? selectedSizes[0] : undefined, // API supports single size filter
+      size: selectedSizes.length > 0 ? selectedSizes[0] : undefined,
       inStock: inStockOnly || undefined,
       sortBy,
       search: searchText.trim() || undefined,
     };
 
-    if (route.params?.onApply) {
-      route.params.onApply(filters);
-    }
-    navigation.goBack();
+    // Navigate back to Home with filter params (no function callbacks — serializable only)
+    navigation.navigate('Home', { filters });
   };
 
   const handleReset = () => {
@@ -68,21 +67,40 @@ const SearchFilterScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Icon name="x" size={24} color="#43332E" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Filter & Sort</Text>
+        <View style={{ width: 24 }} />
+      </View>
+
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Search */}
-        <Text style={styles.sectionTitle}>🔍 Search</Text>
+        <View style={styles.sectionHeader}>
+          <Icon name="search" size={20} color="#B4725E" style={styles.sectionIcon} />
+          <Text style={styles.sectionTitle}>Search</Text>
+        </View>
         <View style={styles.card}>
-          <TextInput
-            style={styles.input}
-            value={searchText}
-            onChangeText={setSearchText}
-            placeholder="Search by product name..."
-            placeholderTextColor="#999"
-          />
+          <View style={styles.searchContainer}>
+            <Icon name="search" size={18} color="#8C7A74" style={styles.searchIcon} />
+            <TextInput
+              style={styles.searchInput}
+              value={searchText}
+              onChangeText={setSearchText}
+              placeholder="Search by product name..."
+              placeholderTextColor="#8C7A74"
+            />
+          </View>
         </View>
 
         {/* Sort */}
-        <Text style={styles.sectionTitle}>📊 Sort By</Text>
+        <View style={styles.sectionHeader}>
+          <Icon name="bar-chart-2" size={20} color="#B4725E" style={styles.sectionIcon} />
+          <Text style={styles.sectionTitle}>Sort By</Text>
+        </View>
         <View style={styles.card}>
           {SORT_OPTIONS.map((opt) => (
             <TouchableOpacity
@@ -90,15 +108,22 @@ const SearchFilterScreen = ({ route, navigation }) => {
               style={[styles.sortItem, sortBy === opt.key && styles.sortItemActive]}
               onPress={() => setSortBy(opt.key)}
             >
-              <Text style={[styles.sortText, sortBy === opt.key && styles.sortTextActive]}>
-                {opt.label}
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Icon name={opt.icon} size={16} color={sortBy === opt.key ? "#B4725E" : "#8C7A74"} style={{ marginRight: 10 }} />
+                <Text style={[styles.sortText, sortBy === opt.key && styles.sortTextActive]}>
+                  {opt.label}
+                </Text>
+              </View>
+              {sortBy === opt.key && <Icon name="check" size={16} color="#B4725E" />}
             </TouchableOpacity>
           ))}
         </View>
 
         {/* Category */}
-        <Text style={styles.sectionTitle}>📁 Category</Text>
+        <View style={styles.sectionHeader}>
+          <Icon name="tag" size={20} color="#B4725E" style={styles.sectionIcon} />
+          <Text style={styles.sectionTitle}>Category</Text>
+        </View>
         <View style={styles.card}>
           <View style={styles.chipRow}>
             {CATEGORIES.map((cat) => (
@@ -116,7 +141,10 @@ const SearchFilterScreen = ({ route, navigation }) => {
         </View>
 
         {/* Price Range */}
-        <Text style={styles.sectionTitle}>💰 Price Range (LKR)</Text>
+        <View style={styles.sectionHeader}>
+          <Icon name="dollar-sign" size={20} color="#B4725E" style={styles.sectionIcon} />
+          <Text style={styles.sectionTitle}>Price Range (LKR)</Text>
+        </View>
         <View style={styles.card}>
           <View style={styles.priceRow}>
             <TextInput
@@ -125,7 +153,7 @@ const SearchFilterScreen = ({ route, navigation }) => {
               onChangeText={setMinPrice}
               placeholder="Min"
               keyboardType="numeric"
-              placeholderTextColor="#999"
+              placeholderTextColor="#8C7A74"
             />
             <Text style={styles.priceDash}>—</Text>
             <TextInput
@@ -134,13 +162,16 @@ const SearchFilterScreen = ({ route, navigation }) => {
               onChangeText={setMaxPrice}
               placeholder="Max"
               keyboardType="numeric"
-              placeholderTextColor="#999"
+              placeholderTextColor="#8C7A74"
             />
           </View>
         </View>
 
         {/* Sizes */}
-        <Text style={styles.sectionTitle}>📏 Size</Text>
+        <View style={styles.sectionHeader}>
+          <Icon name="maximize" size={20} color="#B4725E" style={styles.sectionIcon} />
+          <Text style={styles.sectionTitle}>Size</Text>
+        </View>
         <View style={styles.card}>
           <View style={styles.chipRow}>
             {SIZE_OPTIONS.map((size) => (
@@ -160,17 +191,20 @@ const SearchFilterScreen = ({ route, navigation }) => {
         {/* In Stock Toggle */}
         <View style={styles.card}>
           <View style={styles.toggleRow}>
-            <Text style={styles.toggleLabel}>Show in-stock products only</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Icon name="package" size={18} color="#B4725E" style={{ marginRight: 8 }} />
+              <Text style={styles.toggleLabel}>Show in-stock products only</Text>
+            </View>
             <Switch
               value={inStockOnly}
               onValueChange={setInStockOnly}
-              trackColor={{ false: '#ddd', true: '#C8E6C9' }}
-              thumbColor={inStockOnly ? '#2E7D32' : '#ccc'}
+              trackColor={{ false: '#E6C9B9', true: '#B4725E' }}
+              thumbColor={inStockOnly ? '#FFFFFF' : '#FFFFFF'}
             />
           </View>
         </View>
 
-        <View style={{ height: 100 }} />
+        <View style={{ height: 40 }} />
       </ScrollView>
 
       {/* Bottom Action Bar */}
@@ -187,58 +221,76 @@ const SearchFilterScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8f8f8' },
+  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+  },
+  backBtn: { padding: 4 },
+  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+
   scroll: { flex: 1, padding: 16 },
-  sectionTitle: {
-    fontSize: 15, fontWeight: '800', color: '#333',
-    marginBottom: 10, marginTop: 8,
-  },
+
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, marginTop: 6 },
+  sectionIcon: { marginRight: 8 },
+  sectionTitle: { fontSize: 18, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
+
   card: {
-    backgroundColor: '#fff', borderRadius: 14, padding: 16,
-    marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0',
+    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16,
+    marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
+  searchContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F8F8F8', borderRadius: 10, borderWidth: 1, borderColor: '#E6C9B9', paddingHorizontal: 12 },
+  searchIcon: { marginRight: 8 },
+  searchInput: { flex: 1, paddingVertical: 12, fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D' },
+
   input: {
-    backgroundColor: '#f7f7f7', borderRadius: 10, paddingHorizontal: 14,
-    paddingVertical: 12, fontSize: 14, color: '#333',
-    borderWidth: 1, borderColor: '#e2e8f0',
+    backgroundColor: '#F8F8F8', borderRadius: 10, paddingHorizontal: 14,
+    paddingVertical: 12, fontSize: 15, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D',
+    borderWidth: 1, borderColor: '#E6C9B9',
   },
   sortItem: {
-    paddingVertical: 12, paddingHorizontal: 4,
-    borderBottomWidth: 1, borderBottomColor: '#f0f0f0',
+    paddingVertical: 14, paddingHorizontal: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    borderBottomWidth: 1, borderBottomColor: '#F8F8F8',
   },
-  sortItemActive: { backgroundColor: '#FBE9E7', borderRadius: 8, marginHorizontal: -4, paddingHorizontal: 8 },
-  sortText: { fontSize: 14, color: '#555' },
-  sortTextActive: { color: '#8B2635', fontWeight: '700' },
+  sortItemActive: { backgroundColor: '#FFF5EE', borderRadius: 8, borderWidth: 1, borderColor: '#E6C9B9' },
+  sortText: { fontSize: 15, color: '#43332E', fontFamily: 'InstrumentSans_400Regular' },
+  sortTextActive: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold' },
+
   chipRow: { flexDirection: 'row', flexWrap: 'wrap' },
   chip: {
-    paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
-    backgroundColor: '#f1f1f1', marginRight: 8, marginBottom: 8,
-    borderWidth: 1, borderColor: '#e2e8f0',
+    paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20,
+    backgroundColor: '#FFF5EE', marginRight: 10, marginBottom: 10,
+    borderWidth: 1, borderColor: '#E6C9B9',
   },
-  chipActive: { backgroundColor: '#8B2635', borderColor: '#8B2635' },
-  chipText: { fontSize: 13, color: '#666', fontWeight: '600' },
-  chipTextActive: { color: '#fff' },
+  chipActive: { backgroundColor: '#B4725E', borderColor: '#B4725E' },
+  chipText: { fontSize: 14, color: '#43332E', fontFamily: 'InstrumentSans_600SemiBold' },
+  chipTextActive: { color: '#FFFFFF' },
+
   priceRow: { flexDirection: 'row', alignItems: 'center' },
   priceInput: { flex: 1 },
-  priceDash: { marginHorizontal: 12, fontSize: 18, color: '#888' },
+  priceDash: { marginHorizontal: 12, fontSize: 18, color: '#8C7A74', fontFamily: 'InstrumentSans_600SemiBold' },
+
   toggleRow: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 4
   },
-  toggleLabel: { fontSize: 14, fontWeight: '600', color: '#333' },
+  toggleLabel: { fontSize: 15, fontFamily: 'InstrumentSans_600SemiBold', color: '#2A201D' },
+
   bottomBar: {
-    flexDirection: 'row', padding: 16,
-    backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#e2e8f0',
+    flexDirection: 'row', padding: 16, paddingBottom: 30,
+    backgroundColor: '#FFFFFF', borderTopWidth: 1, borderTopColor: '#E6C9B9',
   },
   resetBtn: {
-    flex: 0.4, paddingVertical: 14, borderRadius: 12,
-    backgroundColor: '#f5f5f5', alignItems: 'center', marginRight: 10,
+    flex: 0.4, paddingVertical: 16, borderRadius: 12,
+    backgroundColor: '#F8F8F8', alignItems: 'center', marginRight: 12, borderWidth: 1, borderColor: '#E6C9B9'
   },
-  resetBtnText: { color: '#666', fontSize: 15, fontWeight: '700' },
+  resetBtnText: { color: '#43332E', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
   applyBtn: {
-    flex: 0.6, paddingVertical: 14, borderRadius: 12,
-    backgroundColor: '#8B2635', alignItems: 'center',
+    flex: 0.6, paddingVertical: 16, borderRadius: 12,
+    backgroundColor: '#B4725E', alignItems: 'center',
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 4
   },
-  applyBtnText: { color: '#fff', fontSize: 15, fontWeight: '800' },
+  applyBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
 });
 
 export default SearchFilterScreen;

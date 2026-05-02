@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, PackageCheck, Ban } from 'lucide-react';
+import { ArrowLeft, Ban, Info } from 'lucide-react';
 import apiClient from '../api/client';
 import StatusBadge from '../components/StatusBadge';
 import Modal from '../components/Modal';
@@ -35,16 +35,6 @@ const OrderDetailPage = () => {
     finally { setActionLoading(false); }
   };
 
-  const handleDeliver = async () => {
-    setActionLoading(true);
-    try {
-      await apiClient.put(`/api/orders/admin/${id}/deliver`);
-      setModal({ open: false, type: '' });
-      fetchOrder();
-    } catch (err) { alert(err.response?.data?.message || 'Failed'); }
-    finally { setActionLoading(false); }
-  };
-
   if (loading) return <div className="loading-container"><div className="spinner"></div></div>;
   if (!order) return <div className="empty-state"><h3>Order not found</h3></div>;
 
@@ -64,7 +54,9 @@ const OrderDetailPage = () => {
               <button className="btn btn-danger btn-sm" onClick={() => { setReason(''); setModal({ open: true, type: 'cancel' }); }}><Ban size={14} /> Cancel Order</button>
             )}
             {order.status === 'shipped' && (
-              <button className="btn btn-success btn-sm" onClick={() => setModal({ open: true, type: 'deliver' })}><PackageCheck size={14} /> Mark Delivered</button>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--color-text-muted)', padding: '0.3rem 0.75rem', background: 'var(--color-surface-alt, #f1f5f9)', borderRadius: '6px', border: '1px solid var(--color-border)' }}>
+                <Info size={13} /> Awaiting customer confirmation
+              </span>
             )}
           </div>
         </div>
@@ -169,29 +161,25 @@ const OrderDetailPage = () => {
       <Modal
         isOpen={modal.open}
         onClose={() => setModal({ open: false, type: '' })}
-        title={modal.type === 'cancel' ? 'Cancel Order' : 'Mark as Delivered'}
+        title="Cancel Order"
         footer={
           <>
             <button className="btn btn-outline" onClick={() => setModal({ open: false, type: '' })}>Close</button>
-            <button 
-              className={`btn ${modal.type === 'cancel' ? 'btn-danger' : 'btn-success'}`} 
-              disabled={actionLoading || (modal.type === 'cancel' && !reason.trim())}
-              onClick={modal.type === 'cancel' ? handleCancel : handleDeliver}
+            <button
+              className="btn btn-danger"
+              disabled={actionLoading || !reason.trim()}
+              onClick={handleCancel}
             >
               {actionLoading ? 'Processing...' : 'Confirm'}
             </button>
           </>
         }
       >
-        {modal.type === 'cancel' ? (
-          <div className="form-group">
-            <label>Cancellation Reason (required)</label>
-            <textarea className="form-textarea" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Provide a reason..." rows={3} />
-            <p className="text-small text-muted mt-1">Cancelling will restore inventory stock.</p>
-          </div>
-        ) : (
-          <p>Are you sure you want to mark this order as delivered? This will open the review window for the customer.</p>
-        )}
+        <div className="form-group">
+          <label>Cancellation Reason (required)</label>
+          <textarea className="form-textarea" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Provide a reason..." rows={3} />
+          <p className="text-small text-muted mt-1">Cancelling will restore inventory stock.</p>
+        </div>
       </Modal>
     </div>
   );

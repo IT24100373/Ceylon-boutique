@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
-  TouchableOpacity, TextInput, ActivityIndicator, Alert,
+  TouchableOpacity, TextInput, ActivityIndicator, Alert, StatusBar
 } from 'react-native';
 import apiClient from '../api/client';
+import Icon from 'react-native-vector-icons/Feather';
 
 // -------------------------------------------------------
 // FR5.4 — Edit Review Screen
@@ -17,9 +18,12 @@ const StarSelector = ({ rating, onSelect }) => (
   <View style={styles.starRow}>
     {[1, 2, 3, 4, 5].map((star) => (
       <TouchableOpacity key={star} onPress={() => onSelect(star)} style={styles.starBtn}>
-        <Text style={[styles.star, rating >= star && styles.starFilled]}>
-          {rating >= star ? '★' : '☆'}
-        </Text>
+        <Icon
+          name="star"
+          size={36}
+          color={rating >= star ? "#B4725E" : "#E6C9B9"}
+          solid={rating >= star}
+        />
       </TouchableOpacity>
     ))}
   </View>
@@ -41,7 +45,9 @@ const EditReviewScreen = ({ route, navigation }) => {
   const targetName = review.reviewType === 'product'
     ? (review.product?.name || 'Product')
     : (review.seller?.shopName || 'Seller');
-  const typeLabel = review.reviewType === 'product' ? '🛍️ Product Review' : '🏪 Seller Review';
+
+  const typeLabel = review.reviewType === 'product' ? 'Product Review' : 'Seller Review';
+  const typeIcon = review.reviewType === 'product' ? 'package' : 'home';
 
   const handleUpdate = async () => {
     if (rating === 0) {
@@ -60,7 +66,7 @@ const EditReviewScreen = ({ route, navigation }) => {
       });
 
       Alert.alert(
-        '✅ Review Updated',
+        'Review Updated',
         'Your review has been updated successfully.',
         [{ text: 'OK', onPress: () => navigation.goBack() }]
       );
@@ -74,15 +80,28 @@ const EditReviewScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFF1E8" />
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Icon name="arrow-left" size={24} color="#43332E" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Edit Review</Text>
+        <View style={{ width: 24 }} />
+      </View>
+
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
         {/* Review context card */}
         <View style={styles.contextCard}>
-          <Text style={styles.typeLabel}>{typeLabel}</Text>
+          <View style={styles.typeRow}>
+            <Icon name={typeIcon} size={14} color="#B4725E" style={{ marginRight: 6 }} />
+            <Text style={styles.typeLabel}>{typeLabel}</Text>
+          </View>
           <Text style={styles.targetName} numberOfLines={2}>{targetName}</Text>
           <View style={styles.windowBadge}>
+            <Icon name="clock" size={12} color="#D4A853" style={{ marginRight: 6 }} />
             <Text style={styles.windowText}>
-              ⏱️ {review.hoursUntilLock}h remaining to edit
+              {review.hoursUntilLock}h remaining to edit
             </Text>
           </View>
         </View>
@@ -104,7 +123,7 @@ const EditReviewScreen = ({ route, navigation }) => {
             value={reviewText}
             onChangeText={setReviewText}
             placeholder="Share your experience..."
-            placeholderTextColor="#aaa"
+            placeholderTextColor="#A0938E"
             multiline
             maxLength={1000}
             textAlignVertical="top"
@@ -120,7 +139,7 @@ const EditReviewScreen = ({ route, navigation }) => {
             value={photo1}
             onChangeText={setPhoto1}
             placeholder="Photo URL 1"
-            placeholderTextColor="#aaa"
+            placeholderTextColor="#A0938E"
             autoCapitalize="none"
             keyboardType="url"
           />
@@ -129,7 +148,7 @@ const EditReviewScreen = ({ route, navigation }) => {
             value={photo2}
             onChangeText={setPhoto2}
             placeholder="Photo URL 2"
-            placeholderTextColor="#aaa"
+            placeholderTextColor="#A0938E"
             autoCapitalize="none"
             keyboardType="url"
           />
@@ -138,7 +157,7 @@ const EditReviewScreen = ({ route, navigation }) => {
             value={photo3}
             onChangeText={setPhoto3}
             placeholder="Photo URL 3"
-            placeholderTextColor="#aaa"
+            placeholderTextColor="#A0938E"
             autoCapitalize="none"
             keyboardType="url"
           />
@@ -155,7 +174,7 @@ const EditReviewScreen = ({ route, navigation }) => {
           disabled={saving || rating === 0}
         >
           {saving ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color="#FFFFFF" />
           ) : (
             <Text style={styles.saveBtnText}>Update Review</Text>
           )}
@@ -166,48 +185,64 @@ const EditReviewScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8f8f8' },
+  container: { flex: 1, backgroundColor: '#FFF1E8' },
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFF1E8'
+  },
+  backBtn: { padding: 4 },
+  headerTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D' },
   scroll: { padding: 16 },
+
   contextCard: {
-    backgroundColor: '#FBE9E7', borderRadius: 14, padding: 16,
-    marginBottom: 16, borderWidth: 1, borderColor: '#FFCCBC',
+    backgroundColor: '#FFF5EE', borderRadius: 14, padding: 20,
+    marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
-  typeLabel: { fontSize: 12, fontWeight: '700', color: '#8B2635', marginBottom: 4 },
-  targetName: { fontSize: 16, fontWeight: '800', color: '#333', marginBottom: 10 },
+  typeRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
+  typeLabel: { fontSize: 13, fontFamily: 'InstrumentSans_600SemiBold', color: '#B4725E' },
+  targetName: { fontSize: 16, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 16, lineHeight: 22 },
+
   windowBadge: {
-    alignSelf: 'flex-start', backgroundColor: '#fff',
-    paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8,
+    alignSelf: 'flex-start', backgroundColor: '#FFFFFF',
+    paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
+    flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#E6C9B9',
   },
-  windowText: { fontSize: 12, color: '#F57C00', fontWeight: '600' },
+  windowText: { fontSize: 12, color: '#D4A853', fontFamily: 'InstrumentSans_600SemiBold' },
+
   section: {
-    backgroundColor: '#fff', borderRadius: 14, padding: 16,
-    marginBottom: 14, borderWidth: 1, borderColor: '#eee',
+    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 20,
+    marginBottom: 16, borderWidth: 1, borderColor: '#E6C9B9',
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
-  sectionTitle: { fontSize: 15, fontWeight: '700', color: '#333', marginBottom: 12 },
-  optional: { fontSize: 12, fontWeight: '400', color: '#aaa' },
+  sectionTitle: { fontSize: 16, fontFamily: 'PlayfairDisplay_700Bold', color: '#2A201D', marginBottom: 16 },
+  optional: { fontSize: 13, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74' },
+
   starRow: { flexDirection: 'row', justifyContent: 'center', marginBottom: 8 },
   starBtn: { padding: 6 },
-  star: { fontSize: 40, color: '#ddd' },
-  starFilled: { color: '#F57C00' },
-  ratingLabel: { textAlign: 'center', fontSize: 16, fontWeight: '700', color: '#F57C00' },
+  ratingLabel: { textAlign: 'center', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold', color: '#B4725E' },
+
   textArea: {
-    borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 10,
-    padding: 12, height: 120, fontSize: 14, color: '#333', backgroundColor: '#fafafa',
+    borderWidth: 1, borderColor: '#E6C9B9', borderRadius: 10,
+    padding: 16, height: 120, fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D', backgroundColor: '#F8F8F8',
   },
-  charCount: { textAlign: 'right', fontSize: 12, color: '#aaa', marginTop: 4 },
+  charCount: { textAlign: 'right', fontSize: 12, fontFamily: 'InstrumentSans_400Regular', color: '#8C7A74', marginTop: 8 },
+
   urlInput: {
-    borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 10,
-    padding: 12, fontSize: 13, color: '#333', backgroundColor: '#fafafa', marginBottom: 10,
+    borderWidth: 1, borderColor: '#E6C9B9', borderRadius: 10,
+    padding: 16, fontSize: 14, fontFamily: 'InstrumentSans_400Regular', color: '#2A201D', backgroundColor: '#F8F8F8', marginBottom: 12,
   },
+
   footer: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
-    backgroundColor: '#fff', padding: 20, borderTopWidth: 1, borderTopColor: '#eee',
+    backgroundColor: '#FFFFFF', padding: 24, paddingBottom: 32, borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    shadowColor: '#43332E', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 10,
   },
   saveBtn: {
-    backgroundColor: '#8B2635', borderRadius: 12, paddingVertical: 16, alignItems: 'center',
+    backgroundColor: '#B4725E', borderRadius: 12, paddingVertical: 18, alignItems: 'center',
   },
   saveBtnDisabled: { opacity: 0.5 },
-  saveBtnText: { color: '#fff', fontSize: 16, fontWeight: '800' },
+  saveBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'InstrumentSans_600SemiBold' },
 });
 
 export default EditReviewScreen;

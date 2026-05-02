@@ -59,21 +59,24 @@ const RegisterScreen = ({ navigation }) => {
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+          <Text style={styles.brandText}>Ceylon Boutique</Text>
           <Text style={styles.title}>Create Account</Text>
           <Text style={styles.subtitle}>Join Ceylon Boutique today</Text>
 
-          <InputField label="Full Name" value={form.fullName} onChangeText={set('fullName')}
-            placeholder="e.g. Amal Perera" autoCapitalize="words" error={errors.fullName} />
-          <InputField label="Email Address" value={form.email} onChangeText={set('email')}
-            placeholder="you@example.com" keyboardType="email-address" error={errors.email} />
-          <InputField label="Phone Number" value={form.phone} onChangeText={set('phone')}
-            placeholder="0771234567" keyboardType="phone-pad" error={errors.phone} />
-          <InputField label="Password" value={form.password} onChangeText={set('password')}
-            placeholder="Min 8 chars, 1 uppercase, 1 number" secureTextEntry error={errors.password} />
-          <InputField label="Confirm Password" value={form.confirmPassword} onChangeText={set('confirmPassword')}
-            placeholder="Re-enter your password" secureTextEntry error={errors.confirmPassword} />
+          <View style={styles.formContainer}>
+            <InputField label="Full Name" icon="user" value={form.fullName} onChangeText={set('fullName')}
+              placeholder="e.g. Amal Perera" autoCapitalize="words" error={errors.fullName} />
+            <InputField label="Email Address" icon="mail" value={form.email} onChangeText={set('email')}
+              placeholder="you@example.com" keyboardType="email-address" error={errors.email} />
+            <InputField label="Phone Number" icon="phone" value={form.phone} onChangeText={set('phone')}
+              placeholder="0771234567" keyboardType="phone-pad" error={errors.phone} />
+            <InputField label="Password" icon="lock" value={form.password} onChangeText={set('password')}
+              placeholder="Min 8 chars, 1 uppercase, 1 number" secureTextEntry error={errors.password} />
+            <InputField label="Confirm Password" icon="lock" value={form.confirmPassword} onChangeText={set('confirmPassword')}
+              placeholder="Re-enter your password" secureTextEntry error={errors.confirmPassword} />
+          </View>
 
-          <Button title="Create Account" onPress={handleRegister} loading={loading} style={styles.btn} />
+          <Button title="Create Account →" onPress={handleRegister} loading={loading} style={styles.btn} />
 
           <TouchableOpacity style={styles.linkRow} onPress={() => navigation.navigate('Login')}>
             <Text style={styles.linkText}>Already have an account? <Text style={styles.link}>Login</Text></Text>
@@ -85,14 +88,40 @@ const RegisterScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#fff' },
-  container: { flexGrow: 1, padding: 24, paddingTop: 40 },
-  title: { fontSize: 28, fontWeight: '800', color: '#8B2635', marginBottom: 6 },
-  subtitle: { fontSize: 15, color: '#666', marginBottom: 28 },
-  btn: { marginTop: 8 },
-  linkRow: { marginTop: 20, alignItems: 'center', paddingBottom: 20 },
-  linkText: { color: '#555', fontSize: 14 },
-  link: { color: '#8B2635', fontWeight: '700' },
+  safe: { flex: 1, backgroundColor: '#FFFFFF' },
+  container: { flexGrow: 1, padding: 30, paddingTop: 40 },
+  brandText: {
+    fontFamily: 'PlayfairDisplay_700Bold',
+    fontSize: 32,
+    color: '#43332E',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  title: {
+    fontFamily: 'PlayfairDisplay_700Bold',
+    fontSize: 40,
+    color: '#2A201D',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontFamily: 'InstrumentSans_400Regular',
+    fontSize: 16,
+    color: '#43332E',
+    textAlign: 'center',
+    marginBottom: 30,
+    opacity: 0.8,
+  },
+  formContainer: {
+    marginBottom: 10,
+  },
+  btn: {
+    marginTop: 10,
+    borderRadius: 8,
+  },
+  linkRow: { marginTop: 30, alignItems: 'center', paddingBottom: 20 },
+  linkText: { fontFamily: 'InstrumentSans_400Regular', color: '#43332E', fontSize: 15 },
+  link: { color: '#B4725E', fontFamily: 'InstrumentSans_600SemiBold' },
 });
 
 export default RegisterScreen;

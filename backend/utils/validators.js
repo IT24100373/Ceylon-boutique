@@ -499,7 +499,7 @@ const placeOrderValidation = [
 
   body('paymentMethod')
     .notEmpty().withMessage('Payment method is required')
-    .isIn(['COD', 'card']).withMessage('Payment method must be "COD" or "card"'),
+    .isIn(['card']).withMessage('Only card payment is accepted.'),
 ];
 
 // -------------------------------------------------------
