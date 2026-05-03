@@ -37,7 +37,7 @@ const EditShopScreen = ({ navigation, route }) => {
     });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
-      const newPhoto = { uri: result.assets[0].uri, isLocal: true, type: result.assets[0].type || 'image/jpeg', name: result.assets[0].uri.split('/').pop() };
+      const newPhoto = { uri: result.assets[0].uri, isLocal: true, type: 'image/jpeg', name: result.assets[0].uri.split('/').pop() || 'image.jpg' };
       if (field === 'logo') setShopLogo(newPhoto);
       else if (field === 'banner') setShopBanner(newPhoto);
     }
@@ -61,7 +61,6 @@ const EditShopScreen = ({ navigation, route }) => {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
-          'Content-Type': 'multipart/form-data',
         },
         body: formData,
       });

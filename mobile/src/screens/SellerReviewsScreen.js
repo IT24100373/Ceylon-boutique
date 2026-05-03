@@ -1,29 +1,22 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, FlatList,
-  TouchableOpacity, ActivityIndicator, Alert, Image, StatusBar, ScrollView
+  TouchableOpacity, ActivityIndicator, Alert, Image, StatusBar, ScrollView, Platform
 } from 'react-native';
 import apiClient from '../api/client';
-import Icon from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 
-// -------------------------------------------------------
-// FR5.3 — Seller Reviews Screen
-// Paginated list of seller reviews on a shop.
-// Reached from: SellerShopProfileScreen → tap rating section
-// Params: sellerId, shopName (optional)
-// -------------------------------------------------------
-
-const StarDisplay = ({ rating, size = 14 }) => {
+const StarDisplay = ({ rating, size = 12 }) => {
   const filled = Math.round(rating);
   return (
     <View style={{ flexDirection: 'row' }}>
       {[1, 2, 3, 4, 5].map((star) => (
         <Icon
           key={star}
-          name="star"
+          name={star <= filled ? "star" : "star-o"}
           size={size}
-          color={star <= filled ? "#EEEADDFF" : "#EEEADDFF"}
-          solid={star <= filled}
+          color={star <= filled ? "#D4A853" : "#EEEADD"}
           style={{ marginRight: 2 }}
         />
       ))}
@@ -35,7 +28,7 @@ const RatingBar = ({ star, count, total }) => {
   const pct = total > 0 ? (count / total) * 100 : 0;
   return (
     <View style={styles.barRow}>
-      <Text style={styles.barLabel}>{star} <Icon name="star" size={10} color="#2E2A26" solid /></Text>
+      <Text style={styles.barLabel}>{star} <Icon name="star" size={10} color="#8A8178" /></Text>
       <View style={styles.barTrack}>
         <View style={[styles.barFill, { width: `${pct}%` }]} />
       </View>
@@ -58,7 +51,6 @@ const ReviewCard = ({ review }) => (
           {new Date(review.createdAt).toLocaleDateString('en-GB', {
             day: 'numeric', month: 'short', year: 'numeric',
           })}
-          {review.isEdited && <Text style={styles.editedTag}> · Edited</Text>}
         </Text>
       </View>
       <StarDisplay rating={review.rating} size={14} />
@@ -69,24 +61,26 @@ const ReviewCard = ({ review }) => (
     ) : null}
 
     {review.photos && review.photos.length > 0 && (
-      <View style={styles.photosRow}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.photosRow}>
         {review.photos.map((uri, i) => (
           <Image key={i} source={{ uri }} style={styles.reviewPhoto} />
         ))}
-      </View>
+      </ScrollView>
     )}
 
-    <TouchableOpacity style={styles.helpfulBtn}>
-      <Icon name="thumbs-up" size={14} color="#2E2A26" style={{ marginRight: 6 }} />
-      <Text style={styles.helpfulText}>Helpful ({review.helpfulCount})</Text>
-    </TouchableOpacity>
+    <View style={styles.reviewFooter}>
+      <View style={styles.helpfulBadge}>
+        <FeatherIcon name="thumbs-up" size={12} color="#8A8178" style={{ marginRight: 6 }} />
+        <Text style={styles.helpfulText}>{review.helpfulCount || 0} Helpful</Text>
+      </View>
+    </View>
   </View>
 );
 
 const SORT_OPTIONS = [
   { key: 'newest', label: 'Newest' },
-  { key: 'highest', label: 'Highest Rated' },
-  { key: 'helpful', label: 'Most Helpful' },
+  { key: 'highest', label: 'Highest' },
+  { key: 'helpful', label: 'Helpful' },
 ];
 
 const SellerReviewsScreen = ({ route, navigation }) => {
@@ -151,29 +145,27 @@ const SellerReviewsScreen = ({ route, navigation }) => {
     return (
       <View style={styles.loadingContainer}>
         <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
-        <ActivityIndicator size="large" color="#EEEADDFF" />
+        <ActivityIndicator size="large" color="#2E2A26" />
       </View>
     );
   }
 
   const ListHeader = () => (
-    <View>
+    <View style={styles.headerContent}>
       {/* Shop name header */}
-      {shopName && (
-        <View style={styles.shopHeader}>
-          <Icon name="home" size={20} color="#2E2A26" style={{ marginRight: 10 }} />
-          <Text style={styles.shopName}>{shopName}</Text>
-        </View>
-      )}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Shop Performance</Text>
+        <View style={styles.sectionLine} />
+      </View>
 
       {/* Rating Summary */}
       <View style={styles.summaryCard}>
         <View style={styles.summaryLeft}>
           <Text style={styles.averageNumber}>{averageRating}</Text>
-          <View style={{ marginVertical: 8 }}>
+          <View style={{ marginVertical: 6 }}>
             <StarDisplay rating={parseFloat(averageRating)} size={16} />
           </View>
-          <Text style={styles.totalCount}>{total} {total === 1 ? 'review' : 'reviews'}</Text>
+          <Text style={styles.totalCount}>{total} Shop Reviews</Text>
         </View>
         <View style={styles.summaryRight}>
           {[5, 4, 3, 2, 1].map((star) => (
@@ -182,30 +174,33 @@ const SellerReviewsScreen = ({ route, navigation }) => {
         </View>
       </View>
 
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Customer Feedback</Text>
+        <View style={styles.sectionLine} />
+      </View>
+
       {/* Sort selector */}
       <View style={styles.sortRow}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {SORT_OPTIONS.map((opt) => (
-            <TouchableOpacity
-              key={opt.key}
-              style={[styles.sortChip, sortBy === opt.key && styles.sortChipActive]}
-              onPress={() => setSortBy(opt.key)}
-            >
-              <Text style={[styles.sortChipText, sortBy === opt.key && styles.sortChipTextActive]}>
-                {opt.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        {SORT_OPTIONS.map((opt) => (
+          <TouchableOpacity
+            key={opt.key}
+            style={[styles.sortChip, sortBy === opt.key && styles.sortChipActive]}
+            onPress={() => setSortBy(opt.key)}
+          >
+            <Text style={[styles.sortChipText, sortBy === opt.key && styles.sortChipTextActive]}>
+              {opt.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
       {reviews.length === 0 && (
         <View style={styles.emptyState}>
           <View style={styles.emptyIconCircle}>
-            <Icon name="star" size={40} color="#2E2A26" />
+            <FeatherIcon name="award" size={40} color="#2E2A26" />
           </View>
-          <Text style={styles.emptyTitle}>No reviews yet</Text>
-          <Text style={styles.emptySubtitle}>This seller hasn't received any reviews yet.</Text>
+          <Text style={styles.emptyTitle}>No Reviews Yet</Text>
+          <Text style={styles.emptySubtitle}>Service reviews for your shop will appear here as customers share their satisfaction.</Text>
         </View>
       )}
     </View>
@@ -215,16 +210,15 @@ const SellerReviewsScreen = ({ route, navigation }) => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
       
-
       <FlatList
         data={reviews}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id || item._id}
         renderItem={({ item }) => <ReviewCard review={item} />}
         ListHeaderComponent={<ListHeader />}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.4}
         ListFooterComponent={loadingMore ? (
-          <ActivityIndicator size="small" color="#EEEADDFF" style={{ marginVertical: 20 }} />
+          <ActivityIndicator size="small" color="#2E2A26" style={{ marginVertical: 20 }} />
         ) : null}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
@@ -235,78 +229,72 @@ const SellerReviewsScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF' },
-  header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
-  },
-  backBtn: { padding: 4 },
-  headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF' },
+  headerContent: { paddingHorizontal: 20 },
   list: { paddingBottom: 40 },
 
-  shopHeader: {
-    flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: 20, paddingVertical: 16, backgroundcolor: '#2E2A26',  
-  },
-  shopName: { fontSize: 18, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', marginVertical: 20 },
+  sectionTitle: { fontSize: 14, fontFamily: 'Montserrat_700Bold', color: '#2E2A26', textTransform: 'uppercase', letterSpacing: 1, marginRight: 15 },
+  sectionLine: { flex: 1, height: 1, backgroundColor: '#F0EBE5' },
 
   summaryCard: {
-    backgroundColor: '#EEEADDFF', flexDirection: 'row', padding: 24,
-    margin: 16, borderRadius: 16,  
-    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#FFFFFF', flexDirection: 'row', padding: 24,
+    borderRadius: 24, marginBottom: 10,
+    borderWidth: 1, borderColor: '#F0EBE5',
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.05, shadowRadius: 20, elevation: 5,
   },
-  summaryLeft: { alignItems: 'center', justifyContent: 'center', marginRight: 24, width: 90 },
-  averageNumber: { fontSize: 48, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', lineHeight: 52 },
-  totalCount: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', marginTop: 4 },
+  summaryLeft: { alignItems: 'center', justifyContent: 'center', marginRight: 24, width: 100 },
+  averageNumber: { fontSize: 44, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', lineHeight: 48 },
+  totalCount: { fontSize: 11, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178', marginTop: 4, textAlign: 'center' },
   summaryRight: { flex: 1, justifyContent: 'center' },
 
   barRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
-  barLabel: { fontSize: 13, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178', width: 24, marginRight: 8, flexDirection: 'row', alignItems: 'center' },
-  barTrack: { flex: 1, height: 8, backgroundColor: '#FFFFFF', borderRadius: 4, overflow: 'hidden',  },
-  barFill: { height: 8, backgroundColor: '#EEEADDFF', borderRadius: 4 },
-  barCount: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#5C554F', width: 24, textAlign: 'right', marginLeft: 8 },
+  barLabel: { fontSize: 11, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178', width: 22, marginRight: 8 },
+  barTrack: { flex: 1, height: 6, backgroundColor: '#F8F6F4', borderRadius: 3, overflow: 'hidden' },
+  barFill: { height: 6, backgroundColor: '#D4A853', borderRadius: 3 },
+  barCount: { fontSize: 11, fontFamily: 'Montserrat_600SemiBold', color: '#A8A19A', width: 22, textAlign: 'right', marginLeft: 8 },
 
-  sortRow: { flexDirection: 'row', paddingHorizontal: 16, marginBottom: 16 },
+  sortRow: { flexDirection: 'row', marginBottom: 20 },
   sortChip: {
-    paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20,
-    backgroundColor: '#EEEADDFF',  
-    marginRight: 8,
+    paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12,
+    backgroundColor: '#F8F6F4', marginRight: 10, borderWidth: 1, borderColor: '#EEEADD'
   },
-  sortChipActive: { backgroundColor: '#EEEADDFF', },
+  sortChipActive: { backgroundColor: '#2E2A26', borderColor: '#2E2A26' },
   sortChipText: { fontSize: 13, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
-  sortChipTextActive: { color: '#5C554F' },
+  sortChipTextActive: { color: '#FFFFFF' },
 
   reviewCard: {
-    backgroundColor: '#EEEADDFF', marginHorizontal: 16, marginBottom: 16,
-    borderRadius: 14, padding: 20,  
-    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: '#FFFFFF', marginHorizontal: 20, marginBottom: 20,
+    borderRadius: 24, padding: 20, borderWidth: 1, borderColor: '#F0EBE5',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.03, shadowRadius: 10, elevation: 2,
   },
   reviewHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   reviewerAvatar: {
-    width: 40, height: 40, borderRadius: 20, backgroundColor: '#EEEADDFF',
-    alignItems: 'center', justifyContent: 'center', marginRight: 12,  
+    width: 36, height: 36, borderRadius: 18, backgroundColor: '#F8F6F4',
+    alignItems: 'center', justifyContent: 'center', marginRight: 12, borderWidth: 1, borderColor: '#EEEADD'
   },
-  reviewerInitial: { color: '#2E2A26', fontFamily: 'Cinzel_700Bold', fontSize: 18 },
+  reviewerInitial: { color: '#2E2A26', fontFamily: 'Cinzel_700Bold', fontSize: 16 },
   reviewerMeta: { flex: 1 },
   reviewerName: { fontSize: 15, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26' },
-  reviewDate: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', marginTop: 2 },
-  editedTag: { color: '#2E2A26', fontStyle: 'italic' },
+  reviewDate: { fontSize: 12, fontFamily: 'Montserrat_400Regular', color: '#8A8178', marginTop: 2 },
 
-  reviewText: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#5C554F', lineHeight: 22, marginBottom: 12 },
+  reviewText: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#5C554F', lineHeight: 22, marginBottom: 15 },
 
-  photosRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },
-  reviewPhoto: { width: 80, height: 80, borderRadius: 8, backgroundColor: '#FFFFFF',  },
+  photosRow: { flexDirection: 'row', marginBottom: 15 },
+  reviewPhoto: { width: 90, height: 90, borderRadius: 12, marginRight: 10, backgroundColor: '#F8F6F4' },
 
-  helpfulBtn: { alignSelf: 'flex-start', paddingVertical: 8, paddingHorizontal: 12, backgroundColor: '#EEEADDFF', borderRadius: 8, flexDirection: 'row', alignItems: 'center',  },
-  helpfulText: { fontSize: 13, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
+  reviewFooter: { flexDirection: 'row', justifyContent: 'flex-end' },
+  helpfulBadge: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, paddingHorizontal: 12, backgroundColor: '#F8F6F4', borderRadius: 8, borderWidth: 1, borderColor: '#EEEADD' },
+  helpfulText: { fontSize: 12, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178' },
 
-  emptyState: { alignItems: 'center', paddingVertical: 60 },
+  emptyState: { alignItems: 'center', paddingVertical: 40, paddingHorizontal: 20 },
   emptyIconCircle: {
-    width: 80, height: 80, borderRadius: 40, backgroundColor: '#EEEADDFF',
-    alignItems: 'center', justifyContent: 'center', marginBottom: 24,
+    width: 100, height: 100, borderRadius: 50, backgroundColor: '#F8F6F4',
+    alignItems: 'center', justifyContent: 'center', marginBottom: 20,
+    borderWidth: 1, borderColor: '#EEEADD'
   },
-  emptyTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 8 },
-  emptySubtitle: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#8A8178' },
+  emptyTitle: { fontSize: 22, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 10 },
+  emptySubtitle: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#8A8178', textAlign: 'center', lineHeight: 22 },
 });
 
 export default SellerReviewsScreen;

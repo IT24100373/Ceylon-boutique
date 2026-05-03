@@ -1,16 +1,11 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
-  TextInput, TouchableOpacity, Alert, ActivityIndicator, StatusBar, Image
+  TextInput, TouchableOpacity, Alert, ActivityIndicator, StatusBar, Image, Platform
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import apiClient from '../api/client';
 import Icon from 'react-native-vector-icons/Feather';
-
-// -------------------------------------------------------
-// Seller — Add Product Screen
-// Multi-section form for creating a new product listing
-// -------------------------------------------------------
 
 const CATEGORIES = [
   'Saree & Traditional', 'Dresses', 'Tops & Blouses', 'Pants & Trousers',
@@ -34,14 +29,12 @@ const AddProductScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
 
-  // --- Size selection toggle ---
   const toggleSize = (size) => {
     setSelectedSizes((prev) =>
       prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
     );
   };
 
-  // --- Add color ---
   const addColor = () => {
     const trimmed = colorInput.trim();
     if (!trimmed) return;
@@ -53,11 +46,8 @@ const AddProductScreen = ({ navigation }) => {
     setColorInput('');
   };
 
-  const removeColor = (index) => {
-    setColors(colors.filter((_, i) => i !== index));
-  };
+  const removeColor = (index) => setColors(colors.filter((_, i) => i !== index));
 
-  // --- Add image URL ---
   const addImage = () => {
     const trimmed = imageInput.trim();
     if (!trimmed) return;
@@ -69,36 +59,28 @@ const AddProductScreen = ({ navigation }) => {
     setImageInput('');
   };
 
-  const removeImage = (index) => {
-    setImages(images.filter((_, i) => i !== index));
-  };
+  const removeImage = (index) => setImages(images.filter((_, i) => i !== index));
 
-  // --- Pick Image from Device ---
   const pickImage = async () => {
     if (images.length >= 10) {
       Alert.alert('Limit', 'Maximum 10 images allowed.');
       return;
     }
-
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('Permission needed', 'Sorry, we need camera roll permissions to make this work!');
       return;
     }
-
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 0.8,
     });
-
     if (!result.canceled && result.assets && result.assets.length > 0) {
-      // Add a special object to distinguish local files from URLs
-      setImages([...images, { uri: result.assets[0].uri, isLocal: true, type: result.assets[0].type || 'image/jpeg', name: result.assets[0].uri.split('/').pop() }]);
+      setImages([...images, { uri: result.assets[0].uri, isLocal: true, type: 'image/jpeg', name: result.assets[0].uri.split('/').pop() || 'image.jpg' }]);
     }
   };
 
-  // --- Upload Local Images to Server ---
   const uploadLocalImages = async () => {
     const localImages = images.filter(img => typeof img === 'object' && img.isLocal);
     if (localImages.length === 0) return images;
@@ -113,61 +95,36 @@ const AddProductScreen = ({ navigation }) => {
     });
 
     try {
-      // Need a separate instance or custom config for multipart/form-data
       const token = await require('@react-native-async-storage/async-storage').default.getItem('ceylon_token');
-
       const response = await fetch(`${apiClient.defaults.baseURL}/api/upload/images`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
-          'Content-Type': 'multipart/form-data',
         },
         body: formData,
       });
-
       const responseData = await response.json();
-
-      if (!response.ok || !responseData.success) {
-        throw new Error(responseData.message || 'Image upload failed');
-      }
-
-      // Combine existing URLs with newly uploaded URLs
+      if (!response.ok || !responseData.success) throw new Error(responseData.message || 'Image upload failed');
       const finalImages = images.map(img => {
         if (typeof img === 'string') return img;
-        // This relies on the order being preserved, which it should be
-        return responseData.images.shift() || img.uri; // Fallback to local uri if something goes wrong, though backend will reject
+        return responseData.images.shift() || img.uri;
       });
-
       return finalImages;
-
     } catch (error) {
       console.error('Upload error:', error);
       throw error;
     }
   };
 
-  // --- Generate variants from sizes × colors ---
   const generateVariants = () => {
-    if (selectedSizes.length === 0) {
-      Alert.alert('Missing Sizes', 'Please select at least one size first.');
-      return;
-    }
-    if (colors.length === 0) {
-      Alert.alert('Missing Colors', 'Please add at least one color first.');
-      return;
-    }
-
+    if (selectedSizes.length === 0) return Alert.alert('Missing Sizes', 'Please select at least one size first.');
+    if (colors.length === 0) return Alert.alert('Missing Colors', 'Please add at least one color first.');
     const newVariants = [];
     selectedSizes.forEach((size) => {
       colors.forEach((color) => {
-        // Preserve existing stock if variant already exists
         const existing = variants.find((v) => v.size === size && v.color === color.name);
-        newVariants.push({
-          size,
-          color: color.name,
-          stock: existing ? existing.stock : 0,
-        });
+        newVariants.push({ size, color: color.name, stock: existing ? existing.stock : 0 });
       });
     });
     setVariants(newVariants);
@@ -179,23 +136,19 @@ const AddProductScreen = ({ navigation }) => {
     setVariants(updated);
   };
 
-  // --- Submit product ---
   const handleSubmit = async () => {
-    // Basic client-side checks
     if (!name.trim()) return Alert.alert('Required', 'Product name is required.');
     if (!description.trim()) return Alert.alert('Required', 'Product description is required.');
     if (!category) return Alert.alert('Required', 'Please select a category.');
-    if (!price || parseFloat(price) < 1) return Alert.alert('Required', 'Please enter a valid price (min LKR 1).');
+    if (!price || parseFloat(price) < 1) return Alert.alert('Required', 'Please enter a valid price.');
     if (selectedSizes.length === 0) return Alert.alert('Required', 'Please select at least one size.');
     if (colors.length === 0) return Alert.alert('Required', 'Please add at least one color.');
-    if (images.length === 0) return Alert.alert('Required', 'Please add at least one image URL.');
-    if (variants.length === 0) return Alert.alert('Required', 'Please generate and set stock for variants.');
+    if (images.length === 0) return Alert.alert('Required', 'Please add at least one image.');
+    if (variants.length === 0) return Alert.alert('Required', 'Please generate variants.');
 
     setLoading(true);
     try {
-      // First upload any local images
       const finalImageUrls = await uploadLocalImages();
-
       await apiClient.post('/api/products', {
         name: name.trim(),
         description: description.trim(),
@@ -206,357 +159,289 @@ const AddProductScreen = ({ navigation }) => {
         images: finalImageUrls,
         variants,
       });
-      Alert.alert('Success!', 'Your product has been listed and is now visible to customers.', [
-        { text: 'OK', onPress: () => navigation.goBack() },
-      ]);
+      Alert.alert('Success!', 'Product listed successfully.', [{ text: 'OK', onPress: () => navigation.goBack() }]);
     } catch (error) {
-      const msg = error.response?.data?.message || 'Failed to add product. Please try again.';
-      Alert.alert('Error', msg);
+      Alert.alert('Error', error.response?.data?.message || 'Failed to add product.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
+      <SafeAreaView style={{ flex: 1 }}>
+        
 
-    
-      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-        {/* Section 1: Basic Info */}
-        <View style={styles.sectionHeader}>
-          <Icon name="info" size={20} color="#2E2A26" style={styles.sectionIcon} />
-          <Text style={styles.sectionTitle}>Basic Information</Text>
-        </View>
-        <View style={styles.card}>
-          <Text style={styles.label}>Product Name *</Text>
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder="e.g. Handloom Cotton Saree"
-            placeholderTextColor="#5C554F"
-            maxLength={200}
-          />
+        <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Basic Details</Text>
+            <View style={styles.sectionLine} />
+          </View>
+          
+          <View style={styles.card}>
+            <Text style={styles.label}>Product Name</Text>
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+              placeholder="Enter product title"
+              placeholderTextColor="#A8A19A"
+            />
 
-          <Text style={styles.label}>Description *</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            value={description}
-            onChangeText={setDescription}
-            placeholder="Describe your product in detail..."
-            placeholderTextColor="#5C554F"
-            multiline
-            numberOfLines={4}
-            maxLength={2000}
-          />
+            <Text style={styles.label}>Description</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              value={description}
+              onChangeText={setDescription}
+              placeholder="What makes this product special?"
+              placeholderTextColor="#A8A19A"
+              multiline
+            />
 
-          <Text style={styles.label}>Category *</Text>
-          <TouchableOpacity
-            style={styles.pickerBtn}
-            onPress={() => setShowCategoryPicker(!showCategoryPicker)}
-          >
-            <Text style={category ? styles.pickerText : styles.pickerPlaceholder}>
-              {category || 'Select a category'}
-            </Text>
-            <Icon name={showCategoryPicker ? "chevron-up" : "chevron-down"} size={20} color="#2E2A26" />
-          </TouchableOpacity>
-          {showCategoryPicker && (
-            <View style={styles.pickerList}>
-              {CATEGORIES.map((cat) => (
+            <Text style={styles.label}>Category</Text>
+            <TouchableOpacity style={styles.pickerBtn} onPress={() => setShowCategoryPicker(!showCategoryPicker)}>
+              <Text style={category ? styles.pickerText : styles.pickerPlaceholder}>{category || 'Select Category'}</Text>
+              <Icon name="chevron-down" size={20} color="#2E2A26" />
+            </TouchableOpacity>
+            
+            {showCategoryPicker && (
+              <View style={styles.pickerList}>
+                {CATEGORIES.map((cat) => (
+                  <TouchableOpacity key={cat} style={styles.pickerItem} onPress={() => { setCategory(cat); setShowCategoryPicker(false); }}>
+                    <Text style={[styles.pickerItemText, category === cat && styles.activePickerItemText]}>{cat}</Text>
+                    {category === cat && <Icon name="check" size={16} color="#2E2A26" />}
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+
+            <Text style={styles.label}>Price (LKR)</Text>
+            <TextInput
+              style={styles.input}
+              value={price}
+              onChangeText={setPrice}
+              placeholder="e.g. 5000"
+              placeholderTextColor="#A8A19A"
+              keyboardType="numeric"
+            />
+          </View>
+
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Attributes</Text>
+            <View style={styles.sectionLine} />
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.label}>Available Sizes</Text>
+            <View style={styles.chipRow}>
+              {SIZE_OPTIONS.map((size) => (
                 <TouchableOpacity
-                  key={cat}
-                  style={[styles.pickerItem, category === cat && styles.pickerItemActive]}
-                  onPress={() => { setCategory(cat); setShowCategoryPicker(false); }}
+                  key={size}
+                  style={[styles.chip, selectedSizes.includes(size) && styles.chipActive]}
+                  onPress={() => toggleSize(size)}
                 >
-                  <Text style={[styles.pickerItemText, category === cat && styles.pickerItemTextActive]}>
-                    {cat}
-                  </Text>
-                  {category === cat && <Icon name="check" size={16} color="#2E2A26" />}
+                  <Text style={[styles.chipText, selectedSizes.includes(size) && styles.chipTextActive]}>{size}</Text>
                 </TouchableOpacity>
               ))}
             </View>
-          )}
 
-          <Text style={styles.label}>Price (LKR) *</Text>
-          <TextInput
-            style={styles.input}
-            value={price}
-            onChangeText={setPrice}
-            placeholder="e.g. 2500"
-            placeholderTextColor="#5C554F"
-            keyboardType="numeric"
-          />
-        </View>
-
-        {/* Section 2: Sizes */}
-        <View style={styles.sectionHeader}>
-          <Icon name="maximize" size={20} color="#2E2A26" style={styles.sectionIcon} />
-          <Text style={styles.sectionTitle}>Sizes *</Text>
-        </View>
-        <View style={styles.card}>
-          <View style={styles.chipRow}>
-            {SIZE_OPTIONS.map((size) => (
-              <TouchableOpacity
-                key={size}
-                style={[styles.chip, selectedSizes.includes(size) && styles.chipActive]}
-                onPress={() => toggleSize(size)}
-              >
-                <Text style={[styles.chipText, selectedSizes.includes(size) && styles.chipTextActive]}>
-                  {size}
-                </Text>
+            <Text style={styles.label}>Colors</Text>
+            <View style={styles.addRow}>
+              <TextInput
+                style={[styles.input, { flex: 1, marginBottom: 0, marginRight: 10 }]}
+                value={colorInput}
+                onChangeText={setColorInput}
+                placeholder="Add color (e.g. Red)"
+                placeholderTextColor="#A8A19A"
+              />
+              <TouchableOpacity style={styles.miniAddBtn} onPress={addColor}>
+                <Icon name="plus" size={20} color="#FFFFFF" />
               </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        {/* Section 3: Colors */}
-        <View style={styles.sectionHeader}>
-          <Icon name="aperture" size={20} color="#2E2A26" style={styles.sectionIcon} />
-          <Text style={styles.sectionTitle}>Colors *</Text>
-        </View>
-        <View style={styles.card}>
-          <View style={styles.addRow}>
-            <TextInput
-              style={[styles.input, { flex: 1, marginBottom: 0, marginRight: 10 }]}
-              value={colorInput}
-              onChangeText={setColorInput}
-              placeholder="e.g. Navy Blue"
-              placeholderTextColor="#5C554F"
-            />
-            <TouchableOpacity style={styles.addBtn} onPress={addColor}>
-              <Icon name="plus" size={16} color="#2E2A26" style={{ marginRight: 4 }} />
-              <Text style={styles.addBtnText}>Add</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.chipRow}>
-            {colors.map((color, idx) => (
-              <TouchableOpacity key={idx} style={styles.chipRemovable} onPress={() => removeColor(idx)}>
-                <Text style={styles.chipRemovableText}>{color.name}</Text>
-                <Icon name="x" size={14} color="#2E2A26" style={{ marginLeft: 6 }} />
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        {/* Section 4: Images */}
-        <View style={styles.sectionHeader}>
-          <Icon name="image" size={20} color="#2E2A26" style={styles.sectionIcon} />
-          <Text style={styles.sectionTitle}>Images * (1–10)</Text>
-        </View>
-        <View style={styles.card}>
-          <View style={styles.addRow}>
-            <TextInput
-              style={[styles.input, { flex: 1, marginBottom: 0, marginRight: 10 }]}
-              value={imageInput}
-              onChangeText={setImageInput}
-              placeholder="Paste image URL"
-              placeholderTextColor="#5C554F"
-            />
-            <TouchableOpacity style={styles.addBtn} onPress={addImage}>
-              <Icon name="link" size={16} color="#2E2A26" style={{ marginRight: 4 }} />
-              <Text style={styles.addBtnText}>URL</Text>
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity style={styles.uploadBtn} onPress={pickImage}>
-            <Icon name="upload" size={18} color="#2E2A26" style={{ marginRight: 8 }} />
-            <Text style={styles.uploadBtnText}>Upload from Device</Text>
-          </TouchableOpacity>
-
-          {images.map((img, idx) => {
-            const isLocal = typeof img === 'object' && img.isLocal;
-            const displayUrl = isLocal ? img.uri : img;
-            return (
-              <View key={idx} style={styles.imageItem}>
-                <Image source={{ uri: displayUrl }} style={styles.imagePreview} />
-                <Text style={styles.imageUrl} numberOfLines={1}>
-                  {isLocal ? 'Local File' : displayUrl}
-                </Text>
-                <TouchableOpacity onPress={() => removeImage(idx)} style={styles.removeBtn}>
-                  <Icon name="trash-2" size={18} color="#2E2A26" />
+            </View>
+            <View style={styles.chipRow}>
+              {colors.map((color, idx) => (
+                <TouchableOpacity key={idx} style={styles.removableChip} onPress={() => removeColor(idx)}>
+                  <Text style={styles.removableChipText}>{color.name}</Text>
+                  <Icon name="x" size={14} color="#2E2A26" />
                 </TouchableOpacity>
-              </View>
-            );
-          })}
-        </View>
-
-        {/* Section 5: Variants & Stock */}
-        <View style={styles.sectionHeader}>
-          <Icon name="package" size={20} color="#2E2A26" style={styles.sectionIcon} />
-          <Text style={styles.sectionTitle}>Stock per Variant</Text>
-        </View>
-        <View style={styles.card}>
-          <TouchableOpacity style={styles.generateBtn} onPress={generateVariants}>
-            <Icon name="refresh-cw" size={16} color="#2E2A26" style={{ marginRight: 8 }} />
-            <Text style={styles.generateBtnText}>Generate Variants from Sizes × Colors</Text>
-          </TouchableOpacity>
-
-          {variants.length > 0 && (
-            <View style={styles.variantTable}>
-              <View style={styles.variantHeader}>
-                <Text style={[styles.variantHeaderText, { flex: 1 }]}>Size</Text>
-                <Text style={[styles.variantHeaderText, { flex: 1 }]}>Color</Text>
-                <Text style={[styles.variantHeaderText, { flex: 0.8 }]}>Stock</Text>
-              </View>
-              {variants.map((v, idx) => (
-                <View key={idx} style={styles.variantRow}>
-                  <Text style={[styles.variantCell, { flex: 1 }]}>{v.size}</Text>
-                  <Text style={[styles.variantCell, { flex: 1 }]}>{v.color}</Text>
-                  <TextInput
-                    style={styles.variantInput}
-                    value={String(v.stock)}
-                    onChangeText={(val) => updateVariantStock(idx, val)}
-                    keyboardType="numeric"
-                  />
-                </View>
               ))}
             </View>
-          )}
-        </View>
+          </View>
 
-        {/* Submit */}
-        <TouchableOpacity
-          style={[styles.submitBtn, loading && styles.submitBtnDisabled]}
-          onPress={handleSubmit}
-          disabled={loading}
-          activeOpacity={0.8}
-        >
-          {loading ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Icon name="upload-cloud" size={20} color="#2E2A26" style={{ marginRight: 8 }} />
-              <Text style={styles.submitBtnText}>Publish Product</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Product Media</Text>
+            <View style={styles.sectionLine} />
+          </View>
+
+          <View style={styles.card}>
+            <TouchableOpacity style={styles.uploadBox} onPress={pickImage}>
+              <Icon name="image" size={32} color="#8A8178" />
+              <Text style={styles.uploadBoxText}>Upload from Device</Text>
+              <Text style={styles.uploadBoxSub}>Up to 10 high-quality photos</Text>
+            </TouchableOpacity>
+
+            <View style={styles.urlRow}>
+              <TextInput
+                style={[styles.input, { flex: 1, marginBottom: 0, marginRight: 10 }]}
+                value={imageInput}
+                onChangeText={setImageInput}
+                placeholder="Or paste image URL"
+                placeholderTextColor="#A8A19A"
+              />
+              <TouchableOpacity style={styles.urlAddBtn} onPress={addImage}>
+                <Icon name="link" size={18} color="#2E2A26" />
+              </TouchableOpacity>
             </View>
-          )}
-        </TouchableOpacity>
 
-        <View style={{ height: 40 }} />
-      </ScrollView>
-    </SafeAreaView>
+            <View style={styles.imageList}>
+              {images.map((img, idx) => {
+                const isLocal = typeof img === 'object' && img.isLocal;
+                return (
+                  <View key={idx} style={styles.imageWrapper}>
+                    <Image source={{ uri: isLocal ? img.uri : img }} style={styles.imageItem} />
+                    <TouchableOpacity style={styles.removeImageBtn} onPress={() => removeImage(idx)}>
+                      <Icon name="x" size={12} color="#FFFFFF" />
+                    </TouchableOpacity>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Inventory</Text>
+            <View style={styles.sectionLine} />
+          </View>
+
+          <View style={styles.card}>
+            <TouchableOpacity style={styles.generateBtn} onPress={generateVariants}>
+              <Icon name="layers" size={18} color="#2E2A26" style={{ marginRight: 8 }} />
+              <Text style={styles.generateBtnText}>Generate Variant Grid</Text>
+            </TouchableOpacity>
+
+            {variants.length > 0 && (
+              <View style={styles.variantList}>
+                {variants.map((v, idx) => (
+                  <View key={idx} style={styles.variantRow}>
+                    <View style={styles.variantInfo}>
+                      <Text style={styles.variantMainText}>{v.color} • {v.size}</Text>
+                    </View>
+                    <View style={styles.variantStockInput}>
+                      <Text style={styles.stockLabel}>Stock:</Text>
+                      <TextInput
+                        style={styles.stockInput}
+                        value={String(v.stock)}
+                        onChangeText={(val) => updateVariantStock(idx, val)}
+                        keyboardType="numeric"
+                      />
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+
+          <TouchableOpacity
+            style={[styles.submitBtn, loading && styles.disabledBtn]}
+            onPress={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.submitBtnText}>Publish Product</Text>}
+          </TouchableOpacity>
+          <View style={{ height: 40 }} />
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF' },
-  header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF'
-  },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 15 },
   backBtn: { padding: 4 },
   headerTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
 
-  scroll: { flex: 1, padding: 16 },
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, marginTop: 10 },
-  sectionIcon: { marginRight: 8 },
-  sectionTitle: { fontSize: 18, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
+  scroll: { flex: 1, paddingHorizontal: 20 },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', marginVertical: 20 },
+  sectionTitle: { fontSize: 14, fontFamily: 'Montserrat_700Bold', color: '#2E2A26', textTransform: 'uppercase', letterSpacing: 1, marginRight: 15 },
+  sectionLine: { flex: 1, height: 1, backgroundColor: '#F0EBE5' },
 
-  card: {
-    backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 20,
-    marginBottom: 16,  
-    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
-  },
-  label: {
-    fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26',
-    marginBottom: 8, marginTop: 14,
-  },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 20, padding: 0, marginBottom: 10 },
+  label: { fontSize: 13, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178', marginBottom: 10, marginTop: 5 },
   input: {
-    backgroundColor: '#EEEADDFF', borderRadius: 10, paddingHorizontal: 14,
-    paddingVertical: 12, fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#2E2A26',
-      marginBottom: 4,
+    backgroundColor: '#F8F6F4', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14,
+    fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', marginBottom: 20,
+    borderWidth: 1, borderColor: '#EEEADD'
   },
   textArea: { minHeight: 100, textAlignVertical: 'top' },
+  
   pickerBtn: {
-    backgroundColor: '#EEEADDFF', borderRadius: 10, paddingHorizontal: 14,
-    paddingVertical: 14,  
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    backgroundColor: '#F8F6F4', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14,
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20,
+    borderWidth: 1, borderColor: '#EEEADD'
   },
-  pickerText: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#5C554F' },
-  pickerPlaceholder: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#8A8178' },
-  pickerList: {
-    backgroundColor: '#EEEADDFF', borderRadius: 10, marginTop: 6,
-      overflow: 'hidden',
-  },
-  pickerItem: { paddingVertical: 14, paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  pickerItemActive: { backgroundColor: '#EEEADDFF' },
-  pickerItemText: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#5C554F' },
-  pickerItemTextActive: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold' },
+  pickerText: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#2E2A26' },
+  pickerPlaceholder: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#A8A19A' },
+  pickerList: { backgroundColor: '#F8F6F4', borderRadius: 12, marginBottom: 20, padding: 8, borderWidth: 1, borderColor: '#EEEADD' },
+  pickerItem: { padding: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderRadius: 8 },
+  pickerItemText: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#5C554F' },
+  activePickerItemText: { fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26' },
 
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 },
-  chip: {
-    paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20,
-    backgroundColor: '#EEEADDFF', marginRight: 10, marginBottom: 10,
-     
-  },
-  chipActive: { backgroundColor: '#EEEADDFF', },
-  chipText: { fontSize: 14, color: '#5C554F', fontFamily: 'Montserrat_600SemiBold' },
-  chipTextActive: { color: '#5C554F' },
-  chipRemovable: {
-    flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
-    backgroundColor: '#EEEADDFF', marginRight: 10, marginBottom: 10,
-     
-  },
-  chipRemovableText: { fontSize: 14, color: '#5C554F', fontFamily: 'Montserrat_600SemiBold' },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 15 },
+  chip: { paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, backgroundColor: '#F8F6F4', marginRight: 10, marginBottom: 10, borderWidth: 1, borderColor: '#EEEADD' },
+  chipActive: { backgroundColor: '#2E2A26', borderColor: '#2E2A26' },
+  chipText: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
+  chipTextActive: { color: '#FFFFFF' },
 
-  addRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
-  addBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    backgroundColor: '#EEEADDFF', paddingHorizontal: 16, paddingVertical: 12,
-    borderRadius: 10,
-  },
-  addBtnText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold', fontSize: 14 },
+  addRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
+  miniAddBtn: { width: 50, height: 50, backgroundColor: '#2E2A26', borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  removableChip: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 10, borderRadius: 12, backgroundColor: '#F0EBE5', marginRight: 10, marginBottom: 10 },
+  removableChipText: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26', marginRight: 8 },
 
-  imageItem: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingVertical: 12,  
+  uploadBox: {
+    height: 140, backgroundColor: '#F8F6F4', borderRadius: 20, borderStyle: 'dashed', borderWidth: 2, borderColor: '#EEEADD',
+    justifyContent: 'center', alignItems: 'center', marginBottom: 20
   },
-  imagePreview: {
-    width: 40, height: 40, borderRadius: 6, marginRight: 10, backgroundColor: '#FFFFFF'
-  },
-  imageUrl: { flex: 1, fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', marginRight: 10 },
-  removeBtn: { padding: 4 },
+  uploadBoxText: { fontSize: 15, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26', marginTop: 12 },
+  uploadBoxSub: { fontSize: 12, fontFamily: 'Montserrat_400Regular', color: '#8A8178', marginTop: 4 },
 
-  uploadBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    backgroundColor: '#EEEADDFF', paddingVertical: 14, borderRadius: 10,
-      marginBottom: 16, borderStyle: 'dashed'
-  },
-  uploadBtnText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold', fontSize: 14 },
+  urlRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
+  urlAddBtn: { width: 50, height: 50, backgroundColor: '#F0EBE5', borderRadius: 12, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#EEEADD' },
+
+  imageList: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 10 },
+  imageWrapper: { width: 80, height: 80, marginRight: 12, marginBottom: 12, borderRadius: 12, overflow: 'hidden' },
+  imageItem: { width: '100%', height: '100%' },
+  removeImageBtn: { position: 'absolute', top: 4, right: 4, width: 20, height: 20, borderRadius: 10, backgroundColor: 'rgba(46, 42, 38, 0.8)', justifyContent: 'center', alignItems: 'center' },
 
   generateBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    backgroundColor: '#EEEADDFF', paddingVertical: 14, borderRadius: 10,
-     
+    backgroundColor: '#F0EBE5', paddingVertical: 16, borderRadius: 12, marginBottom: 20,
+    borderWidth: 1, borderColor: '#EEEADD'
   },
-  generateBtnText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold', fontSize: 14 },
+  generateBtnText: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26' },
 
-  variantTable: { marginTop: 20 },
-  variantHeader: {
-    flexDirection: 'row', paddingVertical: 10, paddingHorizontal: 8,
-    backgroundColor: '#FFFFFF', borderRadius: 8, marginBottom: 8,
+  variantList: { marginBottom: 10 },
+  variantRow: { 
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', 
+    backgroundColor: '#F8F6F4', padding: 15, borderRadius: 12, marginBottom: 12,
+    borderWidth: 1, borderColor: '#EEEADD'
   },
-  variantHeaderText: { fontSize: 13, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26' },
-  variantRow: {
-    flexDirection: 'row', alignItems: 'center',
-    paddingVertical: 10,  
-  },
-  variantCell: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#2E2A26', paddingHorizontal: 8 },
-  variantInput: {
-    flex: 0.8, backgroundColor: '#EEEADDFF', borderRadius: 8,
-    paddingHorizontal: 10, paddingVertical: 8, fontSize: 14, fontFamily: 'Montserrat_400Regular',
-      textAlign: 'center', color: '#2E2A26'
+  variantMainText: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26' },
+  variantStockInput: { flexDirection: 'row', alignItems: 'center' },
+  stockLabel: { fontSize: 12, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178', marginRight: 8 },
+  stockInput: { 
+    backgroundColor: '#FFFFFF', width: 60, paddingVertical: 8, paddingHorizontal: 10, 
+    borderRadius: 8, borderWidth: 1, borderColor: '#EEEADD', textAlign: 'center',
+    fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#2E2A26'
   },
 
-  submitBtn: {
-    backgroundColor: '#EEEADDFF', paddingVertical: 16, borderRadius: 14,
-    alignItems: 'center', marginTop: 10,
-    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1, shadowRadius: 8, elevation: 4,
+  submitBtn: { 
+    backgroundColor: '#2E2A26', paddingVertical: 18, borderRadius: 16, alignItems: 'center', 
+    marginTop: 20, shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.2, shadowRadius: 20, elevation: 8
   },
-  submitBtnDisabled: { opacity: 0.6 },
-  submitBtnText: { color: '#8A8178', fontSize: 16, fontFamily: 'Montserrat_600SemiBold' },
+  disabledBtn: { opacity: 0.6 },
+  submitBtnText: { fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#FFFFFF', letterSpacing: 0.5 },
 });
 
 export default AddProductScreen;

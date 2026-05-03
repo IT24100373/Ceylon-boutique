@@ -8,7 +8,7 @@ const WelcomeScreen = ({ navigation }) => {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       <ImageBackground
-        source={require('../../assets/welcome_bg.png')}
+        source={require('../../assets/welcome_bg.jpg')}
         style={styles.bgImage}
         resizeMode="cover"
       >

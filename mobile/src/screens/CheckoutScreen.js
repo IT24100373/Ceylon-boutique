@@ -144,11 +144,15 @@ const CheckoutScreen = ({ navigation }) => {
   if (processingPayment) {
     return (
       <View style={styles.processingOverlay}>
-        <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
+        <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
         <View style={styles.processingCard}>
-          <ActivityIndicator size="large" color="#EEEADDFF" />
-          <Text style={styles.processingTitle}>Processing Payment</Text>
-          <Text style={styles.processingSubtitle}>Please do not close this screen…</Text>
+          <View style={styles.processingIconContainer}>
+            <ActivityIndicator size="large" color="#2E2A26" />
+          </View>
+          <Text style={styles.processingTitle}>Securing Payment</Text>
+          <Text style={styles.processingSubtitle}>
+            We're processing your transaction securely. Please do not close this screen or navigate away.
+          </Text>
         </View>
       </View>
     );
@@ -159,13 +163,7 @@ const CheckoutScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#EEEADDFF" />
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#2E2A26" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Checkout</Text>
-        <View style={{ width: 24 }} />
-      </View>
+
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -314,6 +312,17 @@ const CheckoutScreen = ({ navigation }) => {
 
         {/* ── Footer ── */}
         <View style={styles.footer}>
+          <View style={styles.footerPriceRow}>
+            <View>
+              <Text style={styles.footerTotalLabel}>Total Amount</Text>
+              <Text style={styles.footerTotalValue}>LKR {cartTotal.toLocaleString()}</Text>
+            </View>
+            <View style={styles.securePaymentBadge}>
+              <Icon name="shield" size={14} color="#8A8178" style={{ marginRight: 6 }} />
+              <Text style={styles.secureText}>Secure Payment</Text>
+            </View>
+          </View>
+
           <TouchableOpacity
             style={[styles.placeOrderBtn, !isFormReady && styles.placeOrderBtnDisabled]}
             disabled={!isFormReady}
@@ -324,7 +333,7 @@ const CheckoutScreen = ({ navigation }) => {
             ) : (
               <>
                 <Text style={styles.placeOrderBtnText}>Pay & Place Order</Text>
-                <Text style={styles.placeOrderBtnAmount}>LKR {cartTotal.toLocaleString()}</Text>
+                <Icon name="arrow-right" size={20} color="#FFFFFF" />
               </>
             )}
           </TouchableOpacity>
@@ -358,15 +367,15 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginTop: 16, marginBottom: 16 },
 
   // Address
-  noAddressContainer: { padding: 24, backgroundColor: '#FFFFFF', borderRadius: 12, alignItems: 'center',  },
+  noAddressContainer: { padding: 24, backgroundColor: '#FFFFFF', borderRadius: 12, alignItems: 'center', },
   noAddressText: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#5C554F', marginBottom: 16 },
   addAddressBtn: { paddingHorizontal: 20, paddingVertical: 12, backgroundColor: '#EEEADDFF', borderRadius: 8 },
   addAddressBtnText: { color: '#5C554F', fontFamily: 'Montserrat_600SemiBold' },
   addressCard: {
     backgroundColor: '#EEEADDFF', padding: 16, borderRadius: 12, marginBottom: 12,
-     
+
   },
-  addressCardSelected: {  backgroundColor: '#EEEADDFF' },
+  addressCardSelected: { backgroundColor: '#EEEADDFF' },
   addressHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   addressLabel: { fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178' },
   addressText: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: '#5C554F', marginBottom: 4, lineHeight: 20 },
@@ -374,7 +383,7 @@ const styles = StyleSheet.create({
   // Payment badge
   paymentBadge: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#EEEADDFF',  
+    backgroundColor: '#EEEADDFF',
     borderRadius: 12, padding: 16, marginBottom: 16,
   },
   paymentBadgeText: { fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
@@ -382,13 +391,13 @@ const styles = StyleSheet.create({
   // Card form
   cardForm: {
     backgroundColor: '#EEEADDFF', borderRadius: 14, padding: 20, marginBottom: 16,
-     
+
   },
   cardFormTitle: { fontSize: 18, fontFamily: 'Cinzel_700Bold', color: '#2E2A26', marginBottom: 20 },
   fieldLabel: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178', marginBottom: 8 },
   inputContainer: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#FFFFFF', borderRadius: 10,  
+    backgroundColor: '#FFFFFF', borderRadius: 10,
     paddingHorizontal: 14, marginBottom: 16,
   },
   inputIcon: { marginRight: 10 },
@@ -398,31 +407,41 @@ const styles = StyleSheet.create({
   rowInputs: { flexDirection: 'row' },
   demoNote: {
     flexDirection: 'row', backgroundColor: '#FFFFFF', borderRadius: 8, padding: 12, marginTop: 4,
-     
+
   },
   demoNoteText: { flex: 1, fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#5C554F', lineHeight: 20 },
 
   // Summary
-  summaryCard: { backgroundColor: '#EEEADDFF', padding: 20, borderRadius: 12,  },
+  summaryCard: {
+    backgroundColor: '#FFFFFF', padding: 20, borderRadius: 16,
+    borderWidth: 1, borderColor: '#F0EBE5',
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 2,
+  },
   summaryRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 },
   summaryText: { fontSize: 15, fontFamily: 'Montserrat_400Regular', color: '#5C554F' },
-  summaryTotalRow: {   paddingTop: 16, marginTop: 8, marginBottom: 0 },
+  summaryTotalRow: { paddingTop: 16, marginTop: 8, marginBottom: 0 },
   summaryTotalText: { fontSize: 16, fontFamily: 'Montserrat_600SemiBold', color: '#5C554F' },
   summaryTotalValue: { fontSize: 20, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
 
   // Footer
   footer: {
-    backgroundColor: '#EEEADDFF', padding: 24, paddingBottom: 32,
-    borderTopLeftRadius: 24, borderTopRightRadius: 24,
-    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 10,
+    backgroundColor: '#FFFFFF', padding: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24,
+    borderTopLeftRadius: 32, borderTopRightRadius: 32,
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: -10 }, shadowOpacity: 0.1, shadowRadius: 20, elevation: 25,
+    borderWidth: 1, borderColor: '#F0EBE5',
   },
+  footerPriceRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  footerTotalLabel: { fontSize: 13, fontFamily: 'Montserrat_400Regular', color: '#8A8178', textTransform: 'uppercase', letterSpacing: 1 },
+  footerTotalValue: { fontSize: 24, fontFamily: 'Cinzel_700Bold', color: '#2E2A26' },
+  securePaymentBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F8F6F4', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
+  secureText: { fontSize: 12, fontFamily: 'Montserrat_600SemiBold', color: '#8A8178' },
   placeOrderBtn: {
-    backgroundColor: '#EEEADDFF', padding: 18, borderRadius: 12,
-    alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between',
+    backgroundColor: '#2E2A26', padding: 18, borderRadius: 16,
+    alignItems: 'center', flexDirection: 'row', justifyContent: 'center',
+    shadowColor: '#2E2A26', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.2, shadowRadius: 12, elevation: 8,
   },
-  placeOrderBtnDisabled: { opacity: 0.5 },
-  placeOrderBtnText: { color: '#5C554F', fontSize: 16, fontFamily: 'Montserrat_600SemiBold' },
-  placeOrderBtnAmount: { color: '#2E2A26', fontSize: 16, fontFamily: 'Montserrat_600SemiBold', opacity: 0.9 },
+  placeOrderBtnDisabled: { backgroundColor: '#A8A19A', shadowOpacity: 0 },
+  placeOrderBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: 'Montserrat_600SemiBold', marginRight: 10 },
 });
 
 export default CheckoutScreen;
