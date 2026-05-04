@@ -1,4 +1,4 @@
-Ceylon Boutique Marketplace
+# Ceylon Boutique Marketplace
 
 A full-stack e-commerce platform connecting customers with authentic Sri Lankan clothing boutiques. This project includes a mobile app for customers and sellers, and a web-based admin panel for platform management.
 
